@@ -1,0 +1,62 @@
+<!-- Winner Start -->
+<div class="container-xxl py-5">
+    <div class="container">
+        {% if winner %}
+            <div class="row g-12 d-flex justify-content-center">
+                <div class="col-lg-5 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
+                    <div class="team-item position-relative rounded overflow-hidden">
+                        <div class="overflow-hidden">
+                            <img class="img-fluid" src="{{asset('assets/img/win.jpg')}}" alt="">
+                        </div>
+                        <div class="team-text bg-light text-center p-4">
+                            <h5><strong class="text-primary">GAGNANT</strong> <i class="fa fa-arrow-right"></i> {{winner.numTicket}}</h5>
+                            {% if winner.user %}
+                                <p><strong class="text-primary">{{winner.user.pseudo|upper}} GAGNE</strong> <strong class="text-dark"><i class="fa fa-arrow-right"></i> {{betroom.awards|number_format(0, '', '.')}}$</strong></p>
+                            {% else %}
+                                <p><strong class="text-danger text-lowercase">Ce ticket n'a pas été sélectionner par un participant !</strong></p>
+                            {% endif %}
+        
+                            <div class="team-social text-center">
+                                <p href="#"><strong>{{(betroom.updatedAt|format_datetime('full', 'none', locale='fr'))|upper}}</strong></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+        
+        {% if betroom.status == "sold out" %}
+        <div class="row g-12 d-flex justify-content-center">
+            <div class="col-lg-5 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
+                <div class="team-item position-relative rounded overflow-hidden">
+                    <div class="team-text bg-light text-center p-4">
+                        <h5><strong class="text-primary"><strong class="text-">LA LIMITE D'ACHAT DE TICKETS EST ATTEINTE</strong> ET LE RESULTAT SERA DISPONIBLE A PARTIR DE 18H, MERCI DE PATIENTER !!</strong></h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% elseif not winner and betroom.status == "closed" and betroom.buyTicket != 0 %}
+        <div class="row g-12 d-flex justify-content-center">
+            <div class="col-lg-5 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
+                <div class="team-item position-relative rounded overflow-hidden">
+                    <div class="team-text bg-light text-center p-4">
+                        <h5><strong class="text-primary">LE RESULTAT SERA DISPONIBLE A PARTIR DE 18H, MERCI DE PATIENTER !!</strong></h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% elseif winner and betroom.status == "closed" and betroom.buyTicket == 0 %}
+        <div class="row g-12 d-flex justify-content-center">
+            <div class="col-lg-5 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
+                <div class="team-item position-relative rounded overflow-hidden">
+                    <div class="team-text bg-light text-center p-4">
+                        <h5><strong class="text-primary">AUCUN PARTICIPANT DANS CETTE SALLE DE TIRAGES, AUCUN GAGNANT !!</strong></h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+    </div>
+</div>
+<!-- Winner End -->

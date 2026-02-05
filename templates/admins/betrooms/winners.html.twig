@@ -1,0 +1,99 @@
+{% extends './admins/adminbase.html.twig' %}
+{% block title %} Liste des resultats{% endblock %}
+{% block body %}
+  <!-- Content -->
+  <div class="container-xxl flex-grow-1 container-p-y">
+
+    <div class="card">
+      <h5 class="card-header text-uppercase">Liste des resultats du jour</h5>
+      <div class="table-responsive text-nowrap">
+        <table class="table">
+          <thead>
+            <tr>
+                <th>
+                    {{form_start(form)}}
+                        <div class="row">
+                        <div class="col mb-3">
+                            <label for="nameWithTitle" class="form-label">AFFICHER DES RESULTATS PAR DATE</label>
+                            {{form_widget(form.result_date,{'attr':{'class':'form-control form-select', 'placeholder':'Selectionner une date de resultat ...'}})}}
+                        </div>
+                        </div>
+                    {{form_end(form)}}
+                </th>
+            </tr>
+            <tr class="bg-dark">
+              <th class="text-white">DATE</th>
+              <th class="text-white">SALLE</th>
+              <th class="text-white">AVATAR</th>
+              <th class="text-white">PSEUDO</th>
+              <th class="text-white">N<sup>o</sup> TICKET</th>
+              <th class="text-white">ACHAT TICKET</th>
+              <th class="text-white">GAIN</th>
+              <th class="text-white">STATUS</th>
+            </tr>
+          </thead>
+          <tbody class="table-border-bottom-0">
+            {% for t in tickets|reverse %}
+              <tr class="table-white">
+                <td>
+                  <strong>{{t.updatedAt|format_datetime('medium', 'medium', locale='fr')}}</strong>
+                </td>
+                <td>
+                  <strong>{{t.betroom.numBetroom}}</strong>
+                </td>
+                <td>
+                    {% if not t.user %}
+                        <img src="{{asset('admins/img/avatars/avatar.jpg')}}" alt="alt" class="w-px-40 h-auto rounded-circle"/>
+                    {% else %}
+                        {% if not t.user.avatar %}
+                            <img src="{{asset('admins/img/avatars/avatar.jpg')}}" alt="alt" class="w-px-40 h-auto rounded-circle"/>
+                        {% else %}
+                            <img src="{{asset('avatars/'~t.user.avatar)}}" alt="alt" class="w-px-40 h-auto rounded-circle"/>
+                        {% endif %}
+                    {% endif %}
+                </td>
+                <td>
+                  <span class="badge bg-label-primary text-dark me-1">
+                    {% if not t.user %}
+                    AUCUN
+                    {% else %}
+                        {{t.user.pseudo}}
+                    {% endif %}
+                  </span>
+                </td>
+                <td>
+                  <strong><span class="badge bg-label-warning text-dark me-1">{{t.numTicket}}</span></strong>
+                </td>
+                <td>
+                  <span class="badge bg-label-primary text-dark me-1">{{t.price|number_format('2','.',',')}} $USD</span>
+                </td>
+                <td>
+                  <span class="badge bg-label-primary text-dark me-1">{{t.betroom.awards|number_format('2','.',',')}} $USD</span>
+                </td>
+                <td>
+                  {% if t.status == "winner" and t.user %}
+                    <span class="badge bg-label-success text-dark me-1">Heureux Gagnant</span>
+                  {% elseif t.status == "winner" and not t.user %}
+                    <span class="badge bg-label-warning text-dark me-1">Aucun Participant</span>
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+            {% if tickets | length == 0 %}
+              <tr class="">
+                <td colspan="8">
+                  <p class="text-center text-muted">Aucune participation ce jour !!</p>
+                </td>
+              </tr>
+            {% endif %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <!--/ liste des gestionnaires -->
+
+  </div>
+  <!-- / Content -->
+
+  <script src="{{asset('admins/js/admins/validateDateForm.js')}}"></script>
+{% endblock %}

@@ -1,0 +1,296 @@
+{% block header %}
+  <!DOCTYPE html>
+  <html lang="fr"  dir="ltr" data-theme="theme-default">
+    <head>
+      <meta charset="utf-8"/>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"/>
+
+      <title>
+        {% block title %}
+          Administration {% endblock %}
+        |
+        cryptobet - une meilleure experience</title>
+
+      <meta name="description" content=""/>
+
+      <!-- Favicon -->
+      <link rel="icon" type="image/x-icon" href="{{asset('assets/img/cr_fav.png')}}"/>
+
+      <!-- Fonts -->
+      <link rel="preconnect" href="https://fonts.googleapis.com"/>
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="crossorigin"/>
+      <link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet"/>
+
+      <!-- Icons. Uncomment required icon fonts -->
+      <link rel="stylesheet" href="{{asset('admins/vendor/fonts/boxicons.css')}}"/>
+
+      <!-- Core CSS -->
+      <link rel="stylesheet" href="{{asset('admins/vendor/css/core.css')}}" class="template-customizer-core-css"/>
+      <link rel="stylesheet" href="{{asset('admins/vendor/css/theme-default.css')}}" class="template-customizer-theme-css"/>
+      <link rel="stylesheet" href="{{asset('admins/css/demo.css')}}"/>
+
+      <!-- Vendors CSS -->
+      <link rel="stylesheet" href="{{asset('admins/vendor/libs/perfect-scrollbar/perfect-scrollbar.css')}}"/>
+
+      <link rel="stylesheet" href="{{asset('admins/vendor/libs/apex-charts/apex-charts.css')}}"/>
+
+      <!-- Page CSS -->
+
+      <!-- Helpers -->
+      <script src="{{asset('admins/vendor/js/helpers.js')}}"></script>
+      <script src="{{asset('admins/js/config.js')}}"></script>
+
+    </head>
+
+    <body class="bg-dark">
+      <!-- Layout wrapper -->
+      <div class="layout-wrapper layout-content-navbar bg-dark">
+        <div class="layout-container bg-dark">
+          <!-- Menu -->
+
+          <aside id="layout-menu" class="layout-menu menu-vertical menu bg-dark bg-menu-theme">
+            <div class="app-brand demo bg-dark">
+              <a href="{{path('admins.index')}}" class="app-brand-link">
+                <img src="{{asset('admins/img/favicon/logos.png')}}" class="img-fluid" />
+              </a>
+
+              <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto d-block d-xl-none">
+                <i class="bx bx-chevron-left bx-sm align-middle"></i>
+              </a>
+            </div>
+
+            <div class="menu-inner-shadow"></div>
+
+            {% set currentPath = path(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')) %}
+            {% set param = app.request.attributes.get('_route_params') %}
+
+            <ul class="menu-inner py-1 bg-dark">
+              <!-- accueil -->
+              <li class="menu-item {% if currentPath == path('admins.index') %}active{% endif %}">
+                <a href="{{path('admins.index')}}" class="menu-link">
+                  <i class="menu-icon tf-icons bx bx-home-circle text-white"></i>
+                  <div data-i18n="Analytics" class="text-white">Acceuil</div>
+                </a>
+              </li>
+
+              <!-- betroom -->
+              <li class="menu-header small text-uppercase">
+                <span class="menu-header-text text-white">Salles de tirages</span>
+              </li>
+              <li class="menu-item {% if currentPath == path('admins.betrooms') or (param and currentPath == path('admins.betrooms.edit',{reference: param.reference})) %}active{% endif %}">
+                <a href="{{path('admins.betrooms')}}" class="menu-link">
+                  <i class="menu-icon tf-icons bx bx-cube text-white"></i>
+                  <div data-i18n="Account Settings" class="text-white">Gestion des salles</div>
+                </a>
+              </li>
+              <li class="menu-item {% if currentPath == path('admins.winners') %}active{% endif %}">
+                <a href="{{path('admins.winners')}}" class="menu-link">
+                  <i class="menu-icon tf-icons bx bx-check-circle text-white"></i>
+                  <div data-i18n="Account Settings" class="text-white">Resultat du jour</div>
+                </a>
+              </li>
+
+              <!-- Rechargement -->
+              <li class="menu-header small text-uppercase">
+                <span class="menu-header-text text-white">Rechargements</span>
+              </li>
+              <li class="menu-item {% if currentPath == path('admins.rechargements.usdt') %}active{% endif %}">
+                <a href="{{path('admins.rechargements.usdt')}}" class="menu-link">
+                  <i class="menu-icon tf-icons bx bx-coin text-white"></i>
+                  <div data-i18n="Account Settings" class="text-white">Rechargements USDT</div>
+                </a>
+              </li>
+
+              <li class="menu-item {% if currentPath == path('admins.rechargements.req') %}active{% endif %}">
+                <a href="{{path('admins.rechargements.req')}}" class="menu-link">
+                  <i class="menu-icon tf-icons bx bx-download text-white"></i>
+                  <div data-i18n="Account Settings" class="text-white">Demandes de rechargements</div>
+                </a>
+              </li>
+
+              <!-- retrait -->
+              <li class="menu-header small text-uppercase">
+                <span class="menu-header-text text-white">Retraits</span>
+              </li>
+              <li class="menu-item {% if currentPath == path('admins.withdrawals') %}active{% endif %}">
+                <a href="{{path('admins.withdrawals')}}" class="menu-link">
+                  <i class="menu-icon tf-icons bx bx-money text-white"></i>
+                  <div data-i18n="Account Settings" class="text-white">Demandes de retraits</div>
+                </a>
+              </li>
+
+              <!-- Administration -->
+              <li class="menu-header small text-uppercase">
+                <span class="menu-header-text text-white">Administration</span></li>
+              <li class="menu-item {% if currentPath == path('admins.administration') %}active{% endif %}">
+                <a href="{{path('admins.administration')}}"  class="menu-link">
+                  <i class="menu-icon tf-icons bx bx-lock text-white"></i>
+                  <div data-i18n="Support" class="text-white">Administrations</div>
+                </a>
+              </li>
+              <li class="menu-item {% if currentPath == path('admins.administration.rechargeurs') %}active{% endif %}">
+                <a href="{{path('admins.administration.rechargeurs')}}"  class="menu-link">
+                  <i class="menu-icon tf-icons bx bx-plus-circle text-white"></i>
+                  <div data-i18n="Support" class="text-white">Rechargeurs</div>
+                </a>
+              </li>
+
+              <li class="menu-item {% if currentPath == path('admins.testimony') %}active{% endif %}">
+                <a href="{{path('admins.testimony')}}"  class="menu-link">
+                  <i class="menu-icon tf-icons bx bx-message text-white"></i>
+                  <div data-i18n="Support" class="text-white">Temoignages</div>
+                </a>
+              </li>
+
+
+              <!-- website -->
+              <li class="menu-header small text-uppercase">
+                <span class="menu-header-text text-white">liens utiles</span>
+              </li>
+
+              <li class="menu-item">
+                <a href="{{path('index')}}" class="menu-link">
+                  <i class="menu-icon tf-icons bx bx-left-arrow text-white"></i>
+                  <div data-i18n="Documentation" class="text-white">Retour sur le site</div>
+                </a>
+              </li>
+
+              <li class="menu-item">
+                <a href="{{path('app_logout')}}" class="menu-link">
+                  <i class="menu-icon tf-icons bx bx-power-off text-white"></i>
+                  <div data-i18n="Documentation" class="text-white">Deconnexion</div>
+                </a>
+              </li>
+            </ul>
+          </aside>
+          <!-- / Menu -->
+
+          <!-- Layout container -->
+          <div class="layout-page">
+            <!-- Navbar -->
+
+            <nav class="layout-navbar container-xxl navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme" id="layout-navbar">
+              <div class="layout-menu-toggle navbar-nav align-items-xl-center me-3 me-xl-0 d-xl-none">
+                <a class="nav-item nav-link px-0 me-xl-4" href="javascript:void(0)">
+                  <i class="bx bx-menu bx-sm"></i>
+                </a>
+              </div>
+
+              <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
+
+                <ul class="navbar-nav flex-row align-items-center ms-auto">
+                  <!-- Place this tag where you want the button to render. -->
+                  <li class="nav-item lh-1 me-3">
+                    <a class="github-button" href="#" data-icon="octicon-star" data-size="large" data-show-count="true">
+                      <b>{{app.user.pseudo}} ({{app.user.wallet.balance|number_format('2','.',',')}} USD)</b>
+                    </a>
+                  </li>
+
+                  <!-- User -->
+                  <li class="nav-item navbar-dropdown dropdown-user dropdown">
+                    <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
+                      <div class="avatar avatar-online">
+                        {% if not app.user.avatar %}
+                          <img src="{{asset('admins/img/avatars/avatar.jpg')}}" alt="alt" class="w-px-40 h-auto rounded-circle"/>
+                        {% else %}
+                            <img src="{{asset('avatars/'~app.user.avatar)}}" alt="alt" class="w-px-40 h-auto rounded-circle"/>
+                        {% endif %}
+                      </div>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                      <li>
+                        <a class="dropdown-item" href="#">
+                          <div class="d-flex">
+                            <div class="flex-shrink-0 me-3">
+                              <div class="avatar avatar-online">
+                                {% if not app.user.avatar %}
+                                  <img src="{{asset('admins/img/avatars/avatar.jpg')}}" alt="alt" class="w-px-40 h-auto rounded-circle"/>
+                                {% else %}
+                                    <img src="{{asset('avatars/'~app.user.avatar)}}" alt="alt" class="w-px-40 h-auto rounded-circle"/>
+                                {% endif %}
+                              </div>
+                            </div>
+                            <div class="flex-grow-1">
+                              <span class="fw-semibold d-block">{{app.user.pseudo}}</span>
+                              <small class="text-muted">{{app.user.email}}</small>
+                            </div>
+                          </div>
+                        </a>
+                      </li>
+                      <li>
+                        <div class="dropdown-divider"></div>
+                      </li>
+                      <li>
+                        <a class="dropdown-item" href="{{path('user.profil',{pseudo: app.user.pseudo})}}">
+                          <i class="bx bx-user me-2"></i>
+                          <span class="align-middle">Profil</span>
+                        </a>
+                      </li>
+                      <li>
+                        <a class="dropdown-item" href="{{path('user.tickets',{pseudo: app.user.pseudo})}}">
+                          <i class="bx bx-credit-card-front me-2"></i>
+                          <span class="align-middle">Mes Tickets</span>
+                        </a>
+                      </li>
+                      <li>
+                        <div class="dropdown-divider"></div>
+                      </li>
+                      <li>
+                        <a class="dropdown-item" href="{{path('app_logout')}}">
+                          <i class="bx bx-power-off me-2"></i>
+                          <span class="align-middle">Deconnexion</span>
+                        </a>
+                      </li>
+                    </ul>
+                  </li>
+                  <!--/ User -->
+                </ul>
+              </div>
+            </nav>
+            <!-- / Navbar -->
+          {% endblock %}
+
+          {% block body %}{% endblock %}
+
+          {% block footer %}
+
+            <div class="content-backdrop fade"></div>
+          </div>
+          <!-- Content wrapper -->
+        </div>
+        <!-- / Layout page -->
+      </div>
+
+      <!-- Overlay -->
+      <div class="layout-overlay layout-menu-toggle"></div>
+    </div>
+    <!-- / Layout wrapper -->
+
+    <div class="buy-now">
+      <a href="https://jcreas.com" target="_blank" class="btn btn-danger btn-buy-now">Jcreas Labs</a>
+    </div>
+
+    <!-- Core JS -->
+    <!-- build:js admins/vendor/js/core.js -->
+    <script src="{{asset('admins/vendor/libs/jquery/jquery.js')}}"></script>
+    <script src="{{asset('admins/vendor/libs/popper/popper.js')}}"></script>
+    <script src="{{asset('admins/vendor/js/bootstrap.js')}}"></script>
+    <script src="{{asset('admins/vendor/libs/perfect-scrollbar/perfect-scrollbar.js')}}"></script>
+
+    <script src="{{asset('admins/vendor/js/menu.js')}}"></script>
+    <!-- endbuild -->
+
+    <!-- Vendors JS -->
+    <script src="{{asset('admins/vendor/libs/apex-charts/apexcharts.js')}}"></script>
+
+    <!-- Main JS -->
+    <script src="{{asset('admins/js/main.js')}}"></script>
+
+    <!-- Page JS -->
+    <script src="{{asset('admins/js/dashboards-analytics.js')}}"></script>
+
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async="async" defer="defer" src="https://buttons.github.io/buttons.js"></script>
+  </body>
+</html>
+{% endblock %}

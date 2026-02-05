@@ -1,0 +1,83 @@
+<header class="header">
+	<div class="container nav-container">
+		<a href="index.html" class="logo">
+			{# <img src="https://images.unsplash.com/photo-1621761191319-c6fb62004040?q=80&w=100&auto=format&fit=crop" alt="BC Logo"> #}
+			<div class="logo-text">
+				<span class="brand-name">Bitcoin Lottery</span>
+				<span class="tagline">Best Lottery Platform</span>
+			</div>
+		</a>
+		<nav class="nav">
+			<ul>
+				<li><a href="{{path('index')}}" class="active">Home</a></li>
+				<li><a href="{{path('betrooms')}}">Private Rooms</a></li>
+				<li><a href="affiliation.html">Affiliation</a></li>
+				<li><a href="faq.html">Faq</a></li>
+				<li><a href="contact.html">Contact Me</a></li>
+			</ul>
+		</nav>
+		<div class="header-actions">
+			<a href="login.html" class="nav-link" style="text-decoration:none; font-weight:600; color:var(--text-main); margin-right: 10px;">Login</a>
+			<div class="profile-compact" id="profile-trigger">
+				<img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=150&auto=format&fit=crop" alt="User Profile" class="avatar">
+			</div>
+			<button class="wallet-btn" id="wallet-connect-btn">
+				<i class="fas fa-wallet"></i>
+				<span>Connect wallet</span>
+			</button>
+		</div>
+	</div>
+</header>
+
+<!-- Wallet Modal -->
+<div class="modal-overlay" id="wallet-modal">
+	<div class="modal">
+		<button class="close-modal">&times;</button>
+		<div class="modal-header">
+			<div class="wallet-icon-box">
+				<i class="fas fa-wallet"></i>
+			</div>
+			<h3>Connect Wallet</h3>
+			<p>Select your favorite wallet to start playing</p>
+		</div>
+		<div class="wallet-options">
+			<button class="wallet-option" data-wallet="metamask">
+				<img src="https://upload.wikimedia.org/wikipedia/commons/3/36/MetaMask_Logo.svg" alt="Metamask">
+				<div class="option-text">
+					<strong>Metamask</strong>
+					<span>Connect To Your Metamask Wallet</span>
+				</div>
+			</button>
+			<button class="wallet-option" data-wallet="walletconnect">
+				<img src="https://raw.githubusercontent.com/WalletConnect/walletconnect-assets/master/Logo/Blue%20(Default)/Logo.svg" alt="WalletConnect">
+				<div class="option-text">
+					<strong>Walletconnect</strong>
+					<span>Scan With Walletconnect To Connect</span>
+				</div>
+			</button>
+		</div>
+	</div>
+</div>
+
+<!-- Profile Popup -->
+<div class="profile-popup" id="profile-popup">
+	<div class="popup-header">
+		<i class="fas fa-wallet"></i>
+		<span>My Wallet:</span>
+		<button class="close-popup">&times;</button>
+	</div>
+	<div class="wallet-card">
+		<div class="balance-display">
+			<span class="amount">235000$</span>
+			<span class="label">Wallet balance</span>
+		</div>
+		<div class="address-box">
+			<span class="address">0xd022f120ed29058636ac09...</span>
+			<button class="copy-btn">
+				<i class="far fa-copy"></i>
+			</button>
+		</div>
+		<p class="status-msg">You are connected to your account with this wallet</p>
+		<button class="logout-btn">Logout</button>
+	</div>
+</div>

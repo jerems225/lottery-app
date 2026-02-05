@@ -1,0 +1,205 @@
+{% extends './admins/profil/header.html.twig' %}
+{% block title %}Demandes de retraits
+{% endblock title %}
+{% block body %}
+  <!-- Content wrapper -->
+  <div class="content-wrapper">
+    <!-- Content -->
+
+    <div class="container-xxl flex-grow-1 container-p-y">
+
+        
+      {% for message in app.flashes('withdrawals') %}
+        <div class="alert alert-success text-dark" align="center">
+          <b>{{message}}</b>
+        </div>
+      {% endfor %}
+
+      {% for message in app.flashes('withdrawals.values.error') %}
+      <div class="alert alert-danger text-dark" align="center">
+        <b>{{message}}</b>
+      </div>
+    {% endfor %}
+
+      <!-- Horizontal -->
+      <h5 class="pb-1 mb-4 text-white">Envoyer une demande de retrait</h5>
+      <div class="row mb-5">
+        <div class="col-md">
+          <div class="card mb-3">
+            <div class="row g-0">
+              <div class="col-md-8">
+                <div class="card-body text-start">
+                  <h5 class="card-title">
+                    <strong>Demande de retrait</strong>
+                  </h5>
+                  <p class="card-text text-justify" style="font-size:12px">Veillez remplir les champs ci-dessous svp !
+                  </p>
+                  {{form_start(form)}}
+                  <div class="row">
+                    <div class="col-6 mb-3">
+                        <label for="email" class="form-label">VOTRE PSEUDO</label>
+                        <input type="text" class="form-control" id="email" name="address" value="{{app.user.pseudo}}" readonly="readonly"/>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <label for="email" class="form-label">Type de paiement</label>
+                        {{form_widget(form.payment_type,{'attr':{'class':'form-control form-select', 'placeholder':''}})}}
+                    </div>
+                  </div>
+
+                  <div id="bank">
+                    <div class="row">
+                        <div class="col-12 mb-3">
+                            <label for="email" class="form-label">Numero de la carte</label>
+                            {{form_widget(form.id_card,{'attr':{'class':'form-control', 'placeholder':'23344-4343-33344',}})}}
+                        </div>
+                        <div class="col-6 mb-3">
+                            <label for="email" class="form-label">Pays</label>
+                            {{form_widget(form.bank_country,{'attr':{'class':'form-control form-select', 'placeholder':''}})}}
+                        </div>
+                        <div class="col-6 mb-3">
+                            <label for="email" class="form-label">Nom de la banque</label>
+                            {{form_widget(form.bank,{'attr':{'class':'form-control', 'placeholder':'ECOBANK, ...'}})}}
+                        </div>
+                    </div>
+                  </div>
+
+                  <div id="asset" class="row">
+                    <div class="col-6 mb-3">
+                        <label for="email" class="form-label">Nom de la crypto</label>
+                        {{form_widget(form.crypto_name,{'attr':{'class':'form-control', 'placeholder':'BITCOIN, ETHEREUM, ...'}})}}
+                    </div>
+                    <div class="col-6 mb-3">
+                        <label for="email" class="form-label">Addresse du wallet</label>
+                        {{form_widget(form.wallet_address,{'attr':{'class':'form-control', 'placeholder':'0x3f0fD44F1115F37f47021***********'}})}}
+                    </div>
+                  </div>
+
+                  <div id="momo" class="row">
+                    <div class="col-6 mb-3">
+                        <label for="email" class="form-label">Mobile Money Operateur</label>
+                        {{form_widget(form.momo_operator,{'attr':{'class':'form-control', 'placeholder':'ORANGE, MOOV, AIRTEL, ...'}})}}
+                    </div>
+                    <div class="col-6 mb-3">
+                        <label for="email" class="form-label">Numero de telephone</label>
+                        {{form_widget(form.phone,{'attr':{'class':'form-control', 'placeholder':'+33 09 34 9844'}})}}
+                      </div>
+                  </div>
+
+                  <div class="mb-3">
+                    <label for="email" class="form-label">Montant du retrait</label>
+                    {{form_widget(form.amount,{'attr':{'class':'form-control form-number', 'placeholder':'10','min':'1'}})}}
+                    <small>
+                      {% if not form.vars.valid %}
+                        {# Loop through every form item #}
+                        {% for child in form.children %}
+                          {# Display the errors of the form item #}
+                          {% if child.vars.name == "amount" %}
+                            {%for error in child.vars.errors%}
+                              <p style="color:red;">{{error.message}}</p>
+                              {%endfor%}
+                            {% endif %}
+                          {% endfor %}
+                        {% endif %}
+                      </small>
+                      <small>
+                        {% for message in app.flashes('withdrawals.amount.error') %}
+                            <p style="color:red;">{{message}}</p>
+                        {% endfor %}
+                      </small>
+                    </div>
+                    <div class="mb-3">
+                      <button class="btn btn-dark d-grid w-100" type="submit">Valider les informations de retrait</button>
+                    </div>
+                    {{form_widget(form._token)}}
+                    {{form_end(form)}}
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <img class="card-img card-img-right" src="{{asset('admins//img/elements/change.jpg')}}" alt="Card image"/>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!--/ Horizontal -->
+
+
+        <div class="col-xl-12">
+          <h6 class="text-white">Listes des demandes de retraits</h6>
+          <div class="nav-align-top mb-4">
+            <ul class="nav nav-pills mb-3 nav-fill" role="tablist">
+              <li class="nav-item">
+                <button type="button" class="nav-link active" role="tab" data-bs-toggle="tab" data-bs-target="#navs-pills-justified-home" aria-controls="navs-pills-justified-home" aria-selected="true">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="33" height="33" fill="currentColor" class="bi bi-currency-exchange" viewbox="0 0 16 16" id="IconChangeColor">
+                    <path d="M0 5a5.002 5.002 0 0 0 4.027 4.905 6.46 6.46 0 0 1 .544-2.073C3.695 7.536 3.132 6.864 3 5.91h-.5v-.426h.466V5.05c0-.046 0-.093.004-.135H2.5v-.427h.511C3.236 3.24 4.213 2.5 5.681 2.5c.316 0 .59.031.819.085v.733a3.46 3.46 0 0 0-.815-.082c-.919 0-1.538.466-1.734 1.252h1.917v.427h-1.98c-.003.046-.003.097-.003.147v.422h1.983v.427H3.93c.118.602.468 1.03 1.005 1.229a6.5 6.5 0 0 1 4.97-3.113A5.002 5.002 0 0 0 0 5zm16 5.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0zm-7.75 1.322c.069.835.746 1.485 1.964 1.562V14h.54v-.62c1.259-.086 1.996-.74 1.996-1.69 0-.865-.563-1.31-1.57-1.54l-.426-.1V8.374c.54.06.884.347.966.745h.948c-.07-.804-.779-1.433-1.914-1.502V7h-.54v.629c-1.076.103-1.808.732-1.808 1.622 0 .787.544 1.288 1.45 1.493l.358.085v1.78c-.554-.08-.92-.376-1.003-.787H8.25zm1.96-1.895c-.532-.12-.82-.364-.82-.732 0-.41.311-.719.824-.809v1.54h-.005zm.622 1.044c.645.145.943.38.943.796 0 .474-.37.8-1.02.86v-1.674l.077.018z" id="mainIconPathAttribute" fill="#ffffff"></path>
+                  </svg>
+                  Mes Demandes de Retraits
+                  <span class="badge rounded-pill badge-center h-px-20 w-px-20 bg-danger">{{app.user.withdrawals|length}}</span>
+                </button>
+              </li>
+            </ul>
+            <div class="tab-content">
+              <div class="tab-pane fade show active" id="navs-pills-justified-home" role="tabpanel">
+                <div class="table-responsive text-nowrap">
+                  <table class="table">
+                    <thead>
+                      <tr class="bg-dark">
+                        <th class="text-white">DATE</th>
+                        <th class="text-white">TRANSACTION ID</th>
+                        <th class="text-white">MOYEN DE PAIEMENT</th>
+                        <th class="text-white">MONTANT</th>
+                        <th class="text-white">TRANSACTION STATUS</th>
+                      </tr>
+                    </thead>
+                    <tbody class="table-border-bottom-0">
+                      {% for tx in app.user.withdrawals | reverse %}
+                        <tr class="table-white">
+                          <td>
+                            <strong>{{tx.createdAt|format_datetime('medium', 'medium', locale='fr')}}</strong>
+                          </td>
+                          <td>{{tx.reference}}</td>
+                          <td>
+                            <span class="badge bg-label-primary text-dark me-1">{{tx.paymentType}}</span>
+                          </td>
+                          <td>
+                            <span class="badge bg-label-primary text-dark me-1">
+                              <strong>{{tx.amount|number_format('2','.',',')}}
+                                  $USD
+                              </strong>
+                          </span>
+                          </td>
+                          <td>
+                            {% if tx.status == "en attente de traitement" %}
+                               <span class="badge bg-label-warning text-dark me-1">{{tx.status|upper}}</span>
+                            {% elseif tx.status == "annulée" %}
+                                <span class="badge bg-label-danger text-dark me-1">{{tx.status|upper}}</span>
+                            {% elseif tx.status == "acceptée" %}
+                                <span class="badge bg-label-success text-dark me-1">{{tx.status|upper}}</span>
+                            {% endif %}
+                          </td>
+                        </tr>
+                      {% endfor %}
+
+                      {% if app.user.withdrawals | length == 0 %}
+                        <tr class="table-dark">
+                          <td colspan="7">
+                            <p class="text-center text-muted">Aucune demande de retrait disponible</p>
+                          </td>
+                        </tr>
+                      {% endif %}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- / Content -->
+
+      <div class="content-backdrop fade"></div>
+    </div>
+    <!-- Content wrapper -->
+
+    <script src="{{asset('admins/js/withdrawal/hideOrShow.js')}}"></script>
+  {% endblock body %}

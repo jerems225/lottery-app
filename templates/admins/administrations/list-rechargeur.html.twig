@@ -1,0 +1,84 @@
+{% extends './admins/adminbase.html.twig' %}
+{% block title %}
+  Rechargeurs {% endblock %}
+{% block body %}
+  <!-- Content -->
+  <div class="container-xxl flex-grow-1 container-p-y">
+
+
+
+      <div class="card">
+        <div class="table-responsive text-nowrap">
+          <table class="table">
+            <thead>
+                {% for message in app.flashes('rechargeur') %}
+                  <div class="alert alert-success" align="center">
+                    <b>{{message}}</b>
+                  </div>
+                {% endfor %}
+                <tr>
+                    <th colspan="2">
+                        {{form_start(form)}}
+                            <div class="row">
+                            <div class="col mb-3">
+                                <label for="nameWithTitle" class="form-label">RECHERCHE D'UTILISATEUR</label>
+                                {{form_widget(form.details,{'attr':{'class':'form-control form-search', 'placeholder':'Pseudo...'}})}}
+                            </div>
+                            </div>
+                        {{form_end(form)}}
+                    </th>
+                </tr>
+                {% for u in allusers|reverse %}
+                  <tr class="mb-1 mt-0 users" id="{{u.pseudo}}">
+                    <td class="text-dark">
+                      <strong>{{u.pseudo}}</strong>
+                    </td>
+                    <td><span class="badge bg-label-primary text-dark me-1">{{u.email}}</span></td>
+                    <td>
+                      <span class="badge bg-label-success text-dark me-1">{{u.roles[0]}}</span></td>
+                    <td>
+                      <a href="{{path('admins.rechargeur.role.add',{pseudo: u.pseudo})}}" class="btn btn-sm btn-dark text-uppercase text-white"><b>RENDRE RECHARGEUR </b><i class="bx bx-money"></i></a>
+                    </td>
+                  </tr>
+                {% endfor %}
+                <tr class="bg-dark">
+                  <th class="text-white">PSEUDO</th>
+                  <th class="text-white">EMAIL</th>
+                  <th class="text-white">ROLE</th>
+                  <th class="text-white">ACTIONS</th>
+                </tr>
+              </thead>
+              <tbody class="table-border-bottom-0">
+
+                {% for u in users %}
+                    <tr class="">
+                    <td>
+                        <strong>{{u.pseudo}}</strong>
+                    </td>
+                    <td>{{u.email}}</td>
+                    <td>
+                        <span class="badge bg-label-success text-dark me-1">{{u.roles[0]}}</span></td>
+                    <td>
+                        <a href="{{path('admins.rechargeur.role',{pseudo: u.pseudo})}}" class="btn btn-sm btn-danger text-uppercase">RETIRER LE ROLE RECHARGEUR <i class="bx bx-block text-dark"></i></a>
+                    </td>
+                    </tr>
+                {% endfor %}
+                {% if users | length == 0 %}
+                  <tr class="">
+                    <td colspan="7">
+                      <p class="text-center text-muted">Aucun rechargeur disponible</p>
+                    </td>
+                  </tr>
+                {% endif %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <!--/ liste des gestionnaires -->
+
+      </div>
+      <!-- / Content -->
+
+      <script src="{{asset('admins/js/admins/showUser.js')}}"></script>
+
+    {% endblock %}

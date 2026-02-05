@@ -1,0 +1,69 @@
+{% extends './admins/profil/header.html.twig' %}
+{% block title %}Mes Tickets{% endblock title %}
+{% block body %}
+  <!-- Content wrapper -->
+  <div class="content-wrapper">
+    <!-- Content -->
+
+    <div class="container-xxl flex-grow-1 container-p-y">
+
+      <div class="card">
+        <h5 class="card-header">Liste des tickets</h5>
+        <div class="table-responsive text-nowrap">
+          <table class="table">
+            <thead class="table-dark text-white">
+              <tr>
+                <th class="text-white">N<sup>o</sup> Ticket</th>
+                <th class="text-white">Status</th>
+                <th class="text-white">Gain</th>
+                <th class="text-white">Salle de tirage</th>
+                <th class="text-white">Prix</th>
+                <th class="text-white">Date</th>
+              </tr>
+            </thead>
+            <tbody class="table-border-bottom-0">
+            {% for ticket in tickets|reverse %}
+                <tr>
+                    <td>
+                        <strong>{{ticket.numTicket}}</strong>
+                    </td>
+                    <td>
+                        {% if ticket.status == "pending" %}
+                            <span class="badge bg-label-warning text-dark me-1">En attente du tirage</span>
+                        {% elseif ticket.status == "winner" %}
+                            <span class="badge bg-label-success text-dark me-1">Heureux Gagnant</span>
+                        {% elseif ticket.status == "loser" %}
+                            <span class="badge bg-label-danger me-1">Perdu</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if ticket.status == "pending" %}
+                            <span class="badge bg-label-primary text-dark me-1">En attente du tirage</span>
+                        {% elseif ticket.status == "winner" %}
+                            <span class="badge bg-label-success text-dark me-1">{{ticket.betroom.awards|number_format('2','.',',')}} $USD</span>
+                        {% elseif ticket.status == "loser" %}
+                            <span class="badge bg-label-danger me-1"><s class="text-dark">{{ticket.betroom.awards|number_format('2','.',',')}} $USD</s></span>
+                        {% endif %}
+                    </td>
+                    <td><strong>{{ticket.betroom.numBetroom|upper}}</strong></td>
+                    <td><span class="badge bg-label-primary me-1">{{ticket.price|number_format('2','.',',')}} $USD</span></td>
+                    <td><strong>{{ticket.createdAt|format_datetime('medium', 'short', locale='fr')}}</strong></td>
+                </tr>
+            {% endfor %}
+
+            {% if tickets|length == 0 %}
+            <tr>
+                <td colspan="6" class="text-center">
+                    <strong>Vous n'avez aucun ticket, rendez vous dans une salle de tirage pour en prendre !!</strong>
+                </td>
+            </tr>
+            {% endif %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="content-backdrop fade"></div>
+    </div>
+    <!-- Content wrapper -->
+  {% endblock body %}

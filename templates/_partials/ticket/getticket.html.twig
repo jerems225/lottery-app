@@ -1,0 +1,56 @@
+<!-- Donate Start -->
+<div class="container-fluid py-5">
+    <div class="container">
+
+        <div class="row g-5 align-items-center">
+            <div class="col-lg-6 wow fadeIn" data-wow-delay="0.1s">
+                <div class="h-100 bg-dark p-5">
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control bg-light border-0" name="betroom" id="betroom" value="{{betroom.numBetroom}}" readonly>
+                                    <label for="betroom">Salle de tirage</label>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="btn-group d-flex justify-content-around">
+                                    <input type="radio" class="btn-check" name="ticket_price" id="btnradio1" value="{{betroom.Ticketprice}}" checked readonly>
+                                    <label class="btn btn-light py-3" for="btnradio1">{{betroom.Ticketprice}}$</label>
+
+                                    <input type="radio" class="btn-check" readonly>
+                                    <label class="btn btn-light py-3 text-primary" for="btnradio1"><strong>GAIN DE {{betroom.awards}}$</strong></label>
+                                </div>
+                            </div>
+                        </div>
+                </div>
+            </div>
+            <div class="col-lg-6 wow fadeIn" data-wow-delay="0.5s">
+                <h1 class="display-6 mb-5">Tentez votre chance maintenant et gagnez {{betroom.awards}}$🎉🎉🎉.</h1>
+            </div>
+        </div>
+
+        {% for message in app.flashes('user.getTicket') %}
+            <div class="alert alert-danger text-dark mt-2" align="center">
+            <b>{{message}}</b>
+            </div>
+        {% endfor %}
+        <div class="row d-flex justify-content-center">
+            {% for ticket in tickets %}
+                {% if  not ticket.user %}
+                    <div class="col-lg-2 mt-4 mb-1 wow fadeInUp" data-wow-delay="0.3s">
+                        <a href="{{path('betrooms.tickets.selection',{reference: ticket.reference})}}" class="btn btn-sm btn-dark">
+                            <h6 class="text-white mt-2">
+                                <img class="img-fluid rounded-circle" src="{{asset('assets/img/win.jpg')}}" width="30" alt="">
+                                <strong>N<sup>o</sup></strong></i> {{ticket.numTicket}}
+                                <i class="fa fa-plus-circle text-warning"></i>
+                            </h6>
+                        </a>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+
+
+    </div>
+</div>
+<!-- Donate End -->

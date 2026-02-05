@@ -1,0 +1,126 @@
+{% extends './security/loginbase.html.twig' %}
+{% block title %}
+  Inscription
+{% endblock %}
+{% block body %}
+  <body>
+
+    <div class="limiter">
+      <div class="container-login100" style="background-image: url('{{asset('assets/img/banner-3.jpg')}}'); background-size:cover;">
+        <div class="wrap-login100">
+          <form class="login100-form validate-form p-l-55 p-r-55 p-t-178" method="post">
+            <span class="login100-form-title">
+              INSCRIPTION - CRYPTOBET
+            </span>
+
+            <div class="wrap-input100 validate-input m-b-16">
+			<span>
+              {% if not form.vars.valid %}
+                {# Loop through every form item #}
+                {% for child in form.children %}
+                  {# Display the errors of the form item #}
+                  {% if child.vars.name == "pseudo" %}
+                    {%for error in child.vars.errors%}
+                      <p style="color:red;text-align:center;">{{error.message}}</p>
+                      {%endfor%}
+                    {% endif %}
+
+                  {% endfor %}
+
+                {% endif %}
+              </span>
+              {{form_widget(form.pseudo, {'attr':{'class':'input100','placeholder':'Pseudo'}})}}
+              <span class="focus-input100"></span>
+            </div>
+
+			<div class="wrap-input100 validate-input m-b-16" data-validate="example@mail.com">
+				<span>
+				  {% if not form.vars.valid %}
+					{# Loop through every form item #}
+					{% for child in form.children %}
+					  {# Display the errors of the form item #}
+					  {% if child.vars.name == "email" %}
+						{%for error in child.vars.errors%}
+						  <p style="color:red;text-align:center;">{{error.message}}</p>
+						  {%endfor%}
+						{% endif %}
+	
+					  {% endfor %}
+	
+					{% endif %}
+				  </span>
+				  {{form_widget(form.email, {'attr':{'class':'input100','placeholder':'Email'}})}}
+				  <span class="focus-input100"></span>
+			</div>
+
+			<div class="wrap-input100 m-b-16" >
+				{{form_widget(form.phone, {'attr':{'class':'input100','placeholder':'Votre telephone ...'}})}}
+				<span class="focus-input100"></span>
+		    </div>
+
+			<div class="wrap-input100 validate-input m-b-16" >
+				<span>
+				  {% if not form.vars.valid %}
+					{# Loop through every form item #}
+					{% for child in form.children %}
+					  {# Display the errors of the form item #}
+					  {% if child.vars.name == "password" %}
+						{%for error in child.vars.errors%}
+						  <p style="color:red;text-align:center;">{{error.message}}</p>
+						  {%endfor%}
+						{% endif %}
+	
+					  {% endfor %}
+	
+					{% endif %}
+				  </span>
+				  {{form_widget(form.password, {'attr':{'class':'input100','placeholder':'Mot de passe'}})}}
+				  <span class="focus-input100"></span>
+			</div>
+
+			<div class="wrap-input100 m-b-16" >
+				<span>
+				  {% if not form.vars.valid %}
+					{# Loop through every form item #}
+					{% for child in form.children %}
+					  {# Display the errors of the form item #}
+					  {% if child.vars.name == "referrer" %}
+						{%for error in child.vars.errors%}
+						  <p style="color:red;text-align:center;">{{error.message}}</p>
+						  {%endfor%}
+						{% endif %}
+	
+					  {% endfor %}
+	
+					{% endif %}
+				  </span>
+				  {{form_widget(form.referrer, {'attr':{'class':'input100','placeholder':'Code du parrain (Optionnel)','value':referrer}})}}
+				  <span class="focus-input100"></span>
+			</div>
+
+			{{form_widget(form._token)}}
+
+            <div class="container-login100-form-btn">
+              <button class="login100-form-btn">
+                Inscription
+              </button>
+            </div>
+
+            <div class="flex-col-c p-t-170 p-b-40">
+              <span class="txt1 p-b-9">
+                Vous avez un compte?
+              </span>
+
+              <a href="{{path('app_login')}}" class="txt3">
+                Connectez vous maintenant
+              </a>
+
+			  <span class="txt1 p-b-9">
+				<a href="{{path('index')}}">Retour sur l'acceuil <i class="fa fa-home"></i></a>
+			  </span>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  {% endblock %}

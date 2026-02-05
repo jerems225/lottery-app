@@ -1,0 +1,118 @@
+{% extends './admins/profil/header.html.twig' %}
+{% block title %}
+  {{app.user.pseudo}}
+{% endblock title %}
+{% block body %}
+  <!-- Content wrapper -->
+  <div class="content-wrapper">
+    <!-- Content -->
+
+
+    <div class="container-xxl flex-grow-1 container-p-y">
+        {% for message in app.flashes('resend-email') %}
+            <div class="alert alert-success alert-dismissible text-dark text-center" role="alert">
+              <strong>{{message}}</strong>
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+        {% for message in app.flashes('validation.error') %}
+          <div class="alert alert-danger alert-dismissible text-dark text-center" role="alert">
+            <strong>{{message}}</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        {% endfor %}
+        {% if not app.user.isIsValidated %}
+            <div class="alert alert-warning alert-dismissible text-dark" role="alert">
+              <strong>Votre compte est toujours inactif, veuillez procéder à la validation de votre compte en vérifiant votre boîte email.</strong>
+                <a href="{{path('validate.account.resend',{pseudo: app.user.pseudo})}}"><span class="badge bg-label-primary text-dark me-1">Re-envoyer l'email de confirmation ?</span></a>
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endif %}
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card mb-4">
+            <h5 class="card-header">Details</h5>
+            <!-- Account -->
+            {{form_start(form)}}
+            <div class="card-body">
+              <div class="d-flex align-items-start align-items-sm-center gap-4">
+                {% if not app.user.avatar %}
+                    <img src="{{asset('admins/img/avatars/avatar.jpg')}}" alt="user-avatar" class="d-block img-fluid rounded" width="100" id="uploadedAvatar"/>
+                {% else %}
+                    <img src="{{asset('avatars/'~app.user.avatar)}}" alt="user-avatar" class="d-block img-fluid rounded" width="100" id="uploadedAvatar"/>
+                {% endif %}
+                
+                <div class="button-wrapper">
+                  <label for="profile_avatar" class="btn btn-dark me-2 mb-4" tabindex="0">
+                    <span class="d-none d-sm-block">Ajouter un avatar</span>
+                    <i class="bx bx-upload d-block d-sm-none"></i>
+                    {{form_widget(form.avatar,{'attr':{'class':'account-file-input', 'placeholder':'votre nom ...','hidden':'hidden'}})}}
+                  </label>
+
+                  <p class="text-muted mb-0">JPG, GIF ou PNG autorisés. Taille maximale de 2Mo</p>
+                </div>
+              </div>
+            </div>
+            <hr class="my-0"/>
+            <div class="card-body">
+              
+                <div class="row">
+                  <div class="mb-3 col-md-6">
+                    <label for="firstName" class="form-label">Nom</label>
+                    {{form_widget(form.lastname,{'attr':{'class':'form-control', 'placeholder':'votre nom ...','autofocus':'autofocus'}})}}
+                  </div>
+                  <div class="mb-3 col-md-6">
+                    <label for="lastName" class="form-label">Prenom(s)</label>
+                    {{form_widget(form.firstname,{'attr':{'class':'form-control', 'placeholder':'vos prenoms ...'}})}}
+                  </div>
+                  <div class="mb-3 col-md-6">
+                    <label for="email" class="form-label">E-mail</label>
+                    {{form_widget(form.email,{'attr':{'class':'form-control', 'placeholder':'votre email ...'}})}}
+                  </div>
+                  <div class="mb-3 col-md-6">
+                    <label class="form-label" for="phoneNumber">Telephone</label>
+                    <div class="input-group input-group-merge">
+                      <span class="input-group-text"></span>
+                      {{form_widget(form.phone,{'attr':{'class':'form-control', 'placeholder':'votre telephone ...'}})}}
+                    </div>
+                  </div>
+                  <div class="mb-3 col-md-6">
+                    <label for="state" class="form-label">Ville</label>
+                    {{form_widget(form.city,{'attr':{'class':'form-control', 'placeholder':'votre ville ...'}})}}
+                  </div>
+                  <div class="mb-3 col-md-6">
+                    <label for="zipCode" class="form-label">Code Postal</label>
+                    {{form_widget(form.zip_code,{'attr':{'class':'form-control', 'placeholder':'votre code postal ...'}})}}
+                  </div>
+                  <div class="mb-3 col-md-6">
+                    <label class="form-label" for="country">Pays</label>
+                    {{form_widget(form.country,{'attr':{'class':'form-control form-select', 'placeholder':'votre nom ...'}})}}
+                  </div>
+                  <div class="mb-3 col-md-6">
+                    <label class="form-label" for="country">Code du Parrain</label>
+                    {{form_widget(form.referrer,{'attr':{'class':'form-control', 'placeholder':'le code du parrain ...'}})}}
+                    <small>
+                      {% for message in app.flashes('referrer.error') %}
+                        <p style="color:red;">{{message}}</p>
+                      {% endfor %}
+
+                    </small>
+                  </div>
+                </div>
+                <div class="mt-2">
+                  <button type="submit" class="btn btn-primary me-2">Enregistrer les modifications</button>
+                </div>
+              {{form_end(form)}}
+            </div>
+            <!-- /Account -->
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <!-- / Content -->
+
+    <div class="content-backdrop fade"></div>
+  </div>
+  <!-- Content wrapper -->
+{% endblock body %}

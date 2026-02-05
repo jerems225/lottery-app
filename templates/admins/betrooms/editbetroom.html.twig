@@ -1,0 +1,96 @@
+{% extends './admins/adminbase.html.twig' %}
+{% block title %}
+  {{app.user.pseudo}}
+{% endblock title %}
+{% block body %}
+  <!-- Content wrapper -->
+  <div class="content-wrapper">
+    <!-- Content -->
+
+    <div class="container-xxl flex-grow-1 container-p-y d-flex justify-content-center">
+
+        <!-- Vertically Centered Modal -->
+        <div class="col-lg-12 col-md-6">
+          <div class="mt-3">
+            <!-- Modal -->
+            <div>
+              <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="modalCenterTitle">MODIFIER LES INFORMATIONS - {{betroom.numBetroom}}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    {{form_start(form)}}
+                      <div class="row">
+                        <div class="col mb-3">
+                          <label for="nameWithTitle" class="form-label">NOM DE LA SALLE</label>
+                          {{form_widget(form.num_betroom,{'attr':{'class':'form-control', 'placeholder':'le nom de la salle de tirage ...'}})}}
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col mb-3">
+                          <label for="nameWithTitle" class="form-label">GAIN</label>
+                          {{form_widget(form.awards,{'attr':{'class':'form-control', 'placeholder':'le gain de cette salle...'}})}}
+                          <small>
+                            {% if not form.vars.valid %}
+                              {# Loop through every form item #}
+                              {% for child in form.children %}
+                                {# Display the errors of the form item #}
+                                {% if child.vars.name =="awards" %}
+                                  {%for error in child.vars.errors%}
+                                  <p style="color:red;">{{error.message}}</p>
+                                  {%endfor%}
+                                {% endif %}
+                              {% endfor %}
+                            {% endif %}
+                          </small>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col mb-3">
+                          <label for="nameWithTitle" class="form-label">PRIX DU TICKET</label>
+                          {{form_widget(form.ticket_price,{'attr':{'class':'form-control', 'placeholder':'le prix unitaire du ticket ...'}})}}
+                          <small>
+                            {% if not form.vars.valid %}
+                              {# Loop through every form item #}
+                              {% for child in form.children %}
+                                {# Display the errors of the form item #}
+                                {% if child.vars.name =="ticket_price" %}
+                                  {%for error in child.vars.errors%}
+                                  <p style="color:red;">{{error.message}}</p>
+                                  {%endfor%}
+                                {% endif %}
+                              {% endfor %}
+                            {% endif %}
+                          </small>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col mb-3">
+                          <label for="nameWithTitle" class="form-label">TICKET MAXIMUM</label>
+                          {{form_widget(form.max_ticket,{'attr':{'class':'form-control', 'placeholder':'le maximum de ticket possible ...'}})}}
+                        </div>
+                      </div>
+                      </div>
+                      <div class="modal-footer">
+                        <a href="{{path('admins.betrooms')}}" class="btn btn-outline-secondary">
+                          Retour
+                        </a>
+                        <button type="submit" class="btn btn-primary">Sauvegarder les changements</button>
+                      </div>
+                    {{form_end(form)}}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Liste des piece -->
+
+    </div>
+    <!-- / Content -->
+
+    <div class="content-backdrop fade"></div>
+  </div>
+  <!-- Content wrapper -->
+{% endblock body %}

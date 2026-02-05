@@ -1,0 +1,63 @@
+{% extends './admins/profil/header.html.twig' %}
+{% block title %}Rechargement USDT(ERC20)
+{% endblock title %}
+{% block body %}
+  <div class="container-xxl">
+    <div class="authentication-wrapper authentication-basic container-p-y">
+      <div class="authentication-inner">
+        <!-- Register -->
+        <div class="card">
+          <div class="card-body">
+            <!-- Logo -->
+            <div class="app-brand justify-content-center">
+              <a href="{{path('index')}}" class="app-brand-link gap-2"></a>
+            </div>
+            <!-- /Logo -->
+            <h4 class="mb-2">Rechargement USDT(ERC20)</h4>
+            <p class="mb-4">Merci de remplir les champs ci-dessous avec vos informations</p>
+
+            {{form_start(form)}}
+              <div class="mb-3">
+                <label for="email" class="form-label">VOTRE PSEUDO</label>
+                <input type="text" class="form-control" id="email" name="address" value="{{app.user.pseudo}}" readonly/>
+              </div>
+              <div class="mb-3">
+                <label for="email" class="form-label">Votre addresse USDT(ERC20)</label>
+                {{form_widget(form.address,{'attr':{'class':'form-control', 'placeholder':'0x3f0fD44F1115F37**************','autofocus':'autofocus'}})}}
+              </div>
+              <div class="mb-3">
+                <label for="email" class="form-label">Montant du chargement</label>
+                {{form_widget(form.amount,{'attr':{'class':'form-control form-number', 'placeholder':'10','min':'1'}})}}
+                <small>
+                  {% if not form.vars.valid %}
+                    {# Loop through every form item #}
+                    {% for child in form.children %}
+                      {# Display the errors of the form item #}
+                      {% if child.vars.name =="amount" %}
+                        {%for error in child.vars.errors%}
+                        <strong class="text-danger">{{error.message}}</strong>
+                        {%endfor%}
+                      {% endif %}
+                    {% endfor %}
+                  {% endif %}
+                </small>
+              </div>
+              <div class="mb-3">
+                <button class="btn btn-dark d-grid w-100" type="submit">Valider les informations de paiement</button>
+              </div>
+              {{form_widget(form._token)}}
+            {{form_end(form)}}
+
+            <p class="text-center">
+              <span>vous avez des difficultés?</span>
+              <a href="{{path('user.rechargement.request',{pseudo: app.user.pseudo})}}">
+                <span>Faites une demande de rechargement</span>
+              </a>
+            </p>
+          </div>
+        </div>
+        <!-- /Register -->
+      </div>
+    </div>
+  </div>
+{% endblock body %}

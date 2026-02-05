@@ -1,0 +1,115 @@
+{% extends './admins/adminbase.html.twig' %}
+{% block body %}
+  <!-- Content -->
+
+  <div class="container-xxl flex-grow-1 container-p-y">
+    <div class="row">
+      <div class="col-lg-12 col-md-4 order-1 d-flex justify-content-center">
+        <div class="row">
+          <div class="col-lg-4 col-md-12 col-6 mb-4">
+            <div class="card">
+              <div class="card-body">
+                <h3 class="card-title mb-2">{{overviews.betrooms|number_format('0',',','.')}}</h3>
+                <small class="text-primary fw-semibold">Salle de tirage(s)</small>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-4 col-md-12 col-6 mb-4">
+            <div class="card">
+              <div class="card-body">
+                <h3 class="card-title mb-2">{{overviews.txusdt_accepted|number_format('0',',','.')}}</h3>
+                <small class="text-success fw-semibold">Rechargement(s) usdt valide(s)</small>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-4 col-md-12 col-6 mb-4">
+            <div class="card">
+              <div class="card-body">
+                <h3 class="card-title mb-2">{{overviews.txusdt_canceled|number_format('0',',','.')}}</h3>
+                <small class="text-danger fw-semibold">Rechargement(s) usdt en attente(s)</small>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-6 col-md-12 col-6 mb-4">
+            <div class="card">
+              <div class="card-body">
+                <h3 class="card-title mb-2">{{overviews.txreq_accepted|number_format('0',',','.')}}</h3>
+                <small class="text-success fw-semibold">Demande(s) de recharg. validee(s)</small>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-6 col-md-12 col-6 mb-4">
+            <div class="card">
+              <div class="card-body">
+                <h3 class="card-title mb-2">{{overviews.txreq_canceled|number_format('0',',','.')}}</h3>
+                <small class="text-danger fw-semibold">Demande(s) de recharg. en attente(s)</small>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-6 col-md-12 col-6 mb-4">
+            <div class="card">
+              <div class="card-body">
+                <h3 class="card-title mb-2">{{overviews.tickets_buy|number_format('0',',','.')}}</h3>
+                <small class="text-primary fw-semibold">Ticket(s) achete(s)</small>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-6 col-md-12 col-6 mb-4">
+            <div class="card">
+              <div class="card-body">
+                <h3 class="card-title mb-2">{{overviews.winners|number_format('0',',','.')}}</h3>
+                <small class="text-success fw-semibold">Ticket(s) gagnant(s)</small>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-3 col-md-12 col-6 mb-4">
+            <div class="card">
+              <div class="card-body">
+                <h3 class="card-title mb-2">{{overviews.users_players|number_format('0',',','.')}}</h3>
+                <small class="text-success fw-semibold">Utilisateur(s) participant(s)</small>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-3 col-md-12 col-6 mb-4">
+            <div class="card">
+              <div class="card-body">
+                <h3 class="card-title mb-2">{{overviews.users_no_players|number_format('0',',','.')}}</h3>
+                <small class="text-danger fw-semibold">Utilisateur(s) non participant(s)</small>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-6 col-md-12 col-6 mb-4">
+            <div class="card">
+              <div class="card-body text-center">
+                <h3 class="card-title mb-2">{{overviews.business|number_format('0','.',',')}} $USD</h3>
+                <small class="text-primary fw-semibold">Chiffre d'affaires</small>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-6 col-md-12 col-6 mb-4">
+            <div class="card">
+              <div class="card-body text-center">
+                <h3 class="card-title mb-2">{{overviews.awards|number_format('0','.',',')}} $USD</h3>
+                <small class="text-primary fw-semibold">Montant verse aux gagnants</small>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-6 col-md-12 col-6 mb-4">
+            <div class="card">
+              <div class="card-body text-center">
+                <h3 class="card-title mb-2">{{overviews.gain|number_format('0','.',',')}} $USD</h3>
+                <small class="text-primary fw-semibold">Benefice generes</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+ 
+    </div>
+
+
+
+  </div>
+  <!-- / Content -->
+{% endblock %}

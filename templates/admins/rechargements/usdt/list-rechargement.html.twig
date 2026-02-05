@@ -1,0 +1,106 @@
+{% extends './admins/adminbase.html.twig' %}
+{% block title %}Liste des rechargements usdt
+{% endblock title %}
+{% block body %}
+  <!-- Content wrapper -->
+  <div class="content-wrapper">
+    <!-- Content -->
+
+    <div class="container-xxl flex-grow-1 container-p-y">
+
+      {% for message in app.flashes('admins.valid.usdt') %}
+        <div class="alert alert-success text-dark" align="center">
+          <b>{{message}}</b>
+        </div>
+      {% endfor %}
+
+      {% for message in app.flashes('admins.reject.usdt') %}
+        <div class="alert alert-danger text-dark" align="center">
+          <b>{{message}}</b>
+        </div>
+      {% endfor %}
+
+      <div class="col-xl-12">
+        <h6 class="text-white">Listes des rechargements</h6>
+        <div class="nav-align-top mb-4">
+          <ul class="nav nav-pills mb-3 nav-fill" role="tablist">
+            <li class="nav-item">
+              <button type="button" class="nav-link active" role="tab" data-bs-toggle="tab" data-bs-target="#navs-pills-justified-home" aria-controls="navs-pills-justified-home" aria-selected="true">
+                <svg role="img" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" id="IconChangeColor" height="31" width="31">
+                  <title>Tether</title>
+                  <path d="M18.7538 10.5176c0 .6251-2.2379 1.1483-5.2381 1.2812l.0028.0007c-.0848.0064-.5233.0325-1.5012.0325-.7778 0-1.33-.0233-1.5237-.0325-3.0059-.1322-5.2495-.6555-5.2495-1.2819s2.2436-1.149 5.2495-1.2834v2.0442c.1965.0142.7594.0474 1.5372.0474.9334 0 1.4008-.0389 1.4849-.0466V9.2356c2.9994.1337 5.2381.657 5.2381 1.282zm5.19.5466L12.1248 22.389a.1803.1803 0 0 1-.2496 0L.0562 11.0635a.1781.1781 0 0 1-.0382-.2079l4.3762-9.1921a.1767.1767 0 0 1 .1626-.1026h14.8878a.1768.1768 0 0 1 .1612.1032l4.3762 9.1922a.1782.1782 0 0 1-.0382.2079zm-4.478-.4038c0-.8068-2.5515-1.4799-5.9473-1.6369V7.195h4.186V4.4055H6.3076V7.195h4.1852v1.8286c-3.4018.1562-5.9601.83-5.9601 1.6376 0 .8075 2.5583 1.4806 5.9601 1.6376v5.8618h3.025v-5.8639c3.394-.1563 5.948-.8295 5.948-1.6363z" id="mainIconPathAttribute" fill="#ffffff"></path>
+                </svg>
+                Rechargements USDT
+                <span class="badge rounded-pill badge-center h-px-20 w-px-20 bg-danger">{{txs|length}}</span>
+              </button>
+            </li>
+          </ul>
+          <div class="tab-content">
+            <div class="tab-pane fade show active" id="navs-pills-justified-home" role="tabpanel">
+              <div class="table-responsive text-nowrap">
+                <table class="table">
+                  <thead>
+                    <tr class="bg-dark">
+                      <th class="text-white">DATE</th>
+                      <th class="text-white">TRANSACTION ID</th>
+                      <th class="text-white">ADDRESSE USDT ENVOYEUR</th>
+                      <th class="text-white">MONTANT</th>
+                      <th class="text-white">TRANSACTION STATUS</th>
+                      <th class="text-white">ACTIONS</th>
+                    </tr>
+                  </thead>
+                  <tbody class="table-border-bottom-0">
+                    {% for tx in txs | reverse %}
+                      <tr class="table-white">
+                        <td>
+                          <strong>{{tx.createdAt|format_datetime('medium', 'short', locale='fr')}}</strong>
+                        </td>
+                        <td>{{tx.reference}}</td>
+                        <td>{{tx.address}}</td>
+                        <td>
+                            <span class="badge bg-label-primary me-1">{{tx.amount|number_format('2','.',',')}} $USD</span>
+                        </td>
+                        <td>
+                          {% if tx.status == "en attente de validation" %}
+                          <span class="badge bg-label-warning text-dark me-1">EN ATTENTE DE VERIFICATION</span>
+                          {% elseif tx.status == "annulée" %}
+                          <span class="badge bg-label-danger text-dark me-1">{{tx.status|upper}}</span>
+                          {% elseif tx.status == "acceptée" %}
+                          <span class="badge bg-label-success text-dark me-1">{{tx.status|upper}}</span>
+                          {% endif %}
+                        </td>
+                        <td>
+                            {% if tx.status == "en attente de validation" %}
+                                <a href="{{path('admins.rechargements.usdt.status',{id: tx.id, reference: tx.reference, status: "accepted"})}}" class="btn btn-sm btn-success text-dark"><strong>VALIDER LE RECHARGEMENT</strong></a>
+                                <a href="{{path('admins.rechargements.usdt.status',{id: tx.id, reference: tx.reference, status: "canceled"})}}" class="btn btn-sm btn-outline-danger text-dark"><strong>ANNULER LE RECHARGEMENT</strong></a>
+                            {% elseif tx.status == "annulée" %}
+                                <a href="{{path('admins.rechargements.usdt.status',{id: tx.id, reference: tx.reference, status: "accepted"})}}" class="btn btn-sm btn-success text-dark"><strong>VALIDER LE RECHARGEMENT</strong></a>
+                            {% elseif tx.status == "acceptée" %}
+                                <a href="{{path('admins.rechargements.usdt.status',{id: tx.id, reference: tx.reference, status: "canceled"})}}" class="btn btn-sm btn-outline-danger text-dark"><strong>ANNULER LE RECHARGEMENT</strong></a>
+                            {% endif %}
+                        </td>
+                      </tr>
+                    {% endfor %}
+
+                    {% if txs | length == 0 %}
+                      <tr class="table-dark">
+                        <td colspan="7">
+                          <p class="text-center text-muted">Aucun rechargement disponible</p>
+                        </td>
+                      </tr>
+                    {% endif %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- / Content -->
+
+    <div class="content-backdrop fade"></div>
+  </div>
+  <!-- Content wrapper -->
+{% endblock body %}

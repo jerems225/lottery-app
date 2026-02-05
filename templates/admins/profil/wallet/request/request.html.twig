@@ -1,0 +1,60 @@
+{% extends './admins/profil/header.html.twig' %}
+{% block title %}Demande de rechargement
+{% endblock title %}
+{% block body %}
+  <div class="container-xxl">
+    <div class="authentication-wrapper authentication-basic container-p-y">
+      <div class="authentication-inner">
+        <!-- Register -->
+        <div class="card">
+          <div class="card-body">
+            <!-- Logo -->
+            <div class="app-brand justify-content-center">
+              <a href="{{path('index')}}" class="app-brand-link gap-2"></a>
+            </div>
+            <!-- /Logo -->
+            <h4 class="mb-2">Demande de rechargement</h4>
+            <p class="mb-4">Merci de remplir les champs ci-dessous avec vos informations</p>
+
+            {{form_start(form)}}
+              <div class="mb-3">
+                <label for="email" class="form-label">VOTRE PSEUDO</label>
+                <input type="text" class="form-control" id="email" name="address" value="{{app.user.pseudo}}" readonly/>
+              </div>
+              <div class="mb-3">
+                <label for="email" class="form-label">Choisir le moyen de paiement</label>
+                {{form_widget(form.payment_type,{'attr':{'class':'form-control form-select', 'placeholder':'choisir le type de paiement','autofocus':'autofocus'}})}}
+              </div>
+              <div class="mb-3">
+                <label for="email" class="form-label">Montant du chargement</label>
+                {{form_widget(form.amount,{'attr':{'class':'form-control form-number', 'placeholder':'10','min':'1','type':'number'}})}}
+                <small>
+                  {% if not form.vars.valid %}
+                    {# Loop through every form item #}
+                    {% for child in form.children %}
+                      {# Display the errors of the form item #}
+                      {% if child.vars.name =="amount" %}
+                        {%for error in child.vars.errors%}
+                        <p style="color:red;">{{error.message}}</p>
+                        {%endfor%}
+                      {% endif %}
+                    {% endfor %}
+                  {% endif %}
+                </small>
+              </div>
+              <div class="mb-3">
+                <label for="email" class="form-label">Votre pays</label>
+                {{form_widget(form.country,{'attr':{'class':'form-control form-select', 'placeholder':'choisir votre pays'}})}}
+              </div>
+              <div class="mb-3">
+                <button class="btn btn-dark d-grid w-100" type="submit">Valider la demande</button>
+              </div>
+              {{form_widget(form._token)}}
+            {{form_end(form)}}
+          </div>
+        </div>
+        <!-- /Register -->
+      </div>
+    </div>
+  </div>
+{% endblock body %}
