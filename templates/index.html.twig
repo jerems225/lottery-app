@@ -1,8 +1,10 @@
 {% extends 'base.html.twig' %}
-{% block title %}Acceuil | {% endblock title %}
+{% block title %}Acceuil |
+{% endblock title %}
 {% block body %}
 
-{% include "./_partials/index/banner.html.twig" %}
-{% include "./_partials/betroom/rooms.html.twig" %}
+	{% include "./_partials/index/banner.html.twig" %}
+	{% include "./_partials/betroom/rooms.html.twig" %}
+	{% include "./_partials/index/testimonies.html.twig" %}
 
 {% endblock body %}

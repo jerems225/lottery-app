@@ -42,6 +42,9 @@ class Betroom
     #[ORM\Column]
     private ?int $buy_ticket = null;
 
+    #[ORM\Column(length: 255, options: ["default" => "open"])]
+    private ?string $status = 'open';
+
     public function __construct()
     {
         $this->tickets = new ArrayCollection();
@@ -178,4 +181,18 @@ class Betroom
         return $this;
     }
 
+    public function getStatus(): ?string
+    {
+        if ($this->buy_ticket >= $this->max_ticket) {
+            return 'sold out';
+        }
+        return $this->status;
+    }
+
+    public function setStatus(string $status): self
+    {
+        $this->status = $status;
+
+        return $this;
+    }
 }

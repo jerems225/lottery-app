@@ -1,22 +1,31 @@
 .checkout-section {
-    padding: 60px 0;
+    padding: 100px 0;
 }
 
 .checkout-grid {
     display: grid;
     grid-template-columns: 1.2fr 0.8fr;
-    gap: 40px;
+    gap: 60px;
     align-items: start;
 }
 
 @media (max-width: 992px) {
+    .checkout-section {
+        padding: 60px 0;
+    }
+    
     .checkout-grid {
         grid-template-columns: 1fr;
+        gap: 40px;
     }
 }
 
 .cart-panel {
-    padding: 40px;
+    padding: 48px;
+    background: #FFFFFF;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-xl);
+    border: 1px solid rgba(0,0,0,0.03);
 }
 
 .panel-header h2 {
@@ -37,12 +46,20 @@
     margin-bottom: 40px;
 }
 
+.img-fluid {
+    max-width: 100%;
+    height: auto;
+    border-radius: var(--radius-md);
+}
+
 .qty-control {
     display: flex;
-    background: #f8f9fa;
-    border-radius: 15px;
-    padding: 10px 20px;
+    background: #FFFFFF;
+    border-radius: var(--radius-md);
+    padding: 8px 16px;
     align-items: center;
+    border: 1px solid rgba(0,0,0,0.05);
+    box-shadow: var(--shadow-sm);
 }
 
 .qty-control input {
@@ -71,9 +88,9 @@
 }
 
 .limit-info {
-    background: #eee;
-    padding: 15px 25px;
-    border-radius: 15px;
+    background: #F1F5F9;
+    padding: 16px 24px;
+    border-radius: var(--radius-md);
     display: flex;
     flex-direction: column;
 }
@@ -101,12 +118,13 @@
 }
 
 .currency-card {
-    border: 2px dashed #ddd;
-    border-radius: 20px;
-    padding: 20px;
+    border: 2px dashed #CBD5E1;
+    border-radius: var(--radius-lg);
+    padding: 24px;
     display: flex;
     align-items: center;
     gap: 20px;
+    background: #F8FAFC;
 }
 
 .curr-icon img {
@@ -131,23 +149,34 @@
 
 .buy-tickets-btn {
     width: 100%;
-    padding: 20px;
-    border-radius: 20px;
+    padding: 18px;
+    border-radius: var(--radius-lg);
     border: none;
-    background: linear-gradient(to right, #d4af37, #b8860b);
+    background: linear-gradient(135deg, var(--primary-gold), var(--dark-gold));
     color: white;
-    font-size: 18px;
-    font-weight: 700;
+    font-size: 16px;
+    font-weight: 800;
     cursor: pointer;
-    box-shadow: 0 10px 20px rgba(184, 134, 11, 0.2);
+    box-shadow: 0 10px 25px -5px rgba(184, 134, 11, 0.25);
+    transition: var(--transition);
+    letter-spacing: 0.02em;
 }
+
+.buy-tickets-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 20px 25px -5px rgba(184, 134, 11, 0.35);
+}
+
+
 
 /* Info Panel Styling */
 .lottery-preview-card {
     background: white;
-    border-radius: 30px;
+    border-radius: var(--radius-lg);
     overflow: hidden;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow-xl);
+    border: 1px solid rgba(0,0,0,0.03);
+    margin-top: 20px;
 }
 
 .preview-img img {
@@ -193,4 +222,61 @@
 
 .t-item .u {
     font-size: 9px;
+}
+
+@media (max-width: 768px) {
+    .cart-panel {
+        padding: 32px 24px;
+        border-radius: 20px;
+    }
+
+    .ticket-selector {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .qty-control {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .limit-info {
+        width: 100%;
+        text-align: center;
+    }
+
+    .total-badge {
+        margin-left: 0;
+        width: 100%;
+        text-align: center;
+        margin-top: 10px;
+    }
+
+    .currency-card {
+        flex-direction: column;
+        text-align: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .panel-header h2 {
+        font-size: 24px;
+    }
+
+    .ticket-stat .num {
+        font-size: 36px;
+    }
+
+    .preview-timer {
+        gap: 5px;
+    }
+
+    .t-item {
+        min-width: 50px;
+        padding: 8px;
+    }
+
+    .t-item .v {
+        font-size: 16px;
+    }
 }

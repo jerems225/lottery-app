@@ -1,30 +1,116 @@
 <header class="header">
 	<div class="container nav-container">
-		<a href="index.html" class="logo">
-			{# <img src="https://images.unsplash.com/photo-1621761191319-c6fb62004040?q=80&w=100&auto=format&fit=crop" alt="BC Logo"> #}
+		<a href="{{path('index')}}" class="logo">
 			<div class="logo-text">
-				<span class="brand-name">Bitcoin Lottery</span>
-				<span class="tagline">Best Lottery Platform</span>
+				<span class="brand-name">BitLOT</span>
+				<span class="tagline">Bitcoin Lottery Platform</span>
 			</div>
 		</a>
 		<nav class="nav">
 			<ul>
-				<li><a href="{{path('index')}}" class="active">Home</a></li>
-				<li><a href="{{path('betrooms')}}">Private Rooms</a></li>
-				<li><a href="affiliation.html">Affiliation</a></li>
-				<li><a href="faq.html">Faq</a></li>
-				<li><a href="contact.html">Contact Me</a></li>
+				<li><a href="{{path('index')}}"class="{%if app.request.get('_route')=='index'%}active{%endif%}">Home</a></li>
+				<li><a href="{{path('lottery_page')}}"class="{%if app.request.get('_route')=='lottery_page'%}active{%endif%}">Lottery</a></li>
+				<li><a href="{{path('betrooms')}}"class="{%if app.request.get('_route')=='betrooms'%}active{%endif%}">Rooms</a></li>
+				<li><a href="{{path('affiliation_page')}}"class="{%if app.request.get('_route')=='affiliation_page'%}active{%endif%}">Affiliation</a></li>
+				<li><a href="{{path('faq_page')}}"class="{%if app.request.get('_route')=='faq_page'%}active{%endif%}">Faq</a></li>
+				<li><a href="{{path('contact')}}"class="{%if app.request.get('_route')=='contact'%}active{%endif%}">Contact</a></li>
 			</ul>
 		</nav>
-		<div class="header-actions">
-			<a href="login.html" class="nav-link" style="text-decoration:none; font-weight:600; color:var(--text-main); margin-right: 10px;">Login</a>
-			<div class="profile-compact" id="profile-trigger">
-				<img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=150&auto=format&fit=crop" alt="User Profile" class="avatar">
+		<div
+			class="header-actions">
+			<!-- Custom Language Switcher -->
+			<div class="lang-switch">
+				<button class="lang-btn" id="lang-toggle">
+					<span class="flag">🇺🇸</span>
+					<span class="code">EN</span>
+					<i class="fas fa-chevron-down"></i>
+				</button>
+				<div class="lang-menu" id="lang-menu">
+					<a href="#" data-lang="en" class="active">
+						<span class="flag">🇺🇸</span>
+						English</a>
+					<a href="#" data-lang="fr">
+						<span class="flag">🇫🇷</span>
+						Français</a>
+				</div>
 			</div>
-			<button class="wallet-btn" id="wallet-connect-btn">
-				<i class="fas fa-wallet"></i>
-				<span>Connect wallet</span>
-			</button>
+			<div id="google_translate_element" style="display:none;"></div>
+
+			{% if app.user %}
+				<div class="profile-compact" id="profile-trigger">
+					<img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=150&auto=format&fit=crop" alt="User Profile" class="avatar">
+				</div>
+
+				<!-- Profile Popup (Moved inside header-actions for relative positioning) -->
+				<div class="profile-popup" id="profile-popup">
+					<div class="popup-header">
+						<i class="fas fa-user-astronaut"></i>
+						<span>My Account</span>
+						<button class="close-popup">&times;</button>
+					</div>
+					<div class="wallet-card">
+						<div class="balance-display">
+							<span class="amount">
+								{% if app.user and app.user.wallet %}
+									{{ app.user.wallet.balance|number_format(2, '.', ',') }}
+									$
+								{% else %}
+									0.00 $
+								{% endif %}
+							</span>
+							<span class="label">Wallet balance</span>
+						</div>
+
+						<div class="profile-menu">
+							<a href="{{ path('user.profil', {'pseudo': app.user.pseudo}) }}" class="menu-item">
+								<i class="fas fa-user-circle"></i>
+								<span>Mon Profil</span>
+							</a>
+
+							{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_SUPERADMIN') %}
+								<a href="{{ path('admins.index') }}" class="menu-item">
+									<i class="fas fa-shield-alt"></i>
+									<span>Administration</span>
+								</a>
+								<a href="{{ path('admins.betrooms') }}" class="menu-item">
+									<i class="fas fa-plus-square"></i>
+									<span>Salles Créées</span>
+								</a>
+							{% endif %}
+
+							<a href="{{ path('user.tickets', {'pseudo': app.user.pseudo}) }}" class="menu-item">
+								<i class="fas fa-ticket-alt"></i>
+								<span>Mes Tickets</span>
+							</a>
+
+							<div class="menu-divider"></div>
+
+							<a href="{{ path('app_logout') }}" class="menu-item logout-link">
+								<i class="fas fa-sign-out-alt"></i>
+								<span>Déconnexion</span>
+							</a>
+						</div>
+					</div>
+				</div>
+
+				<button class="wallet-btn" id="wallet-connect-btn">
+					<i class="fas fa-wallet"></i>
+					<span>
+						{% if app.user.wallet %}
+							{{ app.user.wallet.balance|number_format(2, '.', ',') }}
+							$
+						{% else %}
+							0.00 $
+						{% endif %}
+					</span>
+				</button>
+			{% else %}
+				<a href="{{path('app_login')}}" class="nav-link" style="text-decoration:none; font-weight:600; color:var(--text-main); margin-right: 10px;">Login</a>
+				<button class="wallet-btn" id="wallet-connect-btn">
+					<i class="fas fa-wallet"></i>
+					<span>Connect wallet</span>
+				</button>
+			{% endif %}
 		</div>
 	</div>
 </header>
@@ -56,28 +142,5 @@
 				</div>
 			</button>
 		</div>
-	</div>
-</div>
-
-<!-- Profile Popup -->
-<div class="profile-popup" id="profile-popup">
-	<div class="popup-header">
-		<i class="fas fa-wallet"></i>
-		<span>My Wallet:</span>
-		<button class="close-popup">&times;</button>
-	</div>
-	<div class="wallet-card">
-		<div class="balance-display">
-			<span class="amount">235000$</span>
-			<span class="label">Wallet balance</span>
-		</div>
-		<div class="address-box">
-			<span class="address">0xd022f120ed29058636ac09...</span>
-			<button class="copy-btn">
-				<i class="far fa-copy"></i>
-			</button>
-		</div>
-		<p class="status-msg">You are connected to your account with this wallet</p>
-		<button class="logout-btn">Logout</button>
 	</div>
 </div>

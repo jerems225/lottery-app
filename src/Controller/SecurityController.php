@@ -25,13 +25,20 @@ use Symfony\Component\Security\Http\Authentication\UserAuthenticatorInterface;
 
 class SecurityController extends AbstractController
 {
-    public function __construct(private Environment $twig,private PasswordService $passwordService,private UserService $userService,private UserAuthenticatorInterface $authenticator,
-    private LoginAuthenticator $loginAuthenticator,private walletService $walletService,private sendemailService $sendemailService,private betroomService $betroomService)
-    {
+    public function __construct(
+        private Environment $twig,
+        private PasswordService $passwordService,
+        private UserService $userService,
+        private UserAuthenticatorInterface $authenticator,
+        private LoginAuthenticator $loginAuthenticator,
+        private walletService $walletService,
+        private sendemailService $sendemailService,
+        private betroomService $betroomService
+    ) {
 
     }
 
-    #[Route(path: '/connectez-vous', name: 'app_login')]
+    #[Route(path: '/login', name: 'app_login')]
     /**
      * Authenticate user
      *
@@ -51,7 +58,7 @@ class SecurityController extends AbstractController
 
         return new Response($this->twig->render('security/login.html.twig', [
             'last_username' => $lastUsername,
-             'error' => $error
+            'error' => $error
         ]));
     }
 
@@ -62,24 +69,22 @@ class SecurityController extends AbstractController
      * @param Request $request
      * @return Response
      */
-    #[Route('/rejoignez-nous',name:'app_register')]
-    public function register(Request $request) : Response
+    #[Route('/register', name: 'app_register')]
+    public function register(Request $request): Response
     {
         if ($this->getUser()) {
             return $this->redirectToRoute('index');
         }
 
         $req_referral_code = $request->query->get('referrer');
-        if(null === $req_referral_code)
-        {
+        if (null === $req_referral_code) {
             $req_referral_code = "";
         }
 
         $user = new User();
-        $form = $this->createForm(RegisterType::class,$user);
+        $form = $this->createForm(RegisterType::class, $user);
         $form->handleRequest($request);
-        if($form->isSubmitted() && $form->isValid())
-        {
+        if ($form->isSubmitted() && $form->isValid()) {
 
             //create user wallet
             $wallet = new Wallet();
@@ -87,7 +92,7 @@ class SecurityController extends AbstractController
             $wallet->setBonus(0);
 
             //hash password
-            $Hashpassword = $this->passwordService->Hasher($user,$user->getPassword());
+            $Hashpassword = $this->passwordService->Hasher($user, $user->getPassword());
             $user->setPassword($Hashpassword);
             //setRoles
             $user->setRoles(['ROLE_USER']);
@@ -104,8 +109,7 @@ class SecurityController extends AbstractController
 
             //set Referrer code
             $referrer = $form->get('referrer')->getData();
-            if($referrer && $referrer != "")
-            {
+            if ($referrer && $referrer != "") {
                 $user->setReferrer($referrer);
                 $wallet->setBonus(50.0);
                 $wallet->setReferralBonusStatus(true);
@@ -119,28 +123,28 @@ class SecurityController extends AbstractController
 
             //send validate email 
             $message = "Votre compte a été crée avec succès, veuillez valider votre email en verifiant votre boite mail !!";
-            $this->addFlash('register',$message);
+            $this->addFlash('register', $message);
             $this->sendemailService->sendValidateAccountEmail($user, $message);
 
             //auto log in the user
             return $this->authenticator->authenticateUser(
                 $user,
                 $this->loginAuthenticator,
-                $request);
+                $request
+            );
         }
 
-        return new Response($this->twig->render('./security/register.html.twig',[
+        return new Response($this->twig->render('./security/register.html.twig', [
             'form' => $form->createView(),
             'referrer' => $req_referral_code
         ]));
     }
 
-    #[Route('/activation-de-compte/valider-votre-email', name:'validate.account')]
-    public function validateAccount(Request $request,VerifyEmailHelperInterface $verifyEmailHelper) : Response
+    #[Route('/account-activation/verify-email', name: 'validate.account')]
+    public function validateAccount(Request $request, VerifyEmailHelperInterface $verifyEmailHelper): Response
     {
         $user = $this->userService->getUserById($request->query->get('id'));
-        if($user)
-        {
+        if ($user) {
             $user = $user[0];
             try {
                 $verifyEmailHelper->validateEmailConfirmation(
@@ -149,8 +153,8 @@ class SecurityController extends AbstractController
                     $user->getEmail(),
                 );
             } catch (VerifyEmailExceptionInterface $e) {
-                $this->addFlash('validation.error','Le lien pour vérifier votre email n\'est pas valide. Veuillez re-envoyer l\'email de validation .');
-                return $this->redirectToRoute('user.profil',[
+                $this->addFlash('validation.error', 'Le lien pour vérifier votre email n\'est pas valide. Veuillez re-envoyer l\'email de validation .');
+                return $this->redirectToRoute('user.profil', [
                     'pseudo' => $user->getPseudo()
                 ]);
             }
@@ -158,27 +162,27 @@ class SecurityController extends AbstractController
             $user->setIsValidated(true);
             $this->userService->saveUser($user);
 
-            $this->addFlash('account.validate','Votre compte a été valider avec succès, Merci pour votre attention !!');
+            $this->addFlash('account.validate', 'Votre compte a été valider avec succès, Merci pour votre attention !!');
 
             return $this->authenticator->authenticateUser(
                 $user,
                 $this->loginAuthenticator,
-                $request);
+                $request
+            );
         }
 
         return $this->redirectToRoute('index');
     }
 
-    #[Route('/reinitialisation/mot-de-passe/url_encrypted/token', name:'reset.password')]
-    public function resetPassword(Request $request,VerifyEmailHelperInterface $verifyEmailHelper) : Response
+    #[Route('/reset-password/url_encrypted/token', name: 'reset.password')]
+    public function resetPassword(Request $request, VerifyEmailHelperInterface $verifyEmailHelper): Response
     {
         $this->betroomService->soldOutBetRoom();
         if ($this->getUser()) {
             return $this->redirectToRoute('index');
         }
         $user = $this->userService->getUserById($request->query->get('id'))[0];
-        if($user)
-        {
+        if ($user) {
             try {
                 $verifyEmailHelper->validateEmailConfirmation(
                     $request->getUri(),
@@ -186,37 +190,37 @@ class SecurityController extends AbstractController
                     $user->getEmail(),
                 );
             } catch (VerifyEmailExceptionInterface $e) {
-                $this->addFlash('reset.error','Le lien pour vérifier réinitialiser votre mot de passe n\'est pas valide. Veuillez reprendre le processus !.');
+                $this->addFlash('reset.error', 'Le lien pour vérifier réinitialiser votre mot de passe n\'est pas valide. Veuillez reprendre le processus !.');
                 return $this->redirectToRoute('forget.password');
             }
         }
 
-        $form = $this->createForm(ResetPassWordType::class,$user);
+        $form = $this->createForm(ResetPassWordType::class, $user);
         $form->handleRequest($request);
-        if($form->isSubmitted() && $form->isValid())
-        {
+        if ($form->isSubmitted() && $form->isValid()) {
             //hash password
-            $Hashpassword = $this->passwordService->Hasher($user,$user->getPassword());
+            $Hashpassword = $this->passwordService->Hasher($user, $user->getPassword());
             $user->setPassword($Hashpassword);
 
             $this->userService->saveUser($user);
-            $this->addFlash('reset.success','Votre mot de passe a bien été réinitialiser, Merci pour votre attention !!');
+            $this->addFlash('reset.success', 'Votre mot de passe a bien été réinitialiser, Merci pour votre attention !!');
 
             return $this->authenticator->authenticateUser(
                 $user,
                 $this->loginAuthenticator,
-                $request);
+                $request
+            );
         }
 
-        return new Response($this->twig->render('./security/reset-password.html.twig',[
+        return new Response($this->twig->render('./security/reset-password.html.twig', [
             'form' => $form->createView()
         ]));
     }
 
-    
 
-    #[Route('/mot-de-passe/oublie/confirme-email', name:'forget.password')]
-    public function forgetPassword(Request $request) : Response
+
+    #[Route('/forgot-password/confirm-email', name: 'forget.password')]
+    public function forgetPassword(Request $request): Response
     {
         $this->betroomService->soldOutBetRoom();
         if ($this->getUser()) {
@@ -225,20 +229,16 @@ class SecurityController extends AbstractController
 
         $form = $this->createForm(ForgotType::class);
         $form->handleRequest($request);
-        if($form->isSubmitted() && $form->isValid())
-        {
+        if ($form->isSubmitted() && $form->isValid()) {
             $email = $form->get('email')->getData();
-            $user  = $this->userService->getUserByEmail($email);
-            if($user)
-            {
+            $user = $this->userService->getUserByEmail($email);
+            if ($user) {
                 //send email 
                 $message = "Vous voulez réinitialiser votre mot de passe, cela se fera en deux étapes : un clic sur le bouton juste en bas et le remplissement d'un formulaire. !!";
                 $this->sendemailService->sendResetPasswordEmail($user[0], $message);
                 //show flash
                 $this->addFlash('email.send', 'Nous vous avons envoyé un email, contenant un bouton pour vous permettre de réinitialiser votre compte !!!');
-            }
-            else
-            {
+            } else {
                 //show flash error
                 $this->addFlash('email.error', 'Nous vous n\'avons pas retrouvé votre adresse email comme utilisateur de cette plateforme, Merci d\'ouvrir un compte!!!');
             }
@@ -246,18 +246,17 @@ class SecurityController extends AbstractController
             return $this->redirectToRoute('forget.password');
         }
 
-        return new Response($this->twig->render('./security/forgot.html.twig',[
+        return new Response($this->twig->render('./security/forgot.html.twig', [
             'form' => $form->createView()
         ]));
     }
 
-    #[Route('/activation-de-compte/{pseudo}/re-envoyer-email-confirmation', name: 'validate.account.resend')]
-    public function resendValidateAccount(User $user, $pseudo) : Response
+    #[Route('/account-activation/{pseudo}/resend-confirmation', name: 'validate.account.resend')]
+    public function resendValidateAccount(User $user, $pseudo): Response
     {
         $this->betroomService->soldOutBetRoom();
         $logger = $this->getUser();
-        if(!$logger)
-        {
+        if (!$logger) {
             return $this->redirectToRoute('app_login');
         }
 
@@ -265,9 +264,9 @@ class SecurityController extends AbstractController
         $message = "Votre compte a été crée avec succès, veuillez valider votre email en vérifiant votre boîte aux lettres !!";
         $this->sendemailService->sendValidateAccountEmail($user, $message);
 
-        $this->addFlash('resend-email','L\'email de validation de compte à bien été envoyé dans votre boîte aux lettres!!');
+        $this->addFlash('resend-email', 'L\'email de validation de compte à bien été envoyé dans votre boîte aux lettres!!');
 
-        return $this->redirectToRoute('user.profil',[
+        return $this->redirectToRoute('user.profil', [
             'pseudo' => $pseudo
         ]);
     }

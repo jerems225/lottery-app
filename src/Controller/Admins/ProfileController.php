@@ -34,14 +34,24 @@ use Twig\Environment;
 
 class ProfileController extends AbstractController
 {
-    public function __construct(private Environment $twig,private betroomService $betroomService,private UserService $userService, private walletService $walletService, 
-    private txUsdtService $txUsdtService, private txReqService $txReqService, private withdrawalService $withdrawalService, 
-    private UserPasswordHasherInterface $passwordHasher, private sendemailService $sendemailService, private HttpClientInterface $client, private TestimonyService $testimonyService, private ticketService $ticketService)
-    {
+    public function __construct(
+        private Environment $twig,
+        private betroomService $betroomService,
+        private UserService $userService,
+        private walletService $walletService,
+        private txUsdtService $txUsdtService,
+        private txReqService $txReqService,
+        private withdrawalService $withdrawalService,
+        private UserPasswordHasherInterface $passwordHasher,
+        private sendemailService $sendemailService,
+        private HttpClientInterface $client,
+        private TestimonyService $testimonyService,
+        private ticketService $ticketService
+    ) {
 
     }
 
-    #[Route('/mon-profil/{pseudo}', name: 'user.profil')]
+    #[Route('/my-profile/{pseudo}', name: 'user.profil')]
     /**
      * user profile
      *
@@ -51,7 +61,7 @@ class ProfileController extends AbstractController
      */
     public function profil(User $user, Request $request): Response
     {
-         
+
         $logger = $this->getUser();
         if (!$logger) {
             return $this->redirectToRoute('app_login');
@@ -88,11 +98,9 @@ class ProfileController extends AbstractController
                     $wallet->setReferralBonusStatus(true);
 
                     $this->walletService->saveWallet($wallet);
-                }
-                else
-                {
+                } else {
                     $user->setReferrer($referrer_initial);
-                    $this->addFlash('referrer.error','Ce code de parrainage n\'existe pas, Merci de renseigner un code exact !!');
+                    $this->addFlash('referrer.error', 'Ce code de parrainage n\'existe pas, Merci de renseigner un code exact !!');
                 }
             }
 
@@ -104,10 +112,10 @@ class ProfileController extends AbstractController
         ]));
     }
 
-    #[Route('/mon-profil/{pseudo}/type-de-rechargement', name: 'user.rechargement.type')]
+    #[Route('/my-profile/{pseudo}/deposit-type', name: 'user.rechargement.type')]
     public function choiceDeposit(): Response
     {
-         
+
         $logger = $this->getUser();
         if (!$logger) {
             return $this->redirectToRoute('app_login');
@@ -116,10 +124,10 @@ class ProfileController extends AbstractController
         return new Response($this->twig->render('./admins/profil/wallet/choicedeposit.html.twig', []));
     }
 
-    #[Route('/mon-profil/{pseudo}/type-rechargement/usdt-trc20', name: 'user.rechargement.usdt.trc20')]
+    #[Route('/my-profile/{pseudo}/deposit-type/usdt-trc20', name: 'user.rechargement.usdt.trc20')]
     public function usdtTrc20Deposit(Request $request, $pseudo): Response
     {
-         
+
         $logger = $this->getUser();
         if (!$logger) {
             return $this->redirectToRoute('app_login');
@@ -151,25 +159,25 @@ class ProfileController extends AbstractController
         ]));
     }
 
-    #[Route('/mon-profil/{pseudo}/type-rechargement/usdt-trc20/attente-du-paiement/{reference}', name: 'user.rechargement.usdt.trc20.check')]
+    #[Route('/my-profile/{pseudo}/deposit-type/usdt-trc20/pending-payment/{reference}', name: 'user.rechargement.usdt.trc20.check')]
     public function checkTrc20Tx(TxUsdt $txUsdt, Request $request): Response
     {
-         
+
         $logger = $this->getUser();
         if (!$logger) {
             return $this->redirectToRoute('app_login');
         }
-        
+
         return new Response($this->twig->render('./admins/profil/wallet/trc20/checktx.html.twig', [
             'COMPANY_USDT_TRC20_ADDRESS' => $_ENV['COMPANY_USDT_TRC20_ADDRESS'],
             'TX' => $txUsdt
         ]));
     }
 
-    #[Route('/mon-profil/{pseudo}/type-rechargement/usdt-erc20', name: 'user.rechargement.usdt')]
+    #[Route('/my-profile/{pseudo}/deposit-type/usdt-erc20', name: 'user.rechargement.usdt')]
     public function usdtErc20Deposit(Request $request, $pseudo): Response
     {
-         
+
         $logger = $this->getUser();
         if (!$logger) {
             return $this->redirectToRoute('app_login');
@@ -201,50 +209,46 @@ class ProfileController extends AbstractController
         ]));
     }
 
-    #[Route('/mon-profil/{pseudo}/type-rechargement/usdt-erc20/attente-du-paiement/{reference}', name: 'user.rechargement.usdt.check')]
+    #[Route('/my-profile/{pseudo}/deposit-type/usdt-erc20/pending-payment/{reference}', name: 'user.rechargement.usdt.check')]
     public function checkErc20Tx(TxUsdt $txUsdt, Request $request): Response
     {
-         
+
         $logger = $this->getUser();
         if (!$logger) {
             return $this->redirectToRoute('app_login');
         }
-        
+
         return new Response($this->twig->render('./admins/profil/wallet/usdt/checktx.html.twig', [
             'COMPANY_USDT_ADDRESS' => $_ENV['COMPANY_USDT_ADDRESS'],
             'TX' => $txUsdt
         ]));
     }
 
-    #[Route('/transaction/{pseudo}/checking/type-rechargement/usdt/attente-du-paiement/{reference}', name: 'user.rechargement.usdt.checking')]
+    #[Route('/transaction/{pseudo}/checking/deposit-type/usdt/pending-payment/{reference}', name: 'user.rechargement.usdt.checking')]
     public function checkingTx(TxUsdt $txUsdt, $pseudo): Response
     {
-         
+
         $logger = $this->getUser();
         if (!$logger) {
             return $this->redirectToRoute('app_login');
         }
 
-        $url = $_ENV['WEBHOOK_URL']."/webhook/v1/launch/txusdt/listner?address=".$txUsdt->getAddress()."&reference=".$txUsdt->getReference();
-        $response = $this->client->request('GET',$url);
+        $url = $_ENV['WEBHOOK_URL'] . "/webhook/v1/launch/txusdt/listner?address=" . $txUsdt->getAddress() . "&reference=" . $txUsdt->getReference();
+        $response = $this->client->request('GET', $url);
         $code = 0;
-        if($response->getStatusCode() == 200)
-        {
-            $content = json_decode($response->getContent(),true);
-            if($content['status'] == 200)
-            {
+        if ($response->getStatusCode() == 200) {
+            $content = json_decode($response->getContent(), true);
+            if ($content['status'] == 200) {
                 $code = $content['status'];
-            }
-            elseif($content['status'] == 201)
-            {
+            } elseif ($content['status'] == 201) {
                 $code = $content['status'];
             }
         }
 
 
-            return $this->redirectToRoute('user.rechargement.usdt.check',[
-                'pseudo' => $pseudo,
-                'reference' => $txUsdt->getReference(),
+        return $this->redirectToRoute('user.rechargement.usdt.check', [
+            'pseudo' => $pseudo,
+            'reference' => $txUsdt->getReference(),
         ]);
 
         return new Response($this->twig->render('./admins/profil/wallet/usdt/checktx.html.twig', [
@@ -252,18 +256,17 @@ class ProfileController extends AbstractController
             'TX' => $txUsdt,
             "code" => $code
         ]));
-        
+
     }
 
     #[Route('/usdt/validate/transaction', name: 'validate.tx')]
     public function validateTx(Request $request)
     {
-         
+
         $reference = $request->query->get('reference');
         $value = $request->query->get('value');
         $txUsdt = $this->txUsdtService->getTxUsdtByReference($reference);
-        if(count($txUsdt) > 0)
-        {
+        if (count($txUsdt) > 0) {
             $txUsdt[0]->setStatus("acceptée");
             $txUsdt[0]->setAmount($value);
             $this->txUsdtService->saveTxUsdt($txUsdt[0]);
@@ -274,11 +277,11 @@ class ProfileController extends AbstractController
             $this->walletService->saveWallet($wallet);
 
             //sendfeeback
-            $message = "Le rechargement de votre compte a été accompli avec succès, Merci pour votre attention!!, vous avez fait parvenir ".$value."\$USD dans votre transaction";
+            $message = "Le rechargement de votre compte a été accompli avec succès, Merci pour votre attention!!, vous avez fait parvenir " . $value . "\$USD dans votre transaction";
             $action = "RECHARGEMENT DE COMPTE REUSSI !!";
-            $this->sendemailService->sendFeedBack($txUsdt[0]->getUser(),$message,$action);
+            $this->sendemailService->sendFeedBack($txUsdt[0]->getUser(), $message, $action);
 
-            return $this->redirectToRoute('user.rechargement.usdt.check',[
+            return $this->redirectToRoute('user.rechargement.usdt.check', [
                 'pseudo' => $txUsdt[0]->getUser()->getPseudo(),
                 'reference' => $reference
             ]);
@@ -286,17 +289,15 @@ class ProfileController extends AbstractController
     }
 
 
-    #[Route('/mon-profil/{pseudo}/type-rechargement/request', name: 'user.rechargement.request')]
+    #[Route('/my-profile/{pseudo}/deposit-type/request', name: 'user.rechargement.request')]
     public function reqDeposit(Request $request, $pseudo): Response
     {
-         
+
         $logger = $this->getUser();
         if (!$logger) {
             return $this->redirectToRoute('app_login');
-        }
-        elseif(!$logger->isIsValidated())
-        {
-            return $this->redirectToRoute('user.profil',[
+        } elseif (!$logger->isIsValidated()) {
+            return $this->redirectToRoute('user.profil', [
                 'pseudo' => $pseudo
             ]);
         }
@@ -340,7 +341,8 @@ class ProfileController extends AbstractController
 
         //form datas
         $payment_type = getData('payment_type', $form);
-        $id_card = getData('id_card', $form);;
+        $id_card = getData('id_card', $form);
+        ;
         $bank_country = getData('bank_country', $form);
         $bank = getData('bank', $form);
         $crypto_name = getData('crypto_name', $form);
@@ -389,17 +391,15 @@ class ProfileController extends AbstractController
         }
     }
 
-    #[Route('/mon-profil/{pseudo}/demande-de-retrait', name: 'user.withdrawal')]
+    #[Route('/my-profile/{pseudo}/withdrawal-request', name: 'user.withdrawal')]
     public function withdrawal(Request $request, $pseudo): Response
     {
-         
+
         $logger = $this->getUser();
         if (!$logger) {
             return $this->redirectToRoute('app_login');
-        }
-        elseif(!$logger->isIsValidated())
-        {
-            return $this->redirectToRoute('user.profil',[
+        } elseif (!$logger->isIsValidated()) {
+            return $this->redirectToRoute('user.profil', [
                 'pseudo' => $pseudo
             ]);
         }
@@ -440,40 +440,40 @@ class ProfileController extends AbstractController
         ]));
     }
 
-    #[Route('/mon-profil/{pseudo}/mes-tickets', name: 'user.tickets')]
-    public function myTickets(User $user, $pseudo) : Response
+    #[Route('/my-profile/{pseudo}/my-tickets', name: 'user.tickets')]
+    public function myTickets(User $user, $pseudo): Response
     {
-         
+
         $logger = $this->getUser();
         if (!$logger) {
             return $this->redirectToRoute('app_login');
         }
 
-        return new Response($this->twig->render('./admins/profil/ticket/ticket.html.twig',[
+        return new Response($this->twig->render('./admins/profil/ticket/ticket.html.twig', [
             'tickets' => $user->getTickets()
         ]));
     }
 
-    #[Route('/mon-profil/{pseudo}/mon-equipe', name:'user.profil.myteam')]
-    public function MyTeam() : Response
+    #[Route('/my-profile/{pseudo}/my-team', name: 'user.profil.myteam')]
+    public function MyTeam(): Response
     {
-         
+
         $logger = $this->getUser();
         if (!$logger) {
             return $this->redirectToRoute('app_login');
         }
-        
 
-        return new Response($this->twig->render('./admins/profil/myteam.html.twig',[
+
+        return new Response($this->twig->render('./admins/profil/myteam.html.twig', [
             'filleuls' => $this->userService->getUserByReferrer($logger->getReferralCode()),
-            'referral_url' => $_ENV['BASE_URL']."/rejoignez-nous?referrer=".$logger->getReferralCode()
+            'referral_url' => $_ENV['BASE_URL'] . "/rejoignez-nous?referrer=" . $logger->getReferralCode()
         ]));
     }
 
-    #[Route('/mon-profil/{pseudo}/faire-un-temoignage', name: 'user.profil.testimony')]
-    public function testimony(Request $request)  : Response
+    #[Route('/my-profile/{pseudo}/give-testimonial', name: 'user.profil.testimony')]
+    public function testimony(Request $request): Response
     {
-         
+
         $logger = $this->getUser();
         if (!$logger) {
             return $this->redirectToRoute('app_login');
@@ -482,28 +482,27 @@ class ProfileController extends AbstractController
         $testimony = new Testimony();
         $form = $this->createForm(TestimonyType::class, $testimony);
         $form->handleRequest($request);
-        if($form->isSubmitted() && $form->isValid())
-        {
+        if ($form->isSubmitted() && $form->isValid()) {
             $testimony->setStatus(false);
             $testimony->setUser($logger);
             $this->testimonyService->saveTestimony($testimony);
 
             $this->addFlash('testimony', 'Votre commentaire a bien été pris en compte, il sera disponible sur la plateforme après validation. Merci !!');
-            return $this->redirectToRoute('user.profil.testimony',[
+            return $this->redirectToRoute('user.profil.testimony', [
                 'pseudo' => $testimony->getUser()->getPseudo()
             ]);
         }
 
-        return new Response($this->twig->render('./admins/profil/testimony.html.twig',[
+        return new Response($this->twig->render('./admins/profil/testimony.html.twig', [
             'testimonies' => $this->testimonyService->getTestimoniesByUser($logger),
             'form' => $form->createView()
         ]));
     }
 
-    #[Route('/mon-profil/{pseudo}/{id}/faire-un-temoignage', name: 'user.profil.testimony.remove')]
-    public function removeTestimony(Testimony $testimony)  : Response
+    #[Route('/my-profile/{pseudo}/{id}/testimonial/remove', name: 'user.profil.testimony.remove')]
+    public function removeTestimony(Testimony $testimony): Response
     {
-         
+
         $logger = $this->getUser();
         if (!$logger) {
             return $this->redirectToRoute('app_login');
@@ -512,29 +511,27 @@ class ProfileController extends AbstractController
         $this->testimonyService->removeTestimony($testimony);
         $this->addFlash('testimony', 'La suppression de votre commentaire a bien été pris en compte, Merci !!');
 
-        return $this->redirectToRoute('user.profil.testimony',[
+        return $this->redirectToRoute('user.profil.testimony', [
             'pseudo' => $testimony->getUser()->getPseudo()
         ]);
     }
 
-    #[Route('/mon-profil/{pseudo}/tous-les-resultats',name:'user.profil.winners')]
-    public function Winners(Request $request) : Response
+    #[Route('/my-profile/{pseudo}/all-results', name: 'user.profil.winners')]
+    public function Winners(Request $request): Response
     {
-         
+
         $logger = $this->getUser();
-        if(!$logger)
-        {
+        if (!$logger) {
             return $this->redirectToRoute('app_login');
         }
 
         $form = $this->createForm(ResultatDateType::class);
         $form->handleRequest($request);
-        if($form->isSubmitted() && $form->isValid())
-        {
+        if ($form->isSubmitted() && $form->isValid()) {
             $date = $form->get('result_date')->getData();
             $tickets = $this->ticketService->getWinners($date);
 
-            return new Response($this->twig->render('./admins/profil/winners.html.twig',[
+            return new Response($this->twig->render('./admins/profil/winners.html.twig', [
                 'tickets' => $tickets,
                 'form' => $form->createView()
             ]));
@@ -542,7 +539,7 @@ class ProfileController extends AbstractController
 
         $date_object = new \DateTime();
         $current_date = $date_object->format('d M Y');
-        return new Response($this->twig->render('./admins/profil/winners.html.twig',[
+        return new Response($this->twig->render('./admins/profil/winners.html.twig', [
             'tickets' => $this->ticketService->getWinners($current_date),
             'form' => $form->createView()
         ]));

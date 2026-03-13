@@ -1,5 +1,5 @@
 {% extends 'base.html.twig' %}
-{% block title %}Salles de tirages
+{% block title %}Rooms |
 {% endblock title %}
 {% block body %}
 
@@ -7,145 +7,71 @@
 		<section class="rooms-hero">
 			<div class="glass-panel main-panel" style="background: white; border-radius: 40px; box-shadow: var(--shadow-xl); border: 1px solid rgba(0,0,0,0.03); padding: 60px;">
 				<h1 style="font-weight: 900; letter-spacing: -0.04em;">Community Lottery Rooms</h1>
-				<p style="color: var(--text-muted); font-size: 18px; max-width: 600px; margin: 16px auto;">Create your
-					                    own private room, challenge your community, and earn creator commissions on every draw.</p>
+				<p style="color: var(--text-muted); font-size: 18px; max-width: 600px; margin: 16px auto;">Join our active lottery rooms or wait for special community draws to earn huge rewards.</p>
 				<div class="action-bar" style="background: #F8FAFC; border: 1px solid #E2E8F0; padding: 24px 40px; border-radius: 24px;">
 					<div class="stats">
 						<div class="stat-item">
-							<span class="val" style="color: #111827; font-weight: 800;">12</span>
-							<span class="lbl" style="font-weight: 700; font-size: 12px; color: #94A3B8;">Active
-								                                Rooms</span>
-						</div>
-						<div class="stat-item">
-							<span class="val" style="color: #111827; font-weight: 800;">45</span>
-							<span class="lbl" style="font-weight: 700; font-size: 12px; color: #94A3B8;">Players
-								                                Live</span>
+							<span class="val" style="color: #111827; font-weight: 800;">{{ betrooms|length }}</span>
+							<span class="lbl" style="font-weight: 700; font-size: 12px; color: #94A3B8;">Active Rooms</span>
 						</div>
 					</div>
 					<button class="create-room-btn" id="open-create-room" style="background: linear-gradient(135deg, var(--primary-gold), var(--dark-gold)); padding: 18px 36px; border-radius: 16px; font-weight: 800; font-size: 15px; box-shadow: 0 10px 20px rgba(212, 175, 55, 0.2);">
 						<i class="fas fa-plus-circle" style="margin-right: 8px;"></i>
-						Create Private Room
+						Join a Room
 					</button>
 				</div>
 			</div>
 		</section>
 
-
 		<section class="rooms-list">
 			<div class="filter-bar">
 				<button class="filter-tab active">All Rooms</button>
-				<button class="filter-tab">My Rooms</button>
 				<button class="filter-tab">High Stakes</button>
+				<button class="filter-tab">Sold Out</button>
 			</div>
 
-			<div
-				class="rooms-grid" id="rooms-container">
-				<!-- Example Room Card -->
-				<div class="room-box">
-					<div class="room-header">
-						<span class="room-id">#ROOM-1024</span>
-						<span class="status-badge">Waiting...</span>
-					</div>
-					<div class="room-body">
-						<div class="creator-info">
-							<img src="https://i.pravatar.cc/100?u=a" alt="Creator">
-							<span>John's Party</span>
+			<div class="rooms-grid" id="rooms-container">
+				{% for betroom in betrooms %}
+					<div class="room-box">
+						<div class="room-header">
+							<span class="room-id">#{{ betroom.numBetroom }}</span>
+							<span class="status-badge" style="background: {% if betroom.status == 'sold out' or status == 'closed' %}#FEE2E2; color: #DC2626{% else %}#E8F5E9; color: #2E7D32{% endif %};">
+								{{ (status == 'closed' ? 'CLOSED' : betroom.status)|upper }}
+							</span>
 						</div>
-						<div class="room-details">
-							<div class="detail">
-								<span class="lbl">Bet Amount</span>
-								<span class="val gold">50 $</span>
+						<div class="room-body">
+							<div class="creator-info">
+								<img src="https://i.pravatar.cc/100?u={{ betroom.id }}" alt="Room">
+								<span>{{ betroom.numBetroom }}</span>
 							</div>
-							<div class="detail">
-								<span class="lbl">Players</span>
-								<span class="val">3 / 5</span>
+							<div class="room-details">
+								<div class="detail">
+									<span class="lbl">Bet Amount</span>
+									<span class="val gold">{{ betroom.ticketPrice }}
+										$</span>
+								</div>
+								<div class="detail">
+									<span class="lbl">Participants</span>
+									<span class="val">{{ betroom.buyTicket }}
+										/
+										{{ betroom.maxTicket }}</span>
+								</div>
 							</div>
-						</div>
-						<div class="progress-container">
-							<div class="progress-bar" style="width: 60%;"></div>
-						</div>
-					</div>
-					<div class="room-footer">
-						<button class="join-room-btn">Join Table</button>
-					</div>
-				</div>
-
-				<!-- Another Room Card -->
-				<div class="room-box">
-					<div class="room-header">
-						<span class="room-id">#ROOM-1025</span>
-						<span class="status-badge">Waiting...</span>
-					</div>
-					<div class="room-body">
-						<div class="creator-info">
-							<img src="https://i.pravatar.cc/100?u=b" alt="Creator">
-							<span>CryptoClub VIP</span>
-						</div>
-						<div class="room-details">
-							<div class="detail">
-								<span class="lbl">Bet Amount</span>
-								<span class="val gold">100 $</span>
-							</div>
-							<div class="detail">
-								<span class="lbl">Players</span>
-								<span class="val">1 / 10</span>
+							<div class="progress-container">
+								<div class="progress-bar" style="width: {{ (betroom.buyTicket / betroom.maxTicket * 100)|round }}%;"></div>
 							</div>
 						</div>
-						<div class="progress-container">
-							<div class="progress-bar" style="width: 10%;"></div>
+						<div class="room-footer">
+							{% if betroom.status == "sold out" or status == "closed" %}
+								<button class="join-room-btn" onclick="window.location.href='{{ path('betrooms.winner', {'reference': betroom.reference}) }}'">See Results</button>
+							{% else %}
+								<button class="join-room-btn" onclick="window.location.href='{{ path('betrooms.tickets', {'reference': betroom.reference}) }}'">Join Table</button>
+							{% endif %}
 						</div>
 					</div>
-					<div class="room-footer">
-						<button class="join-room-btn">Join Table</button>
-					</div>
-				</div>
+				{% endfor %}
 			</div>
 		</section>
 	</main>
-
-
-	<!-- Create Room Modal -->
-	<div class="modal-overlay" id="create-room-modal">
-		<div class="modal create-modal">
-			<button class="close-modal">&times;</button>
-			<div class="modal-header">
-				<h3>Create Private Room</h3>
-				<p>Set your rules and invite friends</p>
-			</div>
-			<form id="create-room-form">
-				<div class="form-group">
-					<label>Bet Amount ($)</label>
-					<input type="number" id="room-bet" placeholder="Min 1$" min="1" value="10">
-				</div>
-				<div class="form-group">
-					<label>Min Participants</label>
-					<div class="number-input">
-						<button type="button" class="minus">-</button>
-						<input type="number" id="room-min-players" value="2" min="2">
-						<button type="button" class="plus">+</button>
-					</div>
-				</div>
-				<div class="reward-info">
-					<div class="reward-row">
-						<span>Winner Reward</span>
-						<strong>75%</strong>
-					</div>
-					<div class="reward-row">
-						<span>Creator Commission</span>
-						<strong>5%</strong>
-					</div>
-					<div class="reward-row">
-						<span>Platform Fee</span>
-						<strong>20%</strong>
-					</div>
-				</div>
-				<div class="requirement-check">
-					<i class="fas fa-check-circle"></i>
-					<span>Min balance required: 10$</span>
-				</div>
-				<button type="submit" class="confirm-create-btn">Initialize Room</button>
-			</form>
-		</div>
-	</div>
 
 {% endblock body %}

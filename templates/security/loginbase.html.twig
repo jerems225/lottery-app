@@ -1,55 +1,256 @@
-{% block stylesheets %}
-    <!DOCTYPE html>
-    <html lang="fr">
-    <head>
-        <title>{% block title %}Connexion{% endblock title %} | CryptoBet - Tentez votre chance dans une salle de tirages</title>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!--===============================================================================================-->	
-    <link rel="icon" type="image/x-icon" href="{{asset('assets/img/log.png')}}"/>
-    <!--===============================================================================================-->
-        <link rel="stylesheet" type="text/css" href="{{asset('login/vendor/bootstrap/css/bootstrap.min.css')}}">
-    <!--===============================================================================================-->
-        <link rel="stylesheet" type="text/css" href="{{asset('login/fonts/font-awesome-4.7.0/css/font-awesome.min.css')}}">
-    <!--===============================================================================================-->
-        <link rel="stylesheet" type="text/css" href="{{asset('login/vendor/animate/animate.css')}}">
-    <!--===============================================================================================-->	
-        <link rel="stylesheet" type="text/css" href="{{asset('login/vendor/css-hamburgers/hamburgers.min.css')}}">
-    <!--===============================================================================================-->
-        <link rel="stylesheet" type="text/css" href="{{asset('login//animsition/css/animsition.min.css')}}">
-    <!--===============================================================================================-->
-        <link rel="stylesheet" type="text/css" href="{{asset('login//select2/select2.min.css')}}">
-    <!--===============================================================================================-->	
-        <link rel="stylesheet" type="text/css" href="{{asset('login/vendor/daterangepicker/daterangepicker.css')}}">
-    <!--===============================================================================================-->
-        <link rel="stylesheet" type="text/css" href="{{asset('login/css/util.css')}}">
-        <link rel="stylesheet" type="text/css" href="{{asset('login/css/main.css')}}">
-    <!--===============================================================================================-->
-    </head>
-{% endblock  %}
+<!DOCTYPE html>
+<html lang="fr">
 
-{% block body %}
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>
+			{% block title %}{% endblock %}
+			| BitLOT</title>
+		<link rel="icon" type="image/x-icon" href="{{asset('assets/img/cr_fav.png')}}"/>
+		<link rel="stylesheet" href="{{asset('lottery-assets/css/style.css')}}">
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+		<style>
+			.auth-container {
+				min-height: 100vh;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				padding: 60px 20px;
+			}
 
-{% endblock  %}
+			.auth-card {
+				background: white;
+				border-radius: var(--radius-lg);
+				padding: 48px;
+				width: 100%;
+				max-width: 500px;
+				box-shadow: var(--shadow-xl);
+				text-align: center;
+				border: 1px solid rgba(0, 0, 0, 0.04);
+			}
 
-{% block javascript %}
-<!--===============================================================================================-->
-	<script src="{{asset('login/vendor/jquery/jquery-3.2.1.min.js')}}"></script>
-<!--===============================================================================================-->
-	<script src="{{asset('login/vendor/animsition/js/animsition.min.js')}}"></script>
-<!--===============================================================================================-->
-	<script src="{{asset('login/vendor/bootstrap/js/popper.js')}}"></script>
-	<script src="{{asset('login/vendor/bootstrap/js/bootstrap.min.js')}}"></script>
-<!--===============================================================================================-->
-	<script src="{{asset('login/vendor/select2/select2.min.js')}}"></script>
-<!--===============================================================================================-->
-	<script src="{{asset('login/vendor/daterangepicker/moment.min.js')}}"></script>
-	<script src="{{asset('login/vendor/daterangepicker/daterangepicker.js')}}"></script>
-<!--===============================================================================================-->
-	<script src="{{asset('login/vendor/countdowntime/countdowntime.js')}}"></script>
-<!--===============================================================================================-->
-	<script src="{{asset('login/js/main.js')}}"></script>
+			.auth-header img {
+				width: 64px;
+				height: 64px;
+				border-radius: 16px;
+				margin-bottom: 24px;
+				box-shadow: var(--shadow-md);
+			}
 
-</body>
+			.auth-header i.lock-icon {
+				font-size: 48px;
+				color: var(--primary-gold);
+				margin-bottom: 24px;
+				filter: drop-shadow(0 4px 6px rgba(198, 163, 85, 0.3));
+				display: block;
+			}
+
+			.auth-header h2 {
+				font-size: 28px;
+				font-weight: 800;
+				margin-bottom: 8px;
+				color: var(--text-main);
+			}
+
+			.auth-header p {
+				color: var(--text-muted);
+				margin-bottom: 32px;
+				font-size: 15px;
+			}
+
+			.auth-form-group {
+				text-align: left;
+				margin-bottom: 24px;
+			}
+
+			.auth-form-group label {
+				display: block;
+				margin-bottom: 8px;
+				font-weight: 600;
+				font-size: 14px;
+				color: var(--text-main);
+			}
+
+			.auth-form-group input,
+			.auth-input {
+				width: 100%;
+				padding: 16px;
+				border-radius: var(--radius-sm);
+				border: 1px solid #E2E8F0;
+				background: #F8FAFC;
+				font-family: inherit;
+				transition: var(--transition);
+				outline: none;
+				font-size: 15px;
+				display: block;
+			}
+
+			.auth-form-group input:focus,
+			.auth-input:focus {
+				border-color: var(--primary-gold);
+				box-shadow: 0 0 0 3px rgba(198, 163, 85, 0.1);
+				background: white;
+			}
+
+			.auth-form-group ul {
+				list-style: none;
+				padding: 0;
+				margin: 8px 0 0;
+				color: #DC2626;
+				font-size: 13px;
+				font-weight: 600;
+			}
+
+			.forgot-link {
+				display: block;
+				text-align: right;
+				font-size: 13px;
+				color: var(--primary-gold);
+				text-decoration: none;
+				font-weight: 600;
+				margin-top: 10px;
+			}
+
+			.auth-btn {
+				width: 100%;
+				padding: 16px;
+				background: linear-gradient(135deg, var(--primary-gold), var(--dark-gold));
+				color: white;
+				border: none;
+				border-radius: var(--radius-md);
+				font-weight: 700;
+				font-size: 16px;
+				cursor: pointer;
+				transition: var(--transition);
+				margin-top: 24px;
+				box-shadow: 0 10px 20px -5px rgba(198, 163, 85, 0.4);
+			}
+
+			.auth-btn:hover {
+				transform: translateY(-2px);
+				box-shadow: 0 15px 25px -5px rgba(198, 163, 85, 0.5);
+			}
+
+			.social-auth {
+				margin-top: 32px;
+				padding-top: 32px;
+				border-top: 1px solid #F1F5F9;
+			}
+
+			.social-btns {
+				display: flex;
+				gap: 16px;
+				margin-top: 20px;
+			}
+
+			.social-btn {
+				flex: 1;
+				padding: 14px;
+				border-radius: var(--radius-sm);
+				border: 1px solid #E2E8F0;
+				background: white;
+				cursor: pointer;
+				transition: var(--transition);
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				color: #444;
+				font-size: 18px;
+			}
+
+			.social-btn:hover {
+				background: #F8FAFC;
+				border-color: #CBD5E1;
+				transform: translateY(-2px);
+				box-shadow: var(--shadow-sm);
+			}
+
+			.terms-row {
+				text-align: left;
+				display: flex;
+				gap: 10px;
+				font-size: 13px;
+				color: var(--text-muted);
+				margin-bottom: 24px;
+				align-items: flex-start;
+			}
+
+			.terms-row input[type="checkbox"] {
+				margin-top: 3px;
+				width: auto;
+			}
+
+			.terms-row a {
+				color: var(--primary-gold);
+				font-weight: 600;
+				text-decoration: none;
+			}
+
+			.footer-text {
+				margin-top: 32px;
+				font-size: 14px;
+				color: var(--text-muted);
+			}
+
+			.footer-text a {
+				color: var(--primary-gold);
+				font-weight: 700;
+				text-decoration: none;
+			}
+
+			.auth-error {
+				background: #FEE2E2;
+				color: #DC2626;
+				padding: 12px 16px;
+				border-radius: 12px;
+				font-size: 14px;
+				font-weight: 600;
+				margin-bottom: 20px;
+				border: 1px solid #FECACA;
+			}
+
+			.success-msg {
+				display: none;
+				background: #E8F5E9;
+				color: #2E7D32;
+				padding: 24px;
+				border-radius: var(--radius-md);
+				margin-top: 24px;
+				font-weight: 600;
+				border: 1px solid #C8E6C9;
+			}
+
+			.back-link {
+				display: inline-block;
+				margin-top: 32px;
+				font-size: 14px;
+				color: var(--text-muted);
+				text-decoration: none;
+				font-weight: 600;
+				transition: var(--transition);
+			}
+
+			.back-link:hover {
+				color: var(--text-main);
+			}
+
+			@media(max-width: 480px) {
+				.auth-card {
+					padding: 32px 24px;
+					border-radius: 20px;
+				}
+
+				.auth-header h2 {
+					font-size: 24px;
+				}
+			}
+		</style>
+	</head>
+
+	{% block body %}{% endblock %}
+
 </html>
-{% endblock  %}

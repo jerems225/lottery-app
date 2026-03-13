@@ -1,56 +1,72 @@
-<!-- Donate Start -->
-<div class="container-fluid py-5">
-    <div class="container">
+<div class="container py-5">
+	<div class="container">
+		<div class="checkout-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 48px; margin-bottom: 60px;">
+			<div class="glass-card" style="background: white; border-radius: 32px; box-shadow: var(--shadow-xl); padding: 40px; border: 1px solid rgba(0,0,0,0.03);">
+				<div style="margin-bottom: 24px;">
+					<label style="display: block; font-weight: 700; font-size: 12px; color: #94A3B8; text-transform: uppercase; margin-bottom: 8px;">Selected Room</label>
+					<div style="background: #F8FAFC; padding: 16px; border-radius: 12px; font-weight: 800; font-size: 18px; color: #111827; border: 1px solid #E2E8F0;">
+						{{betroom.numBetroom}}
+					</div>
+				</div>
+				<div style="display: flex; gap: 16px;">
+					<div style="flex: 1; background: #F8FAFC; padding: 20px; border-radius: 20px; text-align: center; border: 1px solid #E2E8F0;">
+						<span style="display: block; font-size: 12px; color: #94A3B8; font-weight: 700; text-transform: uppercase;">Ticket Price</span>
+						<strong style="font-size: 24px; color: var(--primary-gold);">{{betroom.ticketPrice}}$</strong>
+					</div>
+					<div style="flex: 1; background: #111827; padding: 20px; border-radius: 20px; text-align: center;">
+						<span style="display: block; font-size: 12px; color: #94A3B8; font-weight: 700; text-transform: uppercase;">POTENTIAL WIN</span>
+						<strong style="font-size: 24px; color: white;">{{betroom.awards}}$</strong>
+					</div>
+				</div>
+			</div>
+			<div style="display: flex; align-items: center;">
+				<div>
+					<h1 style="font-size: 36px; font-weight: 900; line-height: 1.2; margin-bottom: 16px;">Try your luck now and win
+						<span style="color: var(--primary-gold);">{{betroom.awards}}$</span>
+						in BTC!</h1>
+					<p style="color: var(--text-muted); font-size: 16px;">Select one of the available ticket numbers below to enter the draw. Each house has a pot of prizes waiting for its lucky winner.</p>
+				</div>
+			</div>
+		</div>
 
-        <div class="row g-5 align-items-center">
-            <div class="col-lg-6 wow fadeIn" data-wow-delay="0.1s">
-                <div class="h-100 bg-dark p-5">
-                        <div class="row g-3">
-                            <div class="col-12">
-                                <div class="form-floating">
-                                    <input type="text" class="form-control bg-light border-0" name="betroom" id="betroom" value="{{betroom.numBetroom}}" readonly>
-                                    <label for="betroom">Salle de tirage</label>
-                                </div>
-                            </div>
-                            <div class="col-12">
-                                <div class="btn-group d-flex justify-content-around">
-                                    <input type="radio" class="btn-check" name="ticket_price" id="btnradio1" value="{{betroom.Ticketprice}}" checked readonly>
-                                    <label class="btn btn-light py-3" for="btnradio1">{{betroom.Ticketprice}}$</label>
+		{% for message in app.flashes('user.getTicket') %}
+			<div style="background: #FEE2E2; color: #DC2626; padding: 16px; border-radius: 12px; margin-bottom: 32px; text-align: center; font-weight: 600; border: 1px solid #FECACA;">
+				<i class="fas fa-exclamation-circle"></i>
+				{{message}}
+			</div>
+		{% endfor %}
 
-                                    <input type="radio" class="btn-check" readonly>
-                                    <label class="btn btn-light py-3 text-primary" for="btnradio1"><strong>GAIN DE {{betroom.awards}}$</strong></label>
-                                </div>
-                            </div>
-                        </div>
-                </div>
-            </div>
-            <div class="col-lg-6 wow fadeIn" data-wow-delay="0.5s">
-                <h1 class="display-6 mb-5">Tentez votre chance maintenant et gagnez {{betroom.awards}}$🎉🎉🎉.</h1>
-            </div>
-        </div>
+		<div style="text-align: center; margin-bottom: 40px;">
+			<h2 style="font-weight: 800;">Available Tickets</h2>
+			<div style="width: 60px; height: 4px; background: var(--primary-gold); margin: 12px auto; border-radius: 2px;"></div>
+		</div>
 
-        {% for message in app.flashes('user.getTicket') %}
-            <div class="alert alert-danger text-dark mt-2" align="center">
-            <b>{{message}}</b>
-            </div>
-        {% endfor %}
-        <div class="row d-flex justify-content-center">
-            {% for ticket in tickets %}
-                {% if  not ticket.user %}
-                    <div class="col-lg-2 mt-4 mb-1 wow fadeInUp" data-wow-delay="0.3s">
-                        <a href="{{path('betrooms.tickets.selection',{reference: ticket.reference})}}" class="btn btn-sm btn-dark">
-                            <h6 class="text-white mt-2">
-                                <img class="img-fluid rounded-circle" src="{{asset('assets/img/win.jpg')}}" width="30" alt="">
-                                <strong>N<sup>o</sup></strong></i> {{ticket.numTicket}}
-                                <i class="fa fa-plus-circle text-warning"></i>
-                            </h6>
-                        </a>
-                    </div>
-                {% endif %}
-            {% endfor %}
-        </div>
-
-
-    </div>
+		<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px;">
+			{% for ticket in tickets %}
+				{% if not ticket.user %}
+					<a href="{{path('betrooms.tickets.selection',{reference: ticket.reference})}}" class="ticket-btn" style="text-decoration: none;">
+						<div class="glass-card" style="padding: 20px; text-align: center; border-radius: 20px; background: white; border: 1px solid #E2E8F0; transition: all 0.3s ease;">
+							<div style="margin-bottom: 12px;">
+								<img src="{{asset('assets/img/win.jpg')}}" style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--primary-gold);">
+							</div>
+							<div style="font-weight: 800; color: #111827; font-size: 14px;">Ticket #{{ticket.numTicket}}</div>
+							<div style="margin-top: 8px; color: var(--primary-gold); font-size: 12px; font-weight: 700;">
+								<i class="fas fa-plus-circle"></i>
+								ADD TO ENTRY
+							</div>
+						</div>
+					</a>
+				{% endif %}
+			{% endfor %}
+		</div>
+	</div>
 </div>
-<!-- Donate End -->
+
+<style>
+	.ticket-btn:hover .glass-card {
+		transform: translateY(-5px);
+		border-color: var(--primary-gold);
+		box-shadow: var(--shadow-md);
+		background: #FFFEF9;
+	}
+</style>

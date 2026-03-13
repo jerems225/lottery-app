@@ -1,79 +1,36 @@
 {% extends './security/loginbase.html.twig' %}
-{% block title %}
-  Reinitialisation du Mot de passe 
+{% block title %}Mot de passe oublié
 {% endblock %}
 {% block body %}
-  <body>
+	<body>
+		<div class="auth-container">
+			<div class="auth-card">
+				<div class="auth-header">
+					<i class="fas fa-lock lock-icon"></i>
+					<h2>Reset Password</h2>
+					<p>Enter your email and we'll send you instructions to reset your password.</p>
+				</div>
 
-    <div class="limiter">
-      <div class="container-login100" style="background-image: url('{{asset('assets/img/banner-3.jpg')}}'); background-size:cover;">
-        <div class="wrap-login100">
-          <form class="login100-form validate-form p-l-55 p-r-55 p-t-178" method="post">
-            <span class="login100-form-title">
-              CRYPTOBET - VERIFICATION D'EMAIL
-            </span>
+				<form id="reset-form" method="post">
+					<div class="auth-form-group">
+						<label>Email Address</label>
+						<input type="email" name="email" placeholder="name@example.com" required>
+					</div>
 
-            <div class="wrap-input100 validate-input m-b-16 m-t-14">
-              {{form_widget(form.email, {'attr':{'class':'input100','placeholder':'Votre email svp ...'}})}}
-              <span class="focus-input100"></span>
-            </div>
+					<button type="submit" class="auth-btn">Reset Password</button>
+				</form>
 
-            <small class="mt-4 mb-4">
-                {% for message in app.flashes('email.error') %}
-                  <p style="color:red;"><b>{{message}}</b></p>
-                  
-                <br />
-                {% endfor %}
-            </small>
+				{% for message in app.flashes('success') %}
+					<div style="background: #E8F5E9; color: #2E7D32; padding: 24px; border-radius: 16px; margin-top: 24px; font-weight: 600; border: 1px solid #C8E6C9;">
+						<i class="fas fa-check-circle"></i><br>
+						{{ message }}
+					</div>
+				{% endfor %}
 
-            <small class="mt-4 mb-4">
-              {% for message in app.flashes('reset.error') %}
-                <p style="color:red;"><b>{{message}}</b></p>
-                
-                <br />
-              {% endfor %}
-           </small>
-
-            <small class="mt-4 mb-4">
-              {% for message in app.flashes('verify.error') %}
-                <p style="color:red;"><b>{{message}}</b></p>
-                
-                <br />
-              {% endfor %}
-           </small>
-
-            <small class="mt-4 mb-4">
-                {% for message in app.flashes('email.send') %}
-                  <p class="text-success"><b>{{message}}</b></p>
-                {% endfor %}
-
-                <br />
-            </small>
-
-
-			{{form_widget(form._token)}}
-
-            <div class="container-login100-form-btn">
-              <button class="login100-form-btn">
-                VERIFICATION
-              </button>
-            </div>
-
-            <div class="flex-col-c p-t-170 p-b-40">
-              <span class="txt1 p-b-9">
-                Vous avez un compte?
-              </span>
-
-              <a href="{{path('app_login')}}" class="txt3">
-                Connectez vous maintenant
-              </a>
-
-			  <span class="txt1 p-b-9">
-				<a href="{{path('index')}}">Retour sur l'acceuil <i class="fa fa-home"></i></a>
-			  </span>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-  {% endblock %}
+				<a href="{{path('app_login')}}" class="back-link">
+					<i class="fas fa-arrow-left"></i>
+					Back to login</a>
+			</div>
+		</div>
+	</body>
+{% endblock %}

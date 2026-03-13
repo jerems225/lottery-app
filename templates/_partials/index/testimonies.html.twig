@@ -1,0 +1,29 @@
+<section class="testimonies container" style="margin-top: 100px; margin-bottom: 100px;">
+	<div class="section-header" style="text-align: center; margin-bottom: 60px;">
+		<h2 style="font-weight: 900; font-size: 36px;">What Our Players Say</h2>
+		<div style="width: 60px; height: 4px; background: var(--primary-gold); margin: 16px auto; border-radius: 2px;"></div>
+		<p style="color: var(--text-muted); font-size: 18px;">Real stories from our lucky winners across the globe.</p>
+	</div>
+
+	<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 32px;">
+		{% for testimony in testimonies %}
+			<div class="glass-card" style="background: white; border-radius: 24px; padding: 40px; box-shadow: var(--shadow-lg); border: 1px solid rgba(0,0,0,0.03); position: relative;">
+				<div style="color: var(--primary-gold); font-size: 32px; opacity: 0.2; position: absolute; top: 20px; right: 30px;">
+					<i class="fas fa-quote-right"></i>
+				</div>
+				<div style="display: flex; align-items: center; gap: 16px; margin-bottom: 24px;">
+					<img src="https://i.pravatar.cc/100?u={{ testimony.id }}" alt="{{ testimony.user ? testimony.user.pseudo : 'Anonymous' }}" style="width: 60px; height: 60px; border-radius: 50%; border: 3px solid #F1F5F9;">
+					<div>
+						<strong style="display: block; font-size: 18px; color: #111827;">{{ testimony.user ? testimony.user.pseudo : 'Anonymous Player' }}</strong>
+						<span style="font-size: 14px; color: var(--text-muted);">Verified Winner</span>
+					</div>
+				</div>
+				<p style="color: #475569; line-height: 1.6; font-style: italic;">"{{ testimony.message }}"</p>
+			</div>
+		{% else %}
+			<div style="grid-column: 1 / -1; text-align: center; color: var(--text-muted); padding: 40px;">
+				<p>No testimonials yet. Be our first winner!</p>
+			</div>
+		{% endfor %}
+	</div>
+</section>

@@ -8,6 +8,34 @@ document.addEventListener('DOMContentLoaded', () => {
     const profileTrigger = document.getElementById('profile-trigger');
     const profilePopup = document.getElementById('profile-popup');
     const closePopup = document.querySelector('.close-popup');
+ 
+    // Mobile Menu Selectors
+    const burgerMenu = document.createElement('button');
+    burgerMenu.className = 'burger-menu';
+    burgerMenu.innerHTML = '<span></span><span></span><span></span>';
+    
+    const navContainer = document.querySelector('.nav-container');
+    const nav = document.querySelector('.nav');
+    
+    if (navContainer && nav) {
+        navContainer.insertBefore(burgerMenu, document.querySelector('.header-actions'));
+        
+        burgerMenu.addEventListener('click', () => {
+            burgerMenu.classList.toggle('active');
+            nav.classList.toggle('open');
+            document.body.style.overflow = nav.classList.contains('open') ? 'hidden' : '';
+        });
+
+        // Close menu on link click
+        const navLinks = nav.querySelectorAll('a');
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                burgerMenu.classList.remove('active');
+                nav.classList.remove('open');
+                document.body.style.overflow = '';
+            });
+        });
+    }
 
     // Toggle Wallet Modal
     walletBtn.addEventListener('click', () => {
@@ -92,15 +120,27 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Toggle Profile Popup
-    profileTrigger.addEventListener('click', () => {
-        profilePopup.style.display = profilePopup.style.display === 'block' ? 'none' : 'block';
-    });
+    if (profileTrigger && profilePopup) {
+        profileTrigger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            profilePopup.style.display = profilePopup.style.display === 'block' ? 'none' : 'block';
+        });
 
-    closePopup.addEventListener('click', () => {
-        profilePopup.style.display = 'none';
-    });
+        if (closePopup) {
+            closePopup.addEventListener('click', () => {
+                profilePopup.style.display = 'none';
+            });
+        }
 
-    // Close on click outside
+        // Close on click outside
+        document.addEventListener('click', (e) => {
+            if (!profilePopup.contains(e.target) && !profileTrigger.contains(e.target)) {
+                profilePopup.style.display = 'none';
+            }
+        });
+    }
+
+    // Close on click outside for wallet modal
     window.addEventListener('click', (e) => {
         if (e.target === walletModal) walletModal.style.display = 'none';
     });

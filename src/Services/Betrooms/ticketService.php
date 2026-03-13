@@ -12,45 +12,41 @@ use DateTimeImmutable;
 
 class ticketService
 {
-    public function __construct(private TicketRepository $ticketRepository,private BetroomRepository $betroomRepository)
+    public function __construct(private TicketRepository $ticketRepository, private BetroomRepository $betroomRepository)
     {
     }
 
     public function saveTicket(Ticket $ticket): void
     {
-        if($ticket instanceof Ticket)
-        {
-            $this->ticketRepository->save($ticket,true);
+        if ($ticket instanceof Ticket) {
+            $this->ticketRepository->save($ticket, true);
         }
     }
 
     public function getTicketsByBetRoomAndStatus(string $status, int $id)
     {
-        return $this->ticketRepository->findByStatusAndUser($status,$id,0);
+        return $this->ticketRepository->findByStatusAndUser($status, $id, 0);
     }
 
-    public function getAllResultsDate() : array
+    public function getAllResultsDate(): array
     {
         $tickets = $this->ticketRepository->findByStatusAndWinner("winner");
         $resultats_date = [];
-        foreach($tickets as $ticket)
-        {
-            array_push($resultats_date,$ticket->getUpdatedAt()->format('d M Y'));
+        foreach ($tickets as $ticket) {
+            array_push($resultats_date, $ticket->getUpdatedAt()->format('d M Y'));
         }
 
         return $resultats_date;
     }
 
-    public function getWinners(String $date) : array
+    public function getWinners(string $date): array
     {
         $tickets = $this->ticketRepository->findByStatusAndWinner("winner");
         $winners = [];
-        
-        foreach($tickets as $ticket)
-        {
-            if($ticket->getUpdatedAt()->format('d M Y') == $date && null!=$ticket->getUser())
-            {
-                array_push($winners,$ticket);
+
+        foreach ($tickets as $ticket) {
+            if ($ticket->getUpdatedAt()->format('d M Y') == $date && null != $ticket->getUser()) {
+                array_push($winners, $ticket);
             }
         }
 
@@ -63,9 +59,9 @@ class ticketService
      * Generate Ticket REFERENCE ID
      *
      * @param integer $_limit
-     * @return String
+     * @return string
      */
-    public function generateTicketId(int $_limit) : String
+    public function generateTicketId(int $_limit): string
     {
         $characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
         $randomString = '';
@@ -77,16 +73,20 @@ class ticketService
 
             $ticket = $this->ticketRepository->findByReference($randomString);
 
-        } while($ticket);
+        } while ($ticket);
 
-        return "CB-".$randomString;
+        return "CB-" . $randomString;
     }
 
-    public function createTicket(): void
+    public function createTicket(?Betroom $betroom = null): void
     {
-        $betrooms = $this->betroomRepository->findAll();
-        foreach($betrooms as $betroom)
-        {
+        if ($betroom) {
+            $betrooms = [$betroom];
+        } else {
+            $betrooms = $this->betroomRepository->findAll();
+        }
+
+        foreach ($betrooms as $betroom) {
             $maxTicket = $betroom->getMaxTicket();
             $i = 0;
             while ($i < $maxTicket) {
@@ -97,49 +97,44 @@ class ticketService
                 $ticket->setNumTicket($this->generateTicketId(3));
                 $ticket->setStatus("pending");
                 $ticket->setCreatedAt(new \DateTimeImmutable());
-        
-                $this->ticketRepository->save($ticket,true);
+
+                $this->ticketRepository->save($ticket, true);
                 $i++;
             }
         }
-        
-
     }
 
     public function removeTicket(Ticket $ticket)
     {
-        if($ticket instanceof Ticket)
-        {
-            $this->ticketRepository->remove($ticket,true);
+        if ($ticket instanceof Ticket) {
+            $this->ticketRepository->remove($ticket, true);
         }
     }
 
-    public function getTicketsByUser() : array
+    public function getTicketsByUser(): array
     {
         $tickets = $this->ticketRepository->findAll();
         $tickets_buy = [];
-        foreach($tickets as $ticket)
-        {
-            if($ticket->getUser())
-            {
-                array_push($tickets_buy,$ticket);
+        foreach ($tickets as $ticket) {
+            if ($ticket->getUser()) {
+                array_push($tickets_buy, $ticket);
             }
         }
 
         return $tickets_buy;
     }
 
-    public function getTicketsByStatus(String $status) : array
+    public function getTicketsByStatus(string $status): array
     {
         return $this->ticketRepository->findByStatusAndWinner($status);
     }
 
-    public function getTicketsByStatusAndDate(String $status, DateTimeImmutable $winAt, User $user) : array
+    public function getTicketsByStatusAndDate(string $status, DateTimeImmutable $winAt, User $user): array
     {
         return $this->ticketRepository->findByStatusAndDate($status, $winAt, $user);
     }
 
-    public function getTicketsByUserWinner(User $user,String $status) : array|null
+    public function getTicketsByUserWinner(User $user, string $status): array|null
     {
         return $this->ticketRepository->findByStatusAndUserWinner($user->getId(), $status);
     }
@@ -147,10 +142,8 @@ class ticketService
     public function removeUnSelectedTickets(): void
     {
         $tickets = $this->ticketRepository->findAll();
-        foreach($tickets as $ticket)
-        {
-            if(null == $ticket->getUser() &&  $ticket->getStatus() != "pending")
-            {
+        foreach ($tickets as $ticket) {
+            if (null == $ticket->getUser() && $ticket->getStatus() != "pending") {
                 $this->removeTicket($ticket);
             }
         }
