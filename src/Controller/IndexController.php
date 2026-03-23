@@ -92,9 +92,23 @@ class IndexController extends AbstractController
         return new Response($this->twig->render('affiliation/affiliation.html.twig'));
     }
 
-    #[Route('/lottery', name: 'lottery_page')]
-    public function lottery(): Response
+    #[Route('/lottery/{reference}', name: 'lottery_page')]
+    public function lottery(string $reference = null): Response
     {
-        return new Response($this->twig->render('lottery/lottery.html.twig'));
+        $settings = $this->roomSettingsRepository->findAll()[0];
+        $betroom = null;
+
+        if ($reference) {
+            $betroom = $this->betroomService->getBetroomByReference($reference);
+        } else {
+            $betrooms = $this->betroomService->allBetRoom();
+            $betroom = !empty($betrooms) ? $betrooms[0] : null;
+        }
+
+        return new Response($this->twig->render('lottery/lottery.html.twig', [
+            'betroom' => $betroom,
+            'roomSettings' => $settings,
+            'closedAt' => date_format($settings->getClosedAt(), "Y/m/d H:i:s")
+        ]));
     }
 }

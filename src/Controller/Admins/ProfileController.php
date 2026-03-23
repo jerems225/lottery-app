@@ -544,4 +544,25 @@ class ProfileController extends AbstractController
             'form' => $form->createView()
         ]));
     }
+
+    #[Route('/api/user/link-wallet', name: 'api.user.link_wallet', methods: ['POST'])]
+    public function linkWallet(Request $request): Response
+    {
+        $logger = $this->getUser();
+        if (!$logger instanceof User) {
+            return $this->json(['error' => 'Not authenticated'], 401);
+        }
+
+        $data = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
+        $address = $data['address'] ?? null;
+
+        if (!$address) {
+            return $this->json(['error' => 'Address is required'], 400);
+        }
+
+        $logger->setWalletAddress($address);
+        $this->userService->saveUser($logger);
+
+        return $this->json(['success' => true, 'address' => $address]);
+    }
 }

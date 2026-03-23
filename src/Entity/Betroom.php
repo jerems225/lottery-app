@@ -45,6 +45,22 @@ class Betroom
     #[ORM\Column(length: 255, options: ["default" => "open"])]
     private ?string $status = 'open';
 
+    #[ORM\Column(options: ["default" => false])]
+    private ?bool $isPrivate = false;
+
+    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?User $createdBy = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $minParticipants = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $image = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $closingAt = null;
+
     public function __construct()
     {
         $this->tickets = new ArrayCollection();
@@ -186,12 +202,77 @@ class Betroom
         if ($this->buy_ticket >= $this->max_ticket) {
             return 'sold out';
         }
+
+        if ($this->closingAt !== null && new \DateTimeImmutable() >= $this->closingAt) {
+            return 'closed';
+        }
+
         return $this->status;
     }
 
     public function setStatus(string $status): self
     {
         $this->status = $status;
+
+        return $this;
+    }
+
+    public function isIsPrivate(): ?bool
+    {
+        return $this->isPrivate;
+    }
+
+    public function setIsPrivate(bool $isPrivate): self
+    {
+        $this->isPrivate = $isPrivate;
+
+        return $this;
+    }
+
+    public function getCreatedBy(): ?User
+    {
+        return $this->createdBy;
+    }
+
+    public function setCreatedBy(?User $createdBy): self
+    {
+        $this->createdBy = $createdBy;
+
+        return $this;
+    }
+
+    public function getMinParticipants(): ?int
+    {
+        return $this->minParticipants;
+    }
+
+    public function setMinParticipants(?int $minParticipants): self
+    {
+        $this->minParticipants = $minParticipants;
+
+        return $this;
+    }
+
+    public function getImage(): ?string
+    {
+        return $this->image;
+    }
+
+    public function setImage(?string $image): self
+    {
+        $this->image = $image;
+
+        return $this;
+    }
+
+    public function getClosingAt(): ?\DateTimeImmutable
+    {
+        return $this->closingAt;
+    }
+
+    public function setClosingAt(?\DateTimeImmutable $closingAt): self
+    {
+        $this->closingAt = $closingAt;
 
         return $this;
     }

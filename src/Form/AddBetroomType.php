@@ -15,15 +15,31 @@ class AddBetroomType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('num_betroom',TextType::class)
-            ->add('max_ticket',IntegerType::class)
-            ->add('awards',MoneyType::class,[
+            ->add('num_betroom', TextType::class)
+            ->add('max_ticket', IntegerType::class)
+            ->add('awards', MoneyType::class, [
                 'currency' => "USD",
                 'invalid_message' => "Le montant doit être un nombre, ex: 10"
             ])
-            ->add('ticket_price',MoneyType::class,[
+            ->add('ticket_price', MoneyType::class, [
                 'currency' => "USD",
                 'invalid_message' => "Le montant doit être un nombre, ex: 10"
+            ])
+            ->add('image', \Symfony\Component\Form\Extension\Core\Type\FileType::class, [
+                'label' => 'Image de la salle',
+                'mapped' => false,
+                'required' => false,
+                'constraints' => [
+                    new \Symfony\Component\Validator\Constraints\Image([
+                        'maxSize' => '2M',
+                    ])
+                ],
+            ])
+            ->add('closingAt', \Symfony\Component\Form\Extension\Core\Type\DateTimeType::class, [
+                'label' => 'Temps de fermeture',
+                'widget' => 'single_text',
+                'required' => false,
+                'input' => 'datetime_immutable',
             ])
         ;
     }

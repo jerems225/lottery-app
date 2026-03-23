@@ -18,14 +18,18 @@
 		{% for betroom in betrooms %}
 			<div class="lottery-card">
 				<div class="card-image">
-					{% if loop.index == 1 %}
-						<img src="https://images.unsplash.com/photo-1596838132731-3301c3fd4317?q=80&w=600&auto=format&fit=crop" alt="Golden Slot">
-					{% elseif loop.index == 2 %}
-						<img src="https://images.unsplash.com/photo-1639762681485-074b7f938ba0?q=80&w=1200&auto=format&fit=crop" alt="Silver Slot">
-					{% elseif loop.index == 3 %}
-						<img src="https://images.unsplash.com/photo-1518133910546-b6c2fb7d79e3?q=80&w=600&auto=format&fit=crop" alt="Emerald draw">
+					{% if betroom.image %}
+						<img src="{{ asset('uploads/betrooms/' ~ betroom.image) }}" alt="{{ betroom.numBetroom }}">
 					{% else %}
-						<img src="https://images.unsplash.com/photo-1634704784915-aacf363b021f?q=80&w=600&auto=format&fit=crop" alt="Lottery Draw">
+						{% if loop.index == 1 %}
+							<img src="https://images.unsplash.com/photo-1596838132731-3301c3fd4317?q=80&w=600&auto=format&fit=crop" alt="Golden Slot">
+						{% elseif loop.index == 2 %}
+							<img src="https://images.unsplash.com/photo-1639762681485-074b7f938ba0?q=80&w=1200&auto=format&fit=crop" alt="Silver Slot">
+						{% elseif loop.index == 3 %}
+							<img src="https://images.unsplash.com/photo-1518133910546-b6c2fb7d79e3?q=80&w=600&auto=format&fit=crop" alt="Emerald draw">
+						{% else %}
+							<img src="https://images.unsplash.com/photo-1634704784915-aacf363b021f?q=80&w=600&auto=format&fit=crop" alt="Lottery Draw">
+						{% endif %}
 					{% endif %}
 				</div>
 				<div class="card-info">
@@ -34,7 +38,7 @@
 						<span class="ticket-count">{{ betroom.maxTicket - betroom.buyTicket }}</span>
 						<span class="label">Tickets Remaining</span>
 					</div>
-					<div class="countdown" data-date-end="{{ closedAt }}">
+					<div class="countdown" data-date-end="{{ betroom.closingAt ? betroom.closingAt|date('Y/m/d H:i:s') : closedAt }}">
 						<div class="timer-unit">
 							<span class="val">00</span>
 							<span class="unit">Days</span>
@@ -56,7 +60,7 @@
 						<div class="price-tag">Ticket Price:
 							<span class="price">{{ betroom.ticketPrice }}$</span>
 						</div>
-						<button class="buy-btn" onclick="window.location.href='{{ path('lottery_page') }}'">Buy Now</button>
+						<button class="buy-btn" onclick="window.location.href='{{ path('lottery_page', {reference: betroom.reference}) }}'">Buy Now</button>
 					</div>
 				</div>
 			</div>

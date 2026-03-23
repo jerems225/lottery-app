@@ -21,7 +21,8 @@ class BetroomController extends AbstractController
         private Environment $twig,
         private betroomService $betroomService,
         private ticketService $ticketService,
-        private RoomSettingsRepository $roomSettingsRepository
+        private RoomSettingsRepository $roomSettingsRepository,
+        private \Symfony\Component\String\Slugger\SluggerInterface $slugger
     ) {
     }
 
@@ -39,6 +40,23 @@ class BetroomController extends AbstractController
         $form = $this->createForm(AddBetroomType::class, $betroom);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
+            $imageFile = $form->get('image')->getData();
+            if ($imageFile) {
+                $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
+                $safeFilename = $this->slugger->slug($originalFilename);
+                $newFilename = $safeFilename . '-' . uniqid() . '.' . $imageFile->guessExtension();
+
+                try {
+                    $imageFile->move(
+                        $this->getParameter('betroom_images_directory'),
+                        $newFilename
+                    );
+                } catch (\Symfony\Component\HttpFoundation\File\Exception\FileException $e) {
+                    // ... handle exception if something happens during file upload
+                }
+                $betroom->setImage($newFilename);
+            }
+
             $betroom->setReference(uniqid());
             $betroom->setBuyTicket(0);
             $betroom->setCreatedAt(new \DateTimeImmutable());
@@ -123,6 +141,23 @@ class BetroomController extends AbstractController
         $form = $this->createForm(AddBetroomType::class, $betroom);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
+            $imageFile = $form->get('image')->getData();
+            if ($imageFile) {
+                $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
+                $safeFilename = $this->slugger->slug($originalFilename);
+                $newFilename = $safeFilename . '-' . uniqid() . '.' . $imageFile->guessExtension();
+
+                try {
+                    $imageFile->move(
+                        $this->getParameter('betroom_images_directory'),
+                        $newFilename
+                    );
+                } catch (\Symfony\Component\HttpFoundation\File\Exception\FileException $e) {
+                    // ... handle exception if something happens during file upload
+                }
+                $betroom->setImage($newFilename);
+            }
+
             $this->AddOrRemoveTicket($old_max_ticket, $form, $betroom);
             $betroom->setUpdatedAt(new \DateTimeImmutable());
 

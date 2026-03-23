@@ -88,34 +88,70 @@ document.addEventListener('DOMContentLoaded', () => {
     setInterval(updateCountdowns, 1000);
     updateCountdowns(); // Initial call
 
-    // Wallet Connection Simulation
-    const walletOptions = document.querySelectorAll('.wallet-option');
+    // --- METAMASK LINKING LOGIC ---
+    async function connectMetaMask() {
+        if (typeof window.ethereum === 'undefined') {
+            alert('MetaMask is not installed. Please install it to continue.');
+            return null;
+        }
+        try {
+            const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+            return accounts[0];
+        } catch (error) {
+            console.error('MetaMask Error:', error);
+            return null;
+        }
+    }
+
+    async function saveWalletToDB(address) {
+        try {
+            const response = await fetch('/api/user/link-wallet', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ address: address })
+            });
+            return await response.json();
+        } catch (error) {
+            console.error('DB Sync Error:', error);
+            return { error: 'Failed to sync with database' };
+        }
+    }
+
+    const walletOptions = document.querySelectorAll('.wallet-option[data-wallet="metamask"]');
     walletOptions.forEach(option => {
         option.addEventListener('click', async () => {
-            const walletName = option.querySelector('strong').innerText;
-
-            // UI Feedback: Start Connecting
             option.classList.add('connecting');
-            const originalText = option.querySelector('span').innerText;
-            option.querySelector('span').innerText = 'Connecting to ' + walletName + '...';
+            const statusSpan = option.querySelector('.wallet-addr-display');
+            const originalText = statusSpan ? statusSpan.innerText : '';
+            if (statusSpan) statusSpan.innerText = 'Connecting to MetaMask...';
 
-            // Simulate Network Delay
-            await new Promise(resolve => setTimeout(resolve, 1500));
-
-            // Successful Connection Simulation
+            const address = await connectMetaMask();
+            if (address) {
+                if (statusSpan) statusSpan.innerText = 'Saving to profile...';
+                const sync = await saveWalletToDB(address);
+                
+                if (sync.success) {
+                    // Update Header
+                    const walletBtn = document.getElementById('wallet-connect-btn');
+                    if (walletBtn) {
+                        const short = `${address.substring(0, 6)}...${address.substring(address.length - 4)}`;
+                        const span = walletBtn.querySelector('span');
+                        if (span) span.innerText = short;
+                        walletBtn.style.background = 'linear-gradient(135deg, #059669, #047857)';
+                    }
+                    if (statusSpan) statusSpan.innerText = 'Linked successfully!';
+                    setTimeout(() => {
+                        const walletModal = document.getElementById('wallet-modal');
+                        if (walletModal) walletModal.style.display = 'none';
+                    }, 1000);
+                } else {
+                    alert('Sync error: ' + (sync.error || 'Unknown error'));
+                    if (statusSpan) statusSpan.innerText = originalText;
+                }
+            } else {
+                if (statusSpan) statusSpan.innerText = originalText;
+            }
             option.classList.remove('connecting');
-            option.querySelector('span').innerText = originalText;
-            walletModal.style.display = 'none';
-
-            // Update Header Button
-            walletBtn.innerHTML = `
-                <i class="fas fa-check-circle"></i>
-                <span>Connected: 0x...7b29</span>
-            `;
-            walletBtn.style.background = 'linear-gradient(135deg, #059669, #047857)'; // Green for connected
-
-            // Show Toast or Alert
-            alert(walletName + ' connected successfully!');
         });
     });
 

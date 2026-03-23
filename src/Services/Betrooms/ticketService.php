@@ -147,6 +147,11 @@ class ticketService
                 $this->removeTicket($ticket);
             }
         }
+    }
 
+    public function hasTicketInRoom(User $user, Betroom $room): bool
+    {
+        $tickets = $this->ticketRepository->findByUserAndBetroom($user->getId(), $room->getId());
+        return count($tickets) > 0;
     }
 }

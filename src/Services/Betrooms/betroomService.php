@@ -16,10 +16,15 @@ use DateTimeZone;
 
 class betroomService
 {
-    public function __construct(private BetroomRepository $betroomRepository,private TicketRepository $ticketRepository,
-    private ticketService $ticketService,private walletService $walletService,private sendemailService $sendemailService,
-    private UserService $userService, private RoomSettingsRepository $roomSettingsRepository)
-    {
+    public function __construct(
+        private BetroomRepository $betroomRepository,
+        private TicketRepository $ticketRepository,
+        private ticketService $ticketService,
+        private walletService $walletService,
+        private sendemailService $sendemailService,
+        private UserService $userService,
+        private RoomSettingsRepository $roomSettingsRepository
+    ) {
     }
 
     /**
@@ -28,13 +33,37 @@ class betroomService
      * @param Betroom $betroom
      * @return void
      */
-    public function saveBetRoom(Betroom $betroom) : void
+    public function saveBetRoom(Betroom $betroom): void
     {
-        if($betroom instanceof Betroom)
-        {
-
-            $this->betroomRepository->save($betroom,true);
+        if ($betroom instanceof Betroom) {
+            if ($betroom->getCreatedAt() === null) {
+                $betroom->setCreatedAt(new \DateTimeImmutable());
+            }
+            $betroom->setUpdatedAt(new \DateTimeImmutable());
+            $this->betroomRepository->save($betroom, true);
         }
+    }
+
+    /**
+     * Create a private room
+     */
+    public function createPrivateRoom(User $user, float $betAmount, int $minParticipants): Betroom
+    {
+        $betroom = new Betroom();
+        $betroom->setIsPrivate(true);
+        $betroom->setCreatedBy($user);
+        $betroom->setTicketPrice($betAmount);
+        $betroom->setMinParticipants($minParticipants);
+        $betroom->setMaxTicket($minParticipants); // For private rooms, max tickets = min participants
+        $betroom->setBuyTicket(0);
+        $betroom->setStatus('open');
+        $betroom->setReference(uniqid('PRIV-'));
+        $betroom->setNumBetroom(strval(rand(1000, 9999)));
+        $betroom->setAwards($betAmount * $minParticipants * 0.75); // Potential winner reward
+
+        $this->saveBetRoom($betroom);
+
+        return $betroom;
     }
 
     /**
@@ -45,14 +74,12 @@ class betroomService
      */
     public function removeBetRoom(Betroom $betroom): void
     {
-        if($betroom instanceof Betroom)
-        {
+        if ($betroom instanceof Betroom) {
             $tickets = $betroom->getTickets();
-            foreach($tickets as $ticket)
-            {
+            foreach ($tickets as $ticket) {
                 $this->ticketService->removeTicket($ticket);
             }
-            $this->betroomRepository->remove($betroom,true);
+            $this->betroomRepository->remove($betroom, true);
         }
     }
 
@@ -64,14 +91,12 @@ class betroomService
      */
     private function setTicketStatus(Betroom $betroom)
     {
-        if($betroom instanceof Betroom)
-        {
+        if ($betroom instanceof Betroom) {
             $tickets = $this->ticketRepository->findByStatus("pending", $betroom->getId());
-            foreach($tickets as $ticket)
-            {
+            foreach ($tickets as $ticket) {
                 $ticket->setStatus("loser");
                 $ticket->setUpdatedAt(new \DateTimeImmutable());
-                $this->ticketRepository->save($ticket,true);
+                $this->ticketRepository->save($ticket, true);
             }
         }
     }
@@ -80,19 +105,16 @@ class betroomService
      * get tickets buy by betroom
      *
      * @param array $betrooms
-     * @return void
+     * @return array
      */
-    private function currentBetRoomTickets(array $betrooms)
+    private function currentBetRoomTickets(array $betrooms): array
     {
-        foreach($betrooms as $betroom)
-        {
+        $current_tickets = [];
+        foreach ($betrooms as $betroom) {
             $tickets = $betroom->getTickets();
-            $current_tickets = [];
-            foreach($tickets as $ticket)
-            {
-                if($ticket->getStatus() == "pending")
-                {
-                    array_push($current_tickets,$ticket);
+            foreach ($tickets as $ticket) {
+                if ($ticket->getStatus() == "pending") {
+                    array_push($current_tickets, $ticket);
                 }
             }
         }
@@ -106,23 +128,21 @@ class betroomService
      * @param Betroom $betroom
      * @return void
      */
-    public function loadWinner(Betroom $betroom) :void
+    public function loadWinner(Betroom $betroom): void
     {
         $roomSettings = $this->roomSettingsRepository->findAll()[0];
-        if($betroom instanceof Betroom)
-        {
+        if ($betroom instanceof Betroom) {
             $tickets = $this->ticketRepository->findByStatus("pending", $betroom->getId());
-            if(!empty($tickets))
-            {
+            if (!empty($tickets)) {
                 $winner = null;
-                $index = rand(0, count($tickets) -1);
+                $index = rand(0, count($tickets) - 1);
                 $winner = $tickets[$index];
                 $winner->setStatus("winner");
                 $winner->setUpdatedAt(new \DateTimeImmutable());
                 $winner->setWinAt($roomSettings->getClosedAt());
-                
-                $this->ticketRepository->save($winner,true);
-                
+
+                $this->ticketRepository->save($winner, true);
+
                 //set tickets status
                 $this->setTicketStatus($betroom);
 
@@ -130,40 +150,56 @@ class betroomService
                 $betroom->setBuyTicket(0);
                 $this->saveBetRoom($betroom);
 
-                if(null!==$winner->getUser())
-                {
+                if (null !== $winner->getUser()) {
                     $user_wallet = $winner->getUser()->getWallet();
-                    $user_wallet->setBalance($user_wallet->getBalance() + $winner->getBetroom()->getAwards() + $user_wallet->getBonus());
-                    $this->walletService->saveWallet($user_wallet);
 
-                    $referrer_code = $winner->getUser()->getReferrer();
-                    //get users by referralCode
-                    if($referrer_code)
-                    {
-                        $user = $this->userService->getUserByReferralCode($referrer_code);
-                        //if user exist set his balance by 10% of ticket betroom awards
-                        if(count($user) > 0)
-                        {
-                            $referrer = $user[0];
-                            $referrer_wallet = $referrer->getWallet();
-                            $referrer_percent = ($winner->getBetroom()->getAwards() * 10 ) / 100;
-                            $referrer_wallet->setBalance($referrer->getWallet()->getBalance() + $referrer_percent);
-                            $this->walletService->saveWallet($referrer_wallet);
+                    if ($betroom->isIsPrivate()) {
+                        $totalPot = $betroom->getTicketPrice() * count($tickets);
+                        $winnerShare = $totalPot * 0.75;
+                        $creatorShare = $totalPot * 0.05;
 
-                            $user_wallet->setBalance($user_wallet->getBalance() - $referrer_percent);
-                            $this->walletService->saveWallet($user_wallet);
+                        $user_wallet->setBalance($user_wallet->getBalance() + $winnerShare);
+                        $this->walletService->saveWallet($user_wallet);
 
-                            //sendFeeback
-                            $message = "Vous êtes l'heureux parrain du gagnant de la salle de tirages ".$winner->getBetroom()->getNumBetroom()." parmis tant d'autres, FELICITATIONS 🎉🎉🎉. Vous gagnez la somme de ".$referrer_percent." \$USD";
-                            $action = "PARRAIN DU GAGNANT DU JOUR - ".$winner->getBetroom()->getNumBetroom();
-                            $this->sendemailService->sendFeedBack($referrer,$message,$action);
+                        if ($betroom->getCreatedBy()) {
+                            $creatorWallet = $betroom->getCreatedBy()->getWallet();
+                            $creatorWallet->setBalance($creatorWallet->getBalance() + $creatorShare);
+                            $this->walletService->saveWallet($creatorWallet);
+                        }
+
+                        // Set awards for logging/display
+                        $betroom->setAwards($winnerShare);
+                    } else {
+                        $user_wallet->setBalance($user_wallet->getBalance() + $winner->getBetroom()->getAwards() + $user_wallet->getBonus());
+                        $this->walletService->saveWallet($user_wallet);
+
+                        $referrer_code = $winner->getUser()->getReferrer();
+                        //get users by referralCode
+                        if ($referrer_code) {
+                            $user = $this->userService->getUserByReferralCode($referrer_code);
+                            //if user exist set his balance by 10% of ticket betroom awards
+                            if (count($user) > 0) {
+                                $referrer = $user[0];
+                                $referrer_wallet = $referrer->getWallet();
+                                $referrer_percent = ($winner->getBetroom()->getAwards() * 10) / 100;
+                                $referrer_wallet->setBalance($referrer->getWallet()->getBalance() + $referrer_percent);
+                                $this->walletService->saveWallet($referrer_wallet);
+
+                                $user_wallet->setBalance($user_wallet->getBalance() - $referrer_percent);
+                                $this->walletService->saveWallet($user_wallet);
+
+                                //sendFeeback
+                                $message = "Vous êtes l'heureux parrain du gagnant de la salle de tirages " . $winner->getBetroom()->getNumBetroom() . " parmis tant d'autres, FELICITATIONS 🎉🎉🎉. Vous gagnez la somme de " . $referrer_percent . " \$USD";
+                                $action = "PARRAIN DU GAGNANT DU JOUR - " . $winner->getBetroom()->getNumBetroom();
+                                $this->sendemailService->sendFeedBack($referrer, $message, $action);
+                            }
                         }
                     }
 
                     //sendFeeback
-                    $message = "Vous êtes l'heureux gagnant de la salle de tirages ".$winner->getBetroom()->getNumBetroom()." parmis tant d'autres, FELICITATIONS 🎉🎉🎉🎉 ";
-                    $action = "GAGNANT DU JOUR - ".$winner->getBetroom()->getNumBetroom();
-                    $this->sendemailService->sendFeedBack($winner->getUser(),$message,$action);
+                    $message = "Vous êtes l'heureux gagnant de la salle de tirages " . $winner->getBetroom()->getNumBetroom() . " parmis tant d'autres, FELICITATIONS 🎉🎉🎉🎉 ";
+                    $action = "GAGNANT DU JOUR - " . $winner->getBetroom()->getNumBetroom();
+                    $this->sendemailService->sendFeedBack($winner->getUser(), $message, $action);
                 }
             }
         }
@@ -173,8 +209,7 @@ class betroomService
     public function loadWinners()
     {
         $betrooms = $this->allBetRoom();
-        foreach($betrooms as $betroom)
-        {
+        foreach ($betrooms as $betroom) {
             $this->loadWinner($betroom);
         }
     }
@@ -184,7 +219,7 @@ class betroomService
      *
      * @return array
      */
-    public function allBetRoom() : array
+    public function allBetRoom(): array
     {
         $betrooms = $this->betroomRepository->findAll();
         $this->currentBetRoomTickets($betrooms);
@@ -198,35 +233,29 @@ class betroomService
      * @param Betroom $betroom
      * @return object|null
      */
-    public function getTicketWinner(Betroom $betroom) : object|null
+    public function getTicketWinner(Betroom $betroom): object|null
     {
-        if($betroom instanceof Betroom)
-        {
+        if ($betroom instanceof Betroom) {
             $tickets = $betroom->getTickets();
-            $exist_ticket = false;
-            $date = new \DateTime();
-            $current_date = date_parse($date->format('Y-m-d H:i:s'));
-            foreach($tickets as $ticket)
-            {
-                if($ticket->getStatus() == "winner" && $ticket->getUpdatedAt()->format('Y-m-d H') == $betroom->getUpdatedAt()->format('Y-m-d H') && null!=$ticket->getUser())
-                {
-                    $exist_ticket = true;
+            foreach ($tickets as $ticket) {
+                if ($ticket->getStatus() == "winner" && $ticket->getUpdatedAt() && $betroom->getUpdatedAt() && $ticket->getUpdatedAt()->format('Y-m-d H') == $betroom->getUpdatedAt()->format('Y-m-d H') && null != $ticket->getUser()) {
                     return $ticket;
                 }
             }
-
-            if(!$exist_ticket)
-            {
-                return null;
-            }
         }
+        return null;
     }
 
 
-    public function getCurrentWinners(DateTimeImmutable $winAt, User $user) : array
+    public function getCurrentWinners(DateTimeImmutable $winAt, User $user): array
     {
         $tickets = $this->ticketService->getTicketsByStatusAndDate("winner", $winAt, $user);
 
         return $tickets;
+    }
+
+    public function getBetroomByReference(string $reference): ?Betroom
+    {
+        return $this->betroomRepository->findOneBy(['reference' => $reference]);
     }
 }

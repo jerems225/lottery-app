@@ -8,12 +8,29 @@
 		</a>
 		<nav class="nav">
 			<ul>
-				<li><a href="{{path('index')}}"class="{%if app.request.get('_route')=='index'%}active{%endif%}">Home</a></li>
-				<li><a href="{{path('lottery_page')}}"class="{%if app.request.get('_route')=='lottery_page'%}active{%endif%}">Lottery</a></li>
-				<li><a href="{{path('betrooms')}}"class="{%if app.request.get('_route')=='betrooms'%}active{%endif%}">Rooms</a></li>
-				<li><a href="{{path('affiliation_page')}}"class="{%if app.request.get('_route')=='affiliation_page'%}active{%endif%}">Affiliation</a></li>
-				<li><a href="{{path('faq_page')}}"class="{%if app.request.get('_route')=='faq_page'%}active{%endif%}">Faq</a></li>
-				<li><a href="{{path('contact')}}"class="{%if app.request.get('_route')=='contact'%}active{%endif%}">Contact</a></li>
+				<li>
+					<a href="{{path('index')}}" class="{%if app.request.get('_route')=='index'%}active{%endif%}">Home</a>
+				</li>
+				<li>
+					<a href="{{path('lottery_page')}}" class="{%if app.request.get('_route')=='lottery_page'%}active{%endif%}">Lottery</a>
+				</li>
+				<li>
+					<a href="{{path('betrooms')}}" class="{%if app.request.get('_route')=='betrooms'%}active{%endif%}">Rooms</a>
+				</li>
+				<li>
+					<a href="{{path('affiliation_page')}}" class="{%if app.request.get('_route')=='affiliation_page'%}active{%endif%}">Affiliation</a>
+				</li>
+				<li>
+					<a href="{{path('faq_page')}}" class="{%if app.request.get('_route')=='faq_page'%}active{%endif%}">Faq</a>
+				</li>
+				<li>
+					<a href="{{path('contact')}}" class="{%if app.request.get('_route')=='contact'%}active{%endif%}">Contact</a>
+				</li>
+				{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_SUPERADMIN') %}
+					<li>
+						<a href="{{path('admins.index')}}" class="{% if app.request.get('_route') starts with 'admins.' %}active{% endif %}" style="color: var(--primary-gold); font-weight: 800;">Dashboard</a>
+					</li>
+				{% endif %}
 			</ul>
 		</nav>
 		<div
@@ -95,8 +112,10 @@
 
 				<button class="wallet-btn" id="wallet-connect-btn">
 					<i class="fas fa-wallet"></i>
-					<span>
-						{% if app.user.wallet %}
+					<span style="font-family: monospace;">
+						{% if app.user.walletAddress %}
+							{{ app.user.walletAddress|slice(0, 6) ~ '...' ~ app.user.walletAddress|slice(-4) }}
+						{% elseif app.user.wallet %}
 							{{ app.user.wallet.balance|number_format(2, '.', ',') }}
 							$
 						{% else %}
@@ -120,27 +139,53 @@
 	<div class="modal">
 		<button class="close-modal">&times;</button>
 		<div class="modal-header">
-			<div class="wallet-icon-box">
-				<i class="fas fa-wallet"></i>
+			<div class="wallet-icon-box site-wallet">
+				<i class="fas fa-hand-holding-usd"></i>
 			</div>
-			<h3>Connect Wallet</h3>
-			<p>Select your favorite wallet to start playing</p>
+			<h3>Recharge Your Account</h3>
+			<p>Choose your preferred method to add funds to your BitLOT wallet.</p>
 		</div>
 		<div class="wallet-options">
-			<button class="wallet-option" data-wallet="metamask">
-				<img src="https://upload.wikimedia.org/wikipedia/commons/3/36/MetaMask_Logo.svg" alt="Metamask">
-				<div class="option-text">
-					<strong>Metamask</strong>
-					<span>Connect To Your Metamask Wallet</span>
+			{% if app.user %}
+				<!-- Recharge Options -->
+				<button class="wallet-option" onclick="window.location.href='{{ path('user.rechargement.usdt.trc20', {pseudo: app.user.pseudo}) }}'">
+					<div class="wallet-icon-box crypto">
+						<i class="fab fa-ethereum"></i>
+					</div>
+					<div class="option-text">
+						<strong>USDT Deposit</strong>
+						<span>Recharge via TRC20 / ERC20</span>
+					</div>
+				</button>
+
+				<!-- MetaMask Linking -->
+				<button class="wallet-option" data-wallet="metamask">
+					<img src="https://upload.wikimedia.org/wikipedia/commons/3/36/MetaMask_Logo.svg" alt="Metamask">
+					<div class="option-text">
+						<strong>{{ app.user.walletAddress ? 'Update MetaMask' : 'Link MetaMask' }}</strong>
+						<span class="wallet-addr-display">
+							{{ app.user.walletAddress ? app.user.walletAddress|slice(0, 6) ~ '...' ~ app.user.walletAddress|slice(-4) : 'Securely link your Web3 identity' }}
+						</span>
+					</div>
+				</button>
+
+				<button class="wallet-option" onclick="window.location.href='{{ path('user.rechargement.request', {pseudo: app.user.pseudo}) }}'">
+					<div class="wallet-icon-box manual">
+						<i class="fas fa-university"></i>
+					</div>
+					<div class="option-text">
+						<strong>Other Methods</strong>
+						<span>Momo, Bank Transfer, etc.</span>
+					</div>
+				</button>
+			{% else %}
+				<div class="login-prompt" style="text-align:center; padding: 30px; width: 100%;">
+					<i class="fas fa-lock" style="font-size: 3rem; color: var(--primary-gold); margin-bottom: 20px;"></i>
+					<h3>Access Restricted</h3>
+					<p>Please login or create an account to recharge your BitLOT wallet.</p>
+					<a href="{{ path('app_login') }}" class="buy-btn" style="display:inline-block; margin-top:20px; text-decoration:none; width: auto; padding: 12px 30px;">Login Now</a>
 				</div>
-			</button>
-			<button class="wallet-option" data-wallet="walletconnect">
-				<img src="https://raw.githubusercontent.com/WalletConnect/walletconnect-assets/master/Logo/Blue%20(Default)/Logo.svg" alt="WalletConnect">
-				<div class="option-text">
-					<strong>Walletconnect</strong>
-					<span>Scan With Walletconnect To Connect</span>
-				</div>
-			</button>
+			{% endif %}
 		</div>
 	</div>
 </div>

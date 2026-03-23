@@ -2,7 +2,6 @@
 
 namespace App\Controller\Betrooms;
 
-use ApiPlatform\Core\Annotation\ApiResource;
 use App\Entity\Betroom;
 use App\Entity\Ticket;
 use App\Form\TicketType;
@@ -18,7 +17,6 @@ use Symfony\Component\Routing\Annotation\Route;
 use Twig\Environment;
 
 
-#[ApiResource(collectionOperations: [], itemOperations: ["get", "/loadwinners"])]
 class BetroomController extends AbstractController
 {
     public function __construct(
@@ -108,6 +106,7 @@ class BetroomController extends AbstractController
             return $this->redirectToRoute('betrooms');
         }
         $roomSettings = $settings[0];
+        /** @var \App\Entity\User $logger */
         $logger = $this->getUser();
         if (!$logger) {
             return $this->redirectToRoute('app_login');
@@ -115,11 +114,17 @@ class BetroomController extends AbstractController
             return $this->redirectToRoute('betrooms');
         }
 
-        if ($roomSettings->getStatus() == "closed") {
+        if ($roomSettings->getStatus() == "closed" && !$betroom->isIsPrivate()) {
             return $this->redirectToRoute('betrooms');
         }
 
-        $resultPaymentTicket = $this->walletService->TicketPayment($logger, $betroom);
+        // Security: One entry per private room
+        if ($betroom->isIsPrivate() && $this->ticketService->hasTicketInRoom($logger, $betroom)) {
+            $this->addFlash('ticket', 'Vous avez déjà un ticket dans cette salle privée.');
+            return $this->redirectToRoute('betrooms');
+        }
+
+        $resultPaymentTicket = $this->walletService->TicketPayment($logger, $betroom, $this->userService);
         if ($resultPaymentTicket['status']) {
             $ticket->setUser($logger);
             $ticket->setUpdatedAt(new \DateTimeImmutable());
@@ -128,7 +133,16 @@ class BetroomController extends AbstractController
 
             $betroom->setBuyTicket($betroom->getBuyTicket() + 1);
             $this->betroomService->saveBetRoom($betroom);
-            $this->addFlash('ticket', 'Merci d\'avoir pris part au tirage de la salle ' . $betroom->getNumBetroom() . ', rendez-vous en fin de journée pour les résultats. Augmentez vos chances en prenant un autre ticket!');
+
+            // Automatic draw for private rooms
+            if ($betroom->isIsPrivate() && $betroom->getBuyTicket() >= $betroom->getMinParticipants()) {
+                $betroom->setStatus('sold out');
+                $this->betroomService->saveBetRoom($betroom);
+                $this->betroomService->loadWinner($betroom);
+                $this->addFlash('ticket', 'Le tirage de la salle ' . $betroom->getNumBetroom() . ' a été effectué !');
+            } else {
+                $this->addFlash('ticket', 'Merci d\'avoir pris part au tirage de la salle ' . $betroom->getNumBetroom() . ', rendez-vous en fin de journée pour les résultats. Augmentez vos chances en prenant un autre ticket!');
+            }
 
             return $this->redirectToRoute('betrooms');
         } else {
@@ -137,7 +151,38 @@ class BetroomController extends AbstractController
                 'reference' => $betroom->getReference()
             ]);
         }
+    }
 
+    #[Route('/rooms/create-private', name: 'betrooms.create_private', methods: ['POST'])]
+    public function CreatePrivateRoom(Request $request): Response
+    {
+        /** @var \App\Entity\User $user */
+        $user = $this->getUser();
+        if (!$user) {
+            return $this->redirectToRoute('app_login');
+        }
+
+        $balance = $user->getWallet()->getBalance();
+        if ($balance < 10) {
+            $this->addFlash('error', 'Vous devez avoir au moins 10 $ pour créer une salle.');
+            return $this->redirectToRoute('betrooms');
+        }
+
+        $betAmount = (float) $request->request->get('bet_amount');
+        $minParticipants = (int) $request->request->get('min_participants');
+
+        if ($minParticipants < 2) {
+            $this->addFlash('error', 'Le nombre minimum de participants doit être supérieur ou égal à 2.');
+            return $this->redirectToRoute('betrooms');
+        }
+
+        $room = $this->betroomService->createPrivateRoom($user, $betAmount, $minParticipants);
+
+        // Create initial tickets for this room
+        $this->ticketService->createTicket($room);
+
+        $this->addFlash('success', 'Salle privée créée avec succès !');
+        return $this->redirectToRoute('betrooms');
     }
 
 
