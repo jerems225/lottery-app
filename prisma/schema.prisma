@@ -1,0 +1,154 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id            String          @id @default(cuid())
+  name          String?
+  email         String?         @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?
+  role          String          @default("USER")
+  walletAddress String?         @unique
+  balance       Float           @default(0)
+  accounts      Account[]
+  sessions      Session[]
+  // Optional for WebAuthn support
+  Authenticator Authenticator[]
+
+  lotteries     Lottery[]
+  bets          Bet[]
+  referrals     User[]          @relation("UserReferrals")
+  referredBy    User?           @relation("UserReferrals", fields: [referredById], references: [id])
+  referredById  String?
+
+  commissionsReceived  Commission[] @relation("CommissionsReceived")
+  commissionsGenerated Commission[] @relation("CommissionsGenerated")
+
+  verificationCode String?
+  isVerified      Boolean         @default(false)
+
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// Optional for WebAuthn support
+model Authenticator {
+  credentialID         String  @id
+  userId               String
+  providerAccountId    String
+  credentialPublicKey  String
+  counter              Int
+  credentialDeviceType String
+  credentialBackedUp   Boolean
+  transports           String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, credentialID])
+}
+
+// Project Specific Models
+model Lottery {
+  id                 String   @id @default(cuid())
+  title              String
+  description        String?
+  price              Float
+  jackpot            Float
+  endsAt             DateTime
+  status             String   @default("ACTIVE") // ACTIVE, COMPLETED, CANCELLED
+  isPrivate          Boolean  @default(false)
+  
+  maxTickets         Int      @default(1000)
+  maxTicketsPerUser  Int      @default(50)
+  currentTicketCount Int      @default(0)
+  
+  creatorId          String?
+  creator            User?    @relation(fields: [creatorId], references: [id])
+  
+  bets               Bet[]
+  winnerId           String?
+  
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}
+
+model Bet {
+  id           String   @id @default(cuid())
+  amount       Float
+  ticketsCount Int      @default(1)
+  txHash       String?
+  status       String   @default("PENDING") // PENDING, CONFIRMED, FAILED
+  
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+  
+  lotteryId  String
+  lottery    Lottery  @relation(fields: [lotteryId], references: [id])
+  
+  commissions Commission[]
+  
+  createdAt  DateTime @default(now())
+}
+
+model Commission {
+  id        String   @id @default(cuid())
+  amount    Float
+  userId    String   // The referrer who gets the commission
+  user      User     @relation("CommissionsReceived", fields: [userId], references: [id])
+  
+  fromUserId String  // The friend who played
+  fromUser   User    @relation("CommissionsGenerated", fields: [fromUserId], references: [id])
+  
+  betId     String?  // Reference to the bet that triggered it
+  bet       Bet?     @relation(fields: [betId], references: [id])
+  
+  createdAt DateTime @default(now())
+}

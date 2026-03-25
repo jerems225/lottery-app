@@ -1,26 +1,141 @@
 @import "tailwindcss";
 
+@theme {
+  --color-primary-gold: #C6A355;
+  --color-secondary-gold: #E8C87E;
+  --color-dark-gold: #8B6E32;
+  --color-accent-gold: #FCEABB;
+  
+  --color-text-main: #0F172A;
+  --color-text-muted: #64748B;
+  --color-text-light: #94A3B8;
+  
+  --color-bg-light: #F8FAFC;
+  --color-bg-white: #FFFFFF;
+  
+  --radius-lg: 24px;
+  --radius-md: 16px;
+  --radius-sm: 8px;
+  
+  --font-outfit: "Outfit", sans-serif;
+  
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
+  --shadow-premium: 0 20px 40px -15px rgba(198, 163, 85, 0.15);
+  
+  --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #F8FAFC;
+  --foreground: #0F172A;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-outfit);
+}
+
+/* Custom Gold Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--color-primary-gold), var(--color-dark-gold));
+  border-radius: 10px;
+  border: 2px solid #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-dark-gold);
+}
+
+/* Specific animations for the premium feel */
+@keyframes backgroundFlow {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes textShimmer {
+    to { background-position: 200% center; }
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scaleIn {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes floatingCard {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-10px) scale(1.02); }
+}
+
+@keyframes pulseGold {
+    0% { box-shadow: 0 0 0 0 rgba(198, 163, 85, 0.4); }
+    70% { box-shadow: 0 0 0 20px rgba(198, 163, 85, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(198, 163, 85, 0); }
+}
+
+@keyframes meshFlow {
+    0% { transform: translate(0, 0) rotate(0deg); }
+    33% { transform: translate(5%, 10%) rotate(10deg); }
+    66% { transform: translate(-5%, 20%) rotate(-10deg); }
+    100% { transform: translate(0, 0) rotate(0deg); }
+}
+
+@keyframes titleGlow {
+    0%, 100% { filter: drop-shadow(0 0 15px rgba(198, 163, 85, 0.2)); }
+    50% { filter: drop-shadow(0 0 35px rgba(198, 163, 85, 0.5)); }
+}
+
+/* Common utility classes */
+.glass-panel {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+}
+
+.gold-text-gradient {
+    background: linear-gradient(135deg, #B8860B 0%, #FFD700 25%, #FDB931 50%, #D4AF37 75%, #8B6E32 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+/* Specific glow for important texts */
+@keyframes glowText {
+    from { text-shadow: 0 0 10px rgba(198, 163, 85, 0.2); }
+    to { text-shadow: 0 0 20px rgba(198, 163, 85, 0.6), 0 0 30px rgba(198, 163, 85, 0.4); }
+}
+
+.glow-on-hover:hover {
+    box-shadow: 0 0 20px rgba(198, 163, 85, 0.3);
+}
+
+.reveal-on-scroll {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.reveal-on-scroll.active {
+    opacity: 1;
+    transform: translateY(0);
 }

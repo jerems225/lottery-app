@@ -1,0 +1,7 @@
+-- AlterTable
+ALTER TABLE "Bet" ADD COLUMN     "ticketsCount" INTEGER NOT NULL DEFAULT 1;
+
+-- AlterTable
+ALTER TABLE "Lottery" ADD COLUMN     "currentTicketCount" INTEGER NOT NULL DEFAULT 0,
+ADD COLUMN     "maxTickets" INTEGER NOT NULL DEFAULT 1000,
+ADD COLUMN     "maxTicketsPerUser" INTEGER NOT NULL DEFAULT 50;
