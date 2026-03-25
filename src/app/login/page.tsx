@@ -58,7 +58,9 @@ export default function LoginPage() {
         toast.error(res.error);
       } else {
         toast.success("Account created! Check your email for the verification code.");
-        router.push(`/verify?email=${encodeURIComponent(email)}`);
+        // Store email temporarily to avoid clear value in URL
+        sessionStorage.setItem("bitlot_pending_email", email);
+        router.push(`/verify`);
       }
     }
     setLoading(false);

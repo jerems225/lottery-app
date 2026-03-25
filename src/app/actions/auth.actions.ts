@@ -1,6 +1,7 @@
 "use server";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
+import { sendVerificationEmail } from "@/lib/mail";
 
 /**
  * Register a new user with email/password credentials.
@@ -31,8 +32,9 @@ export async function registerUserAction(formData: FormData) {
             }
         });
 
-        // TODO: Send email with verificationCode using nodemailer/resend
-        console.log(`[EMAIL SEND] Code for ${email}: ${verificationCode}`);
+        // Send real email with Resend
+        await sendVerificationEmail(email, verificationCode);
+        console.log(`[REAL MAIL ATTEMPT] Code for ${email}: ${verificationCode}`);
 
         return { success: true, email };
     } catch (error: any) {
@@ -89,8 +91,9 @@ export async function resendVerificationCodeAction(email: string) {
             data: { verificationCode: newCode }
         });
 
-        // TODO: Send email with newCode
-        console.log(`[RESEND EMAIL] New code for ${email}: ${newCode}`);
+        // Resend via Resend
+        await sendVerificationEmail(email, newCode);
+        console.log(`[RESEND REAL MAIL ATTEMPT] New code for ${email}: ${newCode}`);
 
         return { success: true };
     } catch (error: any) {
