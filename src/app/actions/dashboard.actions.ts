@@ -18,15 +18,41 @@ export async function getUserDashboardDataAction() {
     const userId = session.user.id;
 
     // Parallel queries for performance
-    const [tickets, hostedRooms, referrals, winnings, commissions] = await Promise.all([
+    const [user, bets, tickets, hostedRooms, referrals, winnings, commissions, transactions] = await Promise.all([
+        prisma.user.findUnique({
+            where: { id: userId },
+            select: {
+                id: true,
+                name: true,
+                email: true,
+                balance: true,
+                image: true,
+                isVerified: true,
+                role: true,
+                blockedUntil: true,
+                blockReason: true,
+                isTotalBlock: true,
+                createdAt: true
+            }
+        }),
         prisma.bet.findMany({
+            where: { userId },
+            include: { lottery: true },
+            orderBy: { createdAt: "desc" }
+        }),
+        prisma.ticket.findMany({
             where: { userId },
             include: { lottery: true },
             orderBy: { createdAt: "desc" }
         }),
         prisma.lottery.findMany({
             where: { creatorId: userId },
-            include: { _count: { select: { bets: true } } },
+            include: {
+                _count: { select: { bets: true } },
+                bets: {
+                    include: { user: true }
+                }
+            },
             orderBy: { createdAt: "desc" }
         }),
         prisma.user.findMany({
@@ -41,41 +67,19 @@ export async function getUserDashboardDataAction() {
             where: { userId },
             include: { fromUser: true },
             orderBy: { createdAt: "desc" }
+        }),
+        prisma.transaction.findMany({
+            where: { userId },
+            orderBy: { createdAt: "desc" }
         })
     ]);
 
-    // Build unified transaction history
-    const outgoingTx = tickets.map((t: any) => ({
-        id: t.id,
-        type: "TICKET PURCHASE" as const,
-        amount: -t.amount,
-        date: t.createdAt,
-        status: t.status,
-        description: `Bought ${t.ticketsCount} ticket(s) for ${t.lottery.title}`
-    }));
+    // Unified transaction history is now in the DB
+    // `transactions` already pulled from parallel queries
 
-    const incomingTx = winnings.map((w: any) => ({
-        id: w.id + "_win",
-        type: "JACKPOT WIN" as const,
-        amount: w.jackpot,
-        date: w.updatedAt,
-        status: "CONFIRMED",
-        description: `Won the grand prize in ${w.title}`
-    }));
-
-    const commTx = commissions.map((c: any) => ({
-        id: c.id,
-        type: "COMMISSION" as const,
-        amount: c.amount,
-        date: c.createdAt,
-        status: "CONFIRMED",
-        description: `Affiliate commission from ${c.fromUser.name || "a friend"}`
-    }));
-
-    const transactions = [...outgoingTx, ...incomingTx, ...commTx]
-        .sort((a, b) => b.date.getTime() - a.date.getTime());
 
     return {
+        user,
         tickets,
         hostedRooms,
         referrals,

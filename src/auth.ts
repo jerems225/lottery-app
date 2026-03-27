@@ -30,22 +30,37 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
                 if (!isPasswordCorrect) return null;
 
+                // Check for Total Block
+                if (user.isTotalBlock && user.blockedUntil && new Date(user.blockedUntil) > new Date()) {
+                    throw new Error("Your account has been restricted. Access denied.");
+                }
+
                 return {
                     id: user.id,
                     name: user.name,
                     email: user.email,
                     role: user.role,
                     balance: user.balance,
+                    image: user.image,
+                    isVerified: user.isVerified
                 };
             },
         }),
     ],
     callbacks: {
-        async jwt({ token, user }: { token: any, user: any }) {
+        async jwt({ token, user, trigger, session }: { token: any, user: any, trigger?: string, session?: any }) {
             if (user) {
                 token.role = user.role;
                 token.id = user.id;
                 token.balance = user.balance;
+                token.image = user.image;
+                token.isVerified = user.isVerified;
+            }
+            if (trigger === "update" && session) {
+                if (session.image) token.image = session.image;
+                if (session.name) token.name = session.name;
+                if (session.balance !== undefined) token.balance = session.balance;
+                if (session.isVerified !== undefined) token.isVerified = session.isVerified;
             }
             return token;
         },
@@ -54,6 +69,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 session.user.role = token.role;
                 session.user.id = token.id;
                 session.user.balance = token.balance;
+                session.user.image = token.image;
+                session.user.isVerified = token.isVerified;
             }
             return session;
         },

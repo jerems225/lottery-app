@@ -9,10 +9,23 @@
  */
 
 // Auth
-export { registerUserAction } from "./auth.actions";
+export { registerUserAction, verifyCodeAction, resendVerificationCodeAction, forgotPasswordAction, resetPasswordAction, updatePasswordAction, updateUserAction, getLatestBalanceAction } from "./auth.actions";
+
 
 // Lottery Rooms
-export { getActiveRoomsAction, createPrivateRoomAction, buyTicketsAction } from "./lottery.actions";
+export { getActiveRoomsAction, createPrivateRoomAction, buyTicketsAction, updatePrivateRoomAction, deletePrivateRoomAction, searchUserRoomsAction } from "./lottery.actions";
+
+// Cloudinary
+export { getSignatureAction } from "./cloudinary.actions";
+
+// Admin
+export { getAdminStatsAction, getAllUsersAction, updateUserRoleAction, getAllTransactionsAction, getCommissionsAction, getRecentActivityAction, createNewUserAction, updateUserDetailsAction, deleteUserAction, toggleUserBlockAction } from "./admin.actions";
+
+// Finance
+export { requestDepositAction, requestWithdrawalAction, getAllUserRequestsAction, processUserRequestAction, agentRequestRechargeAction, getAllAgentRechargeRequestsAction, processAgentRechargeAction, getUserPaymentRequestsAction, cancelPaymentRequestAction, searchAgentsAction, adminDirectRechargeAction } from "./finance.actions";
 
 // User Dashboard
 export { getUserDashboardDataAction } from "./dashboard.actions";
+
+// Global Settings
+export { getGlobalSettingsAction, updateGlobalSettingsAction } from "./settings.actions";

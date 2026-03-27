@@ -87,14 +87,14 @@ export const Hero = () => {
           <motion.img 
             animate={{ y: [0, -20, 0], rotate: [0, 10, 0] }}
             transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-            src="https://cryptologos.cc/logos/bitcoin-btc-logo.svg" 
-            className="absolute -top-10 -left-10 w-24 h-24 hidden md:block"
+            src="https://cdn-icons-png.flaticon.com/512/825/825540.png " 
+            className="absolute -top-10 -left-10 w-24 h-24 hidden md:block object-contain"
           />
           <motion.img 
             animate={{ y: [0, -30, 0], rotate: [0, -15, 0] }}
             transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-            src="https://cryptologos.cc/logos/binance-coin-bnb-logo.svg" 
-            className="absolute -bottom-10 -right-10 w-28 h-28 hidden md:block"
+            src="https://upload.wikimedia.org/wikipedia/commons/5/57/Binance_Logo.png" 
+            className="absolute -bottom-10 -right-10 w-28 h-28 hidden md:block object-contain"
           />
 
           <motion.div 

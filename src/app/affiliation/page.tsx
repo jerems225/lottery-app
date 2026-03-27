@@ -156,8 +156,8 @@ export default function AffiliationPage() {
             </div>
             <div className="p-8 bg-zinc-900 border border-black/5 rounded-[32px] shadow-sm text-white">
                <div className="text-4xl font-black text-white mb-2">5%</div>
-               <span className="text-xs font-black uppercase text-zinc-400 tracking-widest">Room Bonus</span>
-               <p className="text-[11px] font-bold text-zinc-500 mt-3">Special bonus for affiliates participating in private competition rooms.</p>
+               <span className="text-xs font-black uppercase text-zinc-400 tracking-widest">Creator Reward</span>
+               <p className="text-[11px] font-bold text-zinc-500 mt-3">Create private rooms and host games to receive 5% of the total prize pool automatically.</p>
             </div>
             <div className="p-8 bg-white border border-black/5 rounded-[32px] shadow-sm">
                <div className="text-4xl font-black text-primary-gold mb-2">∞</div>

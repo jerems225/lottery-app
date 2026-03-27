@@ -1,21 +1,24 @@
 "use client";
 import React, { useState } from "react";
+import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { Wallet, Menu, X, ChevronDown, User, LogOut } from "lucide-react";
+import { Wallet, Menu, X, ChevronDown, User, LogOut, ShieldCheck } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useSession, signOut } from "next-auth/react";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
+import { NotificationBell } from "./NotificationBell";
 
 export const Navbar = () => {
   const { locale, setLocale, t } = useLanguage();
   const { data: session } = useSession();
+  const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const [isLangOpen, setIsLangOpen] = useState(false);
 
   return (
     <header className="sticky top-0 z-50 w-full bg-white/90 backdrop-blur-lg border-b border-black/5 animate-fadeInUp">
-      <div className="max-w-7xl mx-auto px-6 lg:px-10 h-20 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-6 lg:px-20 h-20 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-3 no-underline group">
           <div className="flex flex-col">
             <span className="text-2xl font-black gold-text-gradient tracking-tighter uppercase leading-none">
@@ -29,21 +32,34 @@ export const Navbar = () => {
 
         {/* Desktop Nav */}
         <nav className="hidden md:flex items-center gap-8">
-          {["Home", "Rooms", "Affiliation", "FAQ"].map((item) => (
-            <Link
-              key={item}
-              href={item === "Home" ? "/" : `/${item.toLowerCase()}`}
-              className="text-[15px] font-semibold text-zinc-600 hover:text-primary-gold transition-all relative group py-2"
-            >
-              {t("nav", item)}
-              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary-gold transition-all group-hover:w-full rounded-full" />
-            </Link>
-          ))}
+          {["Home", "Rooms", "Affiliation", "FAQ"].map((item) => {
+            const href = item === "Home" ? "/" : `/${item.toLowerCase()}`;
+            const isActive = pathname === href;
+            return (
+              <Link
+                key={item}
+                href={href}
+                className={cn(
+                  "text-[13px] font-semibold transition-all relative group py-2 uppercase tracking-widest",
+                  isActive ? "text-primary-gold" : "text-zinc-600 hover:text-primary-gold"
+                )}
+              >
+                {t("nav", item)}
+                <span className={cn(
+                  "absolute bottom-0 left-0 h-0.5 bg-primary-gold transition-all rounded-full",
+                  isActive ? "w-full" : "w-0 group-hover:w-full"
+                )} />
+              </Link>
+            );
+          })}
         </nav>
 
         <div className="hidden md:flex items-center gap-4">
           {session ? (
             <>
+              {/* Notifications */}
+              <NotificationBell />
+
               {/* User Balance */}
               <div className="flex items-center bg-zinc-50 border border-zinc-200 rounded-2xl px-4 py-2 gap-3 mr-2 shadow-sm">
                 <div className="w-8 h-8 rounded-full bg-emerald-500/10 flex items-center justify-center">
@@ -59,10 +75,19 @@ export const Navbar = () => {
 
               <Link 
                 href="/profile"
-                className="w-10 h-10 flex items-center justify-center rounded-2xl bg-zinc-100 text-text-muted hover:text-primary-gold hover:bg-primary-gold/10 transition-all"
+                className="w-10 h-10 flex items-center justify-center rounded-2xl bg-zinc-100 text-text-muted hover:text-primary-gold hover:bg-primary-gold/10 transition-all overflow-hidden relative"
                 title="Profile"
               >
-                <User className="w-5 h-5" />
+                {session.user.image ? (
+                  <img src={session.user.image} alt="Avatar" className="w-full h-full object-cover" />
+                ) : (
+                  <User className="w-5 h-5" />
+                )}
+                {session.user.isVerified && (
+                  <div className="absolute top-0 right-0 p-0.5 bg-white rounded-bl-lg">
+                    <ShieldCheck className="w-3 h-3 text-emerald-500 fill-emerald-50" />
+                  </div>
+                )}
               </Link>
 
               <button 
@@ -123,8 +148,17 @@ export const Navbar = () => {
           </div>
         )}
 
-          <Link href={session ? "/profile" : "/login"} className="w-10 h-10 rounded-full bg-zinc-100 border border-zinc-200 flex items-center justify-center text-zinc-600 hover:text-primary-gold transition-all active:scale-90">
-             <User className="w-5 h-5" />
+          <Link href={session ? "/profile" : "/login"} className="w-10 h-10 rounded-full bg-zinc-100 border border-zinc-200 flex items-center justify-center text-zinc-600 hover:text-primary-gold transition-all active:scale-90 overflow-hidden relative">
+             {session?.user?.image ? (
+                <img src={session.user.image} alt="Avatar" className="w-full h-full object-cover" />
+             ) : (
+                <User className="w-5 h-5" />
+             )}
+             {session?.user?.isVerified && (
+               <div className="absolute top-0 right-0 p-0.5 bg-white rounded-bl-lg">
+                 <ShieldCheck className="w-2.5 h-2.5 text-emerald-500 fill-emerald-50" />
+               </div>
+             )}
           </Link>
 
           <button 
@@ -148,8 +182,17 @@ export const Navbar = () => {
           >
              {/* Mobile Profile Header */}
             <div className="flex items-center gap-4 p-6 bg-zinc-50 rounded-[32px] border border-black/5">
-               <div className="w-14 h-14 rounded-2xl bg-primary-gold flex items-center justify-center text-white shadow-lg">
-                  <User className="w-7 h-7" />
+               <div className="w-14 h-14 rounded-2xl bg-zinc-900 flex items-center justify-center text-primary-gold shadow-lg overflow-hidden relative">
+                  {session?.user?.image ? (
+                    <img src={session.user.image} alt="Avatar" className="w-full h-full object-cover" />
+                  ) : (
+                    <User className="w-7 h-7" />
+                  )}
+                  {session?.user?.isVerified && (
+                    <div className="absolute top-0 right-0 p-1 bg-white rounded-bl-xl border border-zinc-100">
+                      <ShieldCheck className="w-4 h-4 text-emerald-500 fill-emerald-50 shadow-sm" />
+                    </div>
+                  )}
                </div>
                <div className="flex flex-col">
                   {session ? (
@@ -167,16 +210,23 @@ export const Navbar = () => {
             </div>
 
             <nav className="flex flex-col gap-4">
-              {["Home", "Rooms", "Affiliation", "FAQ"].map((item) => (
-                <Link
-                  key={item}
-                  href={item === "Home" ? "/" : `/${item.toLowerCase()}`}
-                  className="text-3xl font-[900] text-text-main uppercase tracking-tighter hover:text-primary-gold transition-all"
-                  onClick={() => setIsOpen(false)}
-                >
-                  {t("nav", item)}
-                </Link>
-              ))}
+              {["Home", "Rooms", "Affiliation", "FAQ"].map((item) => {
+                const href = item === "Home" ? "/" : `/${item.toLowerCase()}`;
+                const isActive = pathname === href;
+                return (
+                  <Link
+                    key={item}
+                    href={href}
+                    className={cn(
+                      "text-2xl font-[900] uppercase tracking-tighter transition-all",
+                      isActive ? "text-primary-gold" : "text-text-main hover:text-primary-gold"
+                    )}
+                    onClick={() => setIsOpen(false)}
+                  >
+                    {t("nav", item)}
+                  </Link>
+                );
+              })}
             </nav>
 
             <div className="mt-auto pb-10 flex flex-col gap-4">

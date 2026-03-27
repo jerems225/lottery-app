@@ -3,6 +3,7 @@ import { Outfit } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers/Providers";
 import { FallingGolds } from "@/components/ui/FallingGolds";
+import { GlobalWinCelebrator } from "@/components/layout/GlobalWinCelebrator";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -26,6 +27,7 @@ export default function RootLayout({
         <Providers>
           <FallingGolds />
           <div className="relative z-10 w-full flex flex-col min-h-screen">
+             <GlobalWinCelebrator />
              {children}
           </div>
           <link 

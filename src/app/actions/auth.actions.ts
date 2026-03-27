@@ -1,7 +1,8 @@
 "use server";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
-import { sendVerificationEmail } from "@/lib/mail";
+import { sendVerificationEmail, sendPasswordResetEmail } from "@/lib/mail";
+import { auth } from "@/auth";
 
 /**
  * Register a new user with email/password credentials.
@@ -25,7 +26,7 @@ export async function registerUserAction(formData: FormData) {
                 name,
                 password: hashedPassword,
                 role: "USER",
-                balance: 1000,
+                balance: 0,
                 referredById: referredById || null,
                 verificationCode,
                 isVerified: false,
@@ -98,5 +99,132 @@ export async function resendVerificationCodeAction(email: string) {
         return { success: true };
     } catch (error: any) {
         return { error: "Failed to resend code" };
+    }
+}
+/**
+ * Password Reset: Step 1 - Send Code
+ */
+export async function forgotPasswordAction(email: string) {
+    if (!email) return { error: "Email is required" };
+
+    try {
+        const user = await prisma.user.findUnique({ where: { email } });
+        if (!user) return { error: "If this email exists, a reset code has been sent." };
+
+        const resetCode = Math.floor(100000 + Math.random() * 900000).toString();
+        await prisma.user.update({
+            where: { email },
+            data: { verificationCode: resetCode } // Re-using this field for simplicity or could add resetCode field
+        });
+
+        await sendPasswordResetEmail(email, resetCode);
+        return { success: true };
+    } catch (error) {
+        return { error: "Failed to process request" };
+    }
+}
+
+/**
+ * Password Reset: Step 2 - Verify & Update
+ */
+export async function resetPasswordAction(formData: FormData) {
+    const email = formData.get("email") as string;
+    const code = formData.get("code") as string;
+    const newPassword = formData.get("password") as string;
+
+    if (!email || !code || !newPassword) return { error: "All fields are required" };
+
+    try {
+        const user = await prisma.user.findUnique({ where: { email } });
+        if (!user || user.verificationCode !== code) return { error: "Invalid reset code" };
+
+        const hashedPassword = await bcrypt.hash(newPassword, 12);
+        await prisma.user.update({
+            where: { email },
+            data: {
+                password: hashedPassword,
+                verificationCode: null
+            }
+        });
+
+        return { success: true };
+    } catch (error) {
+        return { error: "Failed to reset password" };
+    }
+}
+
+/**
+ * Update Password from Profile
+ */
+export async function updatePasswordAction(formData: FormData) {
+    const session = await auth();
+    if (!session?.user?.email) return { error: "Not authenticated" };
+
+    const currentPassword = formData.get("currentPassword") as string;
+    const newPassword = formData.get("newPassword") as string;
+
+    if (!currentPassword || !newPassword) return { error: "Both passwords are required" };
+
+    try {
+        const user = await prisma.user.findUnique({ where: { email: session.user.email } });
+        if (!user || !user.password) return { error: "User not found" };
+
+        const isMatch = await bcrypt.compare(currentPassword, user.password);
+        if (!isMatch) return { error: "Current password is incorrect" };
+
+        const hashed = await bcrypt.hash(newPassword, 12);
+        await prisma.user.update({
+            where: { email: session.user.email },
+            data: { password: hashed }
+        });
+
+        return { success: true };
+    } catch (error) {
+        return { error: "Failed to update password" };
+    }
+}
+
+/**
+ * Update User Info (Name, Image)
+ */
+export async function updateUserAction(formData: FormData) {
+    const session = await auth();
+    if (!session?.user?.id) return { error: "Not authenticated" };
+
+    const name = formData.get("name") as string;
+    const image = formData.get("image") as string;
+
+    try {
+        await prisma.user.update({
+            where: { id: session.user.id },
+            data: {
+                ...(name && { name }),
+                ...(image && { image })
+            }
+        });
+
+        return { success: true };
+    } catch (error) {
+        return { error: "Failed to update profile" };
+    }
+}
+
+/**
+ * Fetch the latest user balance directly from the database for real-time frontend syncing.
+ */
+export async function getLatestBalanceAction() {
+    const session = await auth();
+    if (!session?.user?.id) return { success: false };
+
+    try {
+        const user = await prisma.user.findUnique({
+            where: { id: session.user.id },
+            select: { balance: true }
+        });
+        if (!user) return { success: false };
+
+        return { success: true, balance: user.balance };
+    } catch (error) {
+        return { success: false };
     }
 }

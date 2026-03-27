@@ -24,6 +24,8 @@ model User {
 
   lotteries     Lottery[]
   bets          Bet[]
+  tickets       Ticket[]
+  transactions  Transaction[]
   referrals     User[]          @relation("UserReferrals")
   referredBy    User?           @relation("UserReferrals", fields: [referredById], references: [id])
   referredById  String?
@@ -34,8 +36,31 @@ model User {
   verificationCode String?
   isVerified      Boolean         @default(false)
 
+  // Admin Controls
+  blockedUntil    DateTime?
+  blockReason     String?
+  isTotalBlock    Boolean         @default(false)
+
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
+
+  notifications Notification[]
+  paymentRequests        PaymentRequest[] @relation("UserPaymentRequests")
+  handledPaymentRequests PaymentRequest[] @relation("HandledPaymentRequests")
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      String   // ROOM_CLOSED, WINNER_SELECTED, RECHARGE, etc.
+  title     String
+  message   String
+  isRead    Boolean  @default(false)
+  link      String?  // Optional link to redirect
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Account {
@@ -110,10 +135,15 @@ model Lottery {
   maxTicketsPerUser  Int      @default(50)
   currentTicketCount Int      @default(0)
   
+  isAutoResolution   Boolean  @default(false)
+  isResolved         Boolean  @default(false)
+  isClosedNotificationSent Boolean @default(false)
+  
   creatorId          String?
   creator            User?    @relation(fields: [creatorId], references: [id])
   
   bets               Bet[]
+  tickets            Ticket[]
   winnerId           String?
   
   createdAt          DateTime @default(now())
@@ -134,6 +164,7 @@ model Bet {
   lottery    Lottery  @relation(fields: [lotteryId], references: [id])
   
   commissions Commission[]
+  tickets     Ticket[]
   
   createdAt  DateTime @default(now())
 }
@@ -151,4 +182,72 @@ model Commission {
   bet       Bet?     @relation(fields: [betId], references: [id])
   
   createdAt DateTime @default(now())
+}
+
+model Ticket {
+  id          String   @id @default(cuid())
+  reference   String   @unique
+  status      String   @default("PENDING") // PENDING, WINNING, LOSING
+  
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  
+  lotteryId   String
+  lottery     Lottery  @relation(fields: [lotteryId], references: [id])
+  
+  betId       String
+  bet         Bet      @relation(fields: [betId], references: [id])
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Transaction {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  type        String   // TICKET PURCHASE, JACKPOT WIN, COMMISSION, DEPOSIT, WITHDRAWAL
+  amount      Float
+  status      String   @default("CONFIRMED")
+  description String
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Faq {
+  id        String   @id @default(cuid())
+  category  String
+  question  String
+  answer    String
+  icon      String   @default("HelpCircle")
+  order     Int      @default(0)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model PaymentRequest {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation("UserPaymentRequests", fields: [userId], references: [id])
+  type            String   // DEPOSIT, WITHDRAWAL, AGENT_RECHARGE
+  amount          Float
+  status          String   @default("PENDING") // PENDING, APPROVED, REJECTED
+  
+  proofUrl        String?
+  paymentMethod   String?
+  phoneNumber     String?
+  
+  handledById     String?
+  handledBy       User?    @relation("HandledPaymentRequests", fields: [handledById], references: [id])
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model GlobalSetting {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
 }

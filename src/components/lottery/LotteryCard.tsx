@@ -117,19 +117,33 @@ export const LotteryCard = ({ room }: { room: LotteryDisplay }) => {
         <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-all duration-700 pointer-events-none z-10 skew-x-[-25deg] bg-gradient-to-r from-transparent via-white/40 to-transparent" />
       )}
 
-      <div className="relative h-48 w-full bg-zinc-900 overflow-hidden flex flex-col items-center justify-center p-6 text-white text-center">
+      <div className="relative min-h-[240px] w-full bg-zinc-900 overflow-hidden flex flex-col items-center justify-center p-8 text-white text-center">
         <div className="absolute inset-0 opacity-20 bg-[url('https://images.unsplash.com/photo-1639762681485-074b7f938ba0?q=80&w=1200&auto=format&fit=crop')] bg-cover bg-center" />
-        <div className="absolute inset-0 bg-gradient-to-t from-zinc-900 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-zinc-900 via-zinc-900/60 to-zinc-900/40" />
         
-        <div className="relative z-10">
-           <div className="bg-primary-gold text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full mb-3 inline-block">
+        <div className="relative z-10 flex flex-col items-center">
+           <div className="bg-primary-gold text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full mb-4 inline-block shadow-lg shadow-primary-gold/20">
              {room.isPrivate ? "Private Room" : "Public Draw"}
            </div>
-           <h3 className="text-xl font-black uppercase tracking-tight line-clamp-2 leading-tight">
+           
+           <h3 className="text-xl font-bold uppercase tracking-tight line-clamp-1 leading-tight opacity-80 mb-4">
              {room.title}
            </h3>
-           <div className="mt-2 text-primary-gold font-bold text-sm">
-             Jackpot: {formatCurrency(room.jackpot)}
+
+           <motion.div 
+             animate={{ scale: [1, 1.05, 1] }}
+             transition={{ duration: 2, repeat: Infinity }}
+             className="bg-gradient-to-br from-emerald-400 to-emerald-600 text-white px-6 py-4 rounded-[28px] border border-white/20 shadow-2xl relative group overflow-hidden"
+           >
+              <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 skew-x-[-20deg]" />
+              <span className="text-[10px] font-black uppercase tracking-[0.2em] block leading-none mb-2 opacity-90">Potential Max Win</span>
+              <span className="text-3xl font-[1000] tracking-tighter leading-none block">
+                {formatCurrency(room.maxTickets * room.price * 0.75)}
+              </span>
+           </motion.div>
+
+           <div className="mt-4 text-[10px] font-black text-primary-gold uppercase tracking-[0.1em] bg-black/40 px-3 py-1 rounded-full backdrop-blur-sm">
+             Current Pot: {formatCurrency(room.jackpot)}
            </div>
         </div>
       </div>
@@ -174,12 +188,8 @@ export const LotteryCard = ({ room }: { room: LotteryDisplay }) => {
                     <Trophy className="w-8 h-8 text-primary-gold" />
                   </div>
                   <div className="text-center">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-text-muted block mb-1">Winner</span>
-                    <span className="text-xl font-[950] text-text-main uppercase">{room.winnerName}</span>
-                  </div>
-                  <div className="text-center">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-text-muted block mb-1">Jackpot Won</span>
-                    <span className="text-2xl font-[950] text-emerald-600">{formatCurrency(room.jackpot)}</span>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-text-muted block mb-1">Prize Won (75%)</span>
+                    <span className="text-2xl font-[950] text-emerald-600">{formatCurrency(room.jackpot * 0.75)}</span>
                   </div>
                 </>
               ) : (
@@ -190,34 +200,40 @@ export const LotteryCard = ({ room }: { room: LotteryDisplay }) => {
             </div>
           ) : (
             <>
-              {/* Ticket Input */}
-              <div className="flex items-center justify-between bg-zinc-50 p-2 rounded-2xl border border-black/5">
-                 <button 
-                   onClick={() => setTickets(Math.max(1, tickets - 1))}
-                   className="w-10 h-10 flex items-center justify-center bg-white border border-black/5 rounded-xl hover:bg-zinc-100 transition-all text-text-main active:scale-95"
-                 >
-                   <Minus className="w-4 h-4" />
-                 </button>
-                 <div className="flex flex-col items-center">
-                   <span className="text-lg font-black font-mono leading-none">{tickets}</span>
-                   <span className="text-[8px] font-black uppercase tracking-widest text-text-muted">Qty</span>
-                 </div>
-                 <button 
-                   onClick={() => setTickets(Math.min(room.maxTicketsPerUser, tickets + 1))}
-                   className="w-10 h-10 flex items-center justify-center bg-white border border-black/5 rounded-xl hover:bg-zinc-100 transition-all text-text-main active:scale-95"
-                 >
-                   <Plus className="w-4 h-4" />
-                 </button>
-              </div>
+              {/* Ticket Input - show quantity picker only if maxTicketsPerUser > 1 */}
+              {room.maxTicketsPerUser > 1 ? (
+                <div className="flex items-center justify-between bg-zinc-50 p-2 rounded-2xl border border-black/5">
+                   <button 
+                     onClick={() => setTickets(Math.max(1, tickets - 1))}
+                     className="w-10 h-10 flex items-center justify-center bg-white border border-black/5 rounded-xl hover:bg-zinc-100 transition-all text-text-main active:scale-95"
+                   >
+                     <Minus className="w-4 h-4" />
+                   </button>
+                   <div className="flex flex-col items-center">
+                     <span className="text-lg font-black font-mono leading-none">{tickets}</span>
+                     <span className="text-[8px] font-black uppercase tracking-widest text-text-muted">Qty</span>
+                   </div>
+                   <button 
+                     onClick={() => setTickets(Math.min(room.maxTicketsPerUser, tickets + 1))}
+                     className="w-10 h-10 flex items-center justify-center bg-white border border-black/5 rounded-xl hover:bg-zinc-100 transition-all text-text-main active:scale-95"
+                   >
+                     <Plus className="w-4 h-4" />
+                   </button>
+                </div>
+              ) : (
+                <div className="bg-primary-gold/5 border border-primary-gold/10 rounded-2xl p-3 text-center">
+                  <span className="text-[10px] font-black text-primary-gold uppercase tracking-widest">1 Entry per Player · Bet: {formatCurrency(room.price)}</span>
+                </div>
+              )}
 
               {/* Buy Button */}
               <button 
                 onClick={handleBuy}
                 disabled={isBuying}
-                className="w-full flex items-center justify-between px-6 py-4 rounded-2xl font-black text-lg shadow-lg bg-text-main text-white hover:bg-primary-gold hover:-translate-y-1 active:scale-95 transition-all disabled:opacity-70 disabled:pointer-events-none"
+                className="w-full flex items-center justify-between px-6 py-4 rounded-2xl font-black text-lg shadow-lg bg-text-main text-white hover:bg-primary-gold hover:-translate-y-1 active:scale-95 transition-all disabled:opacity-70 disabled:pointer-events-none group/btn"
               >
-                <span>{isBuying ? "Processing..." : "Buy Tickets"}</span>
-                <span className="text-primary-gold">{formatCurrency(room.price * tickets)}</span>
+                <span>{isBuying ? "Processing..." : room.maxTicketsPerUser > 1 ? "Buy Tickets" : "Join Room"}</span>
+                <span className="text-primary-gold group-hover/btn:text-white transition-colors">{formatCurrency(room.price * tickets)}</span>
               </button>
             </>
           )}
@@ -226,4 +242,3 @@ export const LotteryCard = ({ room }: { room: LotteryDisplay }) => {
     </motion.div>
   );
 };
-

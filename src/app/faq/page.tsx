@@ -1,14 +1,24 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { motion, AnimatePresence } from "framer-motion";
 import { HelpCircle, ChevronRight, Search, Zap, Shield, Wallet, Users } from "lucide-react";
 
-const FAQ_DATA = [
+import { getFaqsAction, seedFaqsAction } from "@/app/actions/faq.actions";
+
+// Icons mapping for categories
+const CATEGORY_ICONS: any = {
+  "General": Zap,
+  "Security": Shield,
+  "Payments & Fees": Wallet,
+  "Rooms & Affiliation": Users,
+};
+
+const DEFAULT_FAQS = [
   {
     category: "General",
-    icon: Zap,
+    icon_name: "Zap",
     questions: [
       { q: "What is BitLOT?", a: "BitLOT is a decentralized Bitcoin lottery platform that uses provably fair blockchain technology to ensure complete transparency and security for every draw." },
       { q: "How do I start playing?", a: "To start playing, simply connect your Web3 wallet (like MetaMask), ensure you have enough balance, and join any active public lottery or a private community room." },
@@ -17,7 +27,7 @@ const FAQ_DATA = [
   },
   {
     category: "Security",
-    icon: Shield,
+    icon_name: "Shield",
     questions: [
       { q: "Is my Bitcoin safe on BitLOT?", a: "We use a secure escrow system. Your funds are only locked during the duration of the lottery you join and are automatically distributed via smart logic once the winner is determined." },
       { q: "Do I need to undergo KYC?", a: "BitLOT is a privacy-first platform. No personal identity verification is required to participate in standard draws." }
@@ -25,7 +35,7 @@ const FAQ_DATA = [
   },
   {
     category: "Payments & Fees",
-    icon: Wallet,
+    icon_name: "Wallet",
     questions: [
       { q: "Which cryptocurrencies are supported?", a: "Currently, BitLOT primarily supports Bitcoin (BTC) and major stablecoins like USDT/USDC for ticket purchases." },
       { q: "How long do payouts take?", a: "Payouts are automated. Once a draw is finalized, winnings are credited to your site balance or wallet within seconds." },
@@ -34,7 +44,7 @@ const FAQ_DATA = [
   },
   {
     category: "Rooms & Affiliation",
-    icon: Users,
+    icon_name: "Users",
     questions: [
       { q: "Can I create my own lottery room?", a: "Yes! Any registered user with a minimum balance can create a Private Community Room, set their own entry fee, and invite friends." },
       { q: "How does the affiliate program work?", a: "When you refer a friend, you earn a 2% commission on every bet they place, for life. Commissions are paid instantly." }
@@ -61,9 +71,9 @@ const FAQItem = ({ q, a }: { q: string; a: string }) => {
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
             className="overflow-hidden"
           >
             <div className="p-8 pt-0 text-text-muted font-bold leading-relaxed border-t border-black/5 bg-zinc-50/30">
@@ -79,18 +89,55 @@ const FAQItem = ({ q, a }: { q: string; a: string }) => {
 export default function FAQPage() {
   const [activeCategory, setActiveCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
+  const [faqs, setFaqs] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const filteredCategories = FAQ_DATA.filter(cat => 
+  const loadFaqs = async () => {
+    setLoading(true);
+    const res = await getFaqsAction();
+    if (res.success && res.faqs) {
+      if (res.faqs.length === 0) {
+        // Try to seed initial content
+        await seedFaqsAction(DEFAULT_FAQS);
+        const retry = await getFaqsAction();
+        if (retry.success && retry.faqs) setFaqs(retry.faqs);
+      } else {
+        setFaqs(res.faqs);
+      }
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    loadFaqs();
+  }, []);
+
+  // Re-structure faqs into categories for the UI
+  const groupedFaqs = faqs.reduce((acc: any[], current: any) => {
+    const existing = acc.find(c => c.category === current.category);
+    if (existing) {
+      existing.questions.push({ q: current.question, a: current.answer });
+    } else {
+      acc.push({
+        category: current.category,
+        icon: CATEGORY_ICONS[current.category] || HelpCircle,
+        questions: [{ q: current.question, a: current.answer }]
+      });
+    }
+    return acc;
+  }, []);
+
+  const filteredCategories = groupedFaqs.filter((cat: any) => 
     activeCategory === "All" || cat.category === activeCategory
-  ).map(cat => ({
+  ).map((cat: any) => ({
     ...cat,
-    questions: cat.questions.filter(q => 
+    questions: cat.questions.filter((q: any) => 
       q.q.toLowerCase().includes(searchQuery.toLowerCase()) || 
       q.a.toLowerCase().includes(searchQuery.toLowerCase())
     )
-  })).filter(cat => cat.questions.length > 0);
+  })).filter((cat: any) => cat.questions.length > 0);
 
-  const categoriesWithAll = [{ category: "All", icon: HelpCircle }, ...FAQ_DATA];
+  const categoriesWithAll = [{ category: "All", icon: HelpCircle }, ...groupedFaqs];
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -173,7 +220,7 @@ export default function FAQPage() {
                                <h2 className="text-2xl font-[950] text-text-main uppercase tracking-tight">{cat.category} Questions</h2>
                             </div>
                             <div className="flex flex-col gap-4">
-                               {cat.questions.map((q, j) => (
+                               {cat.questions.map((q: any, j: number) => (
                                  <FAQItem key={j} q={q.q} a={q.a} />
                                ))}
                             </div>

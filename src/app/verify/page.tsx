@@ -154,12 +154,27 @@ export default function VerifyPage() {
                    {timer > 0 ? `Retry allowed in ${timer}s` : "I didn't receive any code"}
                 </button>
 
-                <button 
-                   onClick={() => router.push("/login")}
-                   className="text-[10px] font-black text-text-muted uppercase tracking-[0.2em] hover:text-text-main transition-colors"
-                >
-                   Back to Login
-                </button>
+                 <div className="flex flex-col gap-2">
+                    <button 
+                        onClick={() => {
+                            sessionStorage.removeItem("bitlot_pending_email");
+                            router.push("/rooms");
+                        }}
+                        className="w-full text-[10px] font-[900] text-primary-gold uppercase tracking-[0.2em] hover:text-primary-gold/70 transition-colors bg-primary-gold/5 py-4 rounded-2xl border border-primary-gold/10"
+                    >
+                        Skip for now &rarr;
+                    </button>
+                    <p className="text-[9px] font-bold text-text-muted/60 lowercase italic">
+                        you can verify your account later from your profile settings
+                    </p>
+                 </div>
+
+                 <button 
+                    onClick={() => router.push("/login")}
+                    className="text-[10px] font-[600] text-text-muted uppercase tracking-[0.2em] hover:text-text-main transition-colors mt-2"
+                 >
+                    Back to Login
+                 </button>
              </div>
           </div>
 
