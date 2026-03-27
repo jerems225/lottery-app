@@ -14,7 +14,11 @@ const outfit = Outfit({
 export const metadata: Metadata = {
   title: "BitLOT | Bitcoin Lottery Platform",
   description: "The next generation of provably fair Bitcoin lotteries. Secure, transparent, and community-driven.",
+  icons: {
+    icon: "/favicon.ico",
+  },
 };
+
 
 export default function RootLayout({
   children,
