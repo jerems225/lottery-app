@@ -7,8 +7,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Trophy, X } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 
-// Polling interval: 30 seconds instead of 5
-const SYNC_INTERVAL = 30000;
+// Polling interval: 60 seconds (synced with notifications to balance load)
+const SYNC_INTERVAL = 60000;
 
 export function GlobalWinCelebrator() {
     const { data: session, update } = useSession();

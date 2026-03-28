@@ -63,7 +63,7 @@ export default function RoomsPage() {
     fetchRoomData();
     const interval = setInterval(() => {
         fetchRoomData(true);
-    }, 15000); // 15-second poll (was 3s — too aggressive)
+    }, 30000); // 30-second poll (reduced frequency)
     
     return () => clearInterval(interval);
   }, [fetchRoomData]);
@@ -207,28 +207,28 @@ export default function RoomsPage() {
       {/* Create Room Modal */}
       <AnimatePresence>
         {showModal && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/40 backdrop-blur-md" onClick={() => setShowModal(false)}>
+          <div className="fixed inset-0 z-[100] flex items-start md:items-center justify-center p-4 md:p-6 bg-black/40 backdrop-blur-md overflow-y-auto" onClick={() => setShowModal(false)}>
             <motion.div 
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
-              className="bg-white p-10 lg:p-12 rounded-[40px] shadow-2xl w-full max-w-lg border border-black/5"
+              className="bg-white p-6 md:p-10 lg:p-12 rounded-[32px] md:rounded-[40px] shadow-2xl w-full max-w-lg my-auto border border-black/5"
             >
-              <div className="flex justify-between items-start mb-8">
+              <div className="flex justify-between items-start mb-6 md:mb-8">
                 <div>
-                  <h2 className="text-3xl font-black text-text-main uppercase">New Private Room</h2>
-                  <p className="text-text-muted font-bold mt-2 text-sm">Configure your community lottery</p>
+                  <h2 className="text-2xl md:text-3xl font-black text-text-main uppercase">New Private Room</h2>
+                  <p className="text-text-muted font-bold mt-1 md:mt-2 text-xs md:text-sm">Configure your community lottery</p>
                 </div>
                 <button onClick={() => setShowModal(false)} className="w-10 h-10 flex items-center justify-center rounded-xl bg-bg-light hover:bg-zinc-100 transition-all">
                   <Plus className="w-6 h-6 rotate-45 text-text-muted" />
                 </button>
               </div>
 
-              <form onSubmit={handleCreateRoom} className="flex flex-col gap-6">
+              <form onSubmit={handleCreateRoom} className="flex flex-col gap-5 md:gap-6">
                 {/* Room Title */}
                 <div className="flex flex-col gap-2">
-                  <label className="text-xs font-black text-text-muted uppercase tracking-[0.1em]">Room Name</label>
+                  <label className="text-[10px] md:text-xs font-black text-text-muted uppercase tracking-[0.1em]">Room Name</label>
                   <div className="relative">
                     <Type className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-text-light" />
                     <input 
@@ -237,14 +237,14 @@ export default function RoomsPage() {
                       defaultValue="My Private Lottery"
                       maxLength={50}
                       required
-                      className="w-full bg-bg-light border border-black/5 rounded-2xl py-4 pl-12 pr-6 font-bold text-sm outline-none focus:border-primary-gold transition-all"
+                      className="w-full bg-bg-light border border-black/5 rounded-2xl py-3 md:py-4 pl-12 pr-6 font-bold text-sm outline-none focus:border-primary-gold transition-all"
                     />
                   </div>
                 </div>
 
                 {/* Ticket Price */}
                 <div className="flex flex-col gap-2">
-                  <label className="text-xs font-black text-text-muted uppercase tracking-[0.1em]">Ticket Price (USD)</label>
+                  <label className="text-[10px] md:text-xs font-black text-text-muted uppercase tracking-[0.1em]">Ticket Price (USD)</label>
                   <div className="relative">
                     <DollarSign className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-text-light" />
                     <input 
@@ -253,14 +253,14 @@ export default function RoomsPage() {
                       defaultValue={10}
                       min={1}
                       required
-                      className="w-full bg-bg-light border border-black/5 rounded-2xl py-4 pl-12 pr-6 font-black text-lg outline-none focus:border-primary-gold transition-all"
+                      className="w-full bg-bg-light border border-black/5 rounded-2xl py-3 md:py-4 pl-12 pr-6 font-black text-lg outline-none focus:border-primary-gold transition-all"
                     />
                   </div>
                 </div>
 
                 {/* Max Tickets */}
                 <div className="flex flex-col gap-2">
-                  <label className="text-xs font-black text-text-muted uppercase tracking-[0.1em]">Max Tickets</label>
+                  <label className="text-[10px] md:text-xs font-black text-text-muted uppercase tracking-[0.1em]">Max Tickets</label>
                   <div className="relative">
                     <Ticket className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-text-light" />
                     <input 
@@ -269,17 +269,17 @@ export default function RoomsPage() {
                       defaultValue={20}
                       min={2}
                       required
-                      className="w-full bg-bg-light border border-black/5 rounded-2xl py-4 pl-12 pr-6 font-black text-lg outline-none focus:border-primary-gold transition-all"
+                      className="w-full bg-bg-light border border-black/5 rounded-2xl py-3 md:py-4 pl-12 pr-6 font-black text-lg outline-none focus:border-primary-gold transition-all"
                     />
                   </div>
                 </div>
 
                 {/* Duration Selector */}
                 <div className="flex flex-col gap-3">
-                  <label className="text-xs font-black text-text-muted uppercase tracking-[0.1em] flex items-center gap-2">
+                  <label className="text-[10px] md:text-xs font-black text-text-muted uppercase tracking-[0.1em] flex items-center gap-2">
                     <Clock className="w-4 h-4" /> Close Purchases After
                   </label>
-                  <div className="grid grid-cols-5 gap-2">
+                  <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
                     {DURATION_OPTIONS.map(opt => (
                       <button
                         key={opt.value}
@@ -300,31 +300,23 @@ export default function RoomsPage() {
                 {/* Pricing Rules */}
                 <div className="p-4 bg-primary-gold/5 border border-primary-gold/10 rounded-2xl border-dashed">
                   <span className="text-[10px] font-black text-primary-gold uppercase mb-2 block tracking-widest">Revenue Split</span>
-                  <div className="flex justify-between text-xs font-bold text-text-muted">
+                  <div className="flex justify-between text-[11px] font-bold text-text-muted">
                     <span>🎟️ Winner Take:</span>
                     <span className="text-text-main">75%</span>
                   </div>
-                  <div className="flex justify-between text-xs font-bold text-text-muted mt-1">
+                  <div className="flex justify-between text-[11px] font-bold text-text-muted mt-1">
                     <span>👤 Creator Share:</span>
                     <span className="text-text-main">5%</span>
                   </div>
-                  <div className="flex justify-between text-xs font-bold text-text-muted mt-1">
+                  <div className="flex justify-between text-[11px] font-bold text-text-muted mt-1">
                     <span>🏢 Platform Fee:</span>
                     <span className="text-text-main">20%</span>
-                  </div>
-                  <div className="flex justify-between text-xs font-bold text-text-muted mt-1">
-                    <span>Min. Wallet Required:</span>
-                    <span className="text-primary-gold font-black">$10</span>
-                  </div>
-                  <div className="flex justify-between text-xs font-bold text-text-muted mt-1">
-                    <span>Entry per User:</span>
-                    <span className="text-text-main">1 ticket</span>
                   </div>
                 </div>
 
                 <button 
                   disabled={isLoading}
-                  className="w-full bg-text-main text-white py-5 rounded-2xl font-black text-lg shadow-xl shadow-black/10 hover:bg-primary-gold transition-all mt-2 disabled:opacity-50"
+                  className="w-full bg-text-main text-white py-4 md:py-5 rounded-2xl font-black text-base md:text-lg shadow-xl shadow-black/10 hover:bg-primary-gold transition-all mt-2 disabled:opacity-50"
                 >
                   {isLoading ? "Creating..." : "🚀 Launch Private Room"}
                 </button>

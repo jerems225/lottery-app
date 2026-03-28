@@ -18,8 +18,11 @@ export const NotificationBell = () => {
     const fetchNotifications = async () => {
         const res = await getNotificationsAction();
         if (res.success && res.notifications) {
-            setNotifications(res.notifications);
-            setUnreadCount(res.unreadCount || 0);
+            // Only update if unread count changed to prevent unnecessary re-renders
+            if (res.unreadCount !== unreadCount || notifications.length !== res.notifications.length) {
+                setNotifications(res.notifications);
+                setUnreadCount(res.unreadCount || 0);
+            }
 
             // Handle Toast for new notifications if the dropdown was closed
             if (!isOpen && res.unreadCount > unreadCount) {
@@ -44,10 +47,10 @@ export const NotificationBell = () => {
 
     useEffect(() => {
         fetchNotifications();
-        // Poll every 30 seconds
-        const interval = setInterval(fetchNotifications, 30000);
+        // Poll every 60 seconds (reduced from 30s)
+        const interval = setInterval(fetchNotifications, 60000);
         return () => clearInterval(interval);
-    }, []);
+    }, [unreadCount, notifications.length]);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {

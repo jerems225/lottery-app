@@ -2,11 +2,13 @@ import type { NextAuthConfig } from "next-auth";
 
 export const authConfig = {
     trustHost: true,
+    secret: process.env.AUTH_SECRET,
     session: { strategy: "jwt" },
     pages: {
         signIn: "/login",
     },
     callbacks: {
+
         async jwt({ token, user, trigger, session }: { token: any, user: any, trigger?: string, session?: any }) {
             if (user) {
                 token.role = user.role;
@@ -35,4 +37,11 @@ export const authConfig = {
         },
     },
     providers: [], // Empty providers for now, will be populated in auth.ts
+    // Suppress terminal errors for failed signins
+    logger: {
+        error(code, ...args) {
+          if (code.name === "CredentialsSignin") return;
+          console.error(code, ...args);
+        },
+    },
 } satisfies NextAuthConfig;

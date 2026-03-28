@@ -10,7 +10,7 @@ export const Hero = () => {
   const { t } = useLanguage();
 
   return (
-    <section className="relative w-full max-w-7xl mx-auto px-6 lg:px-10 py-20 lg:py-40 text-center overflow-hidden min-h-[90vh] flex flex-col justify-center">
+    <section className="relative w-full max-w-[1440px] mx-auto px-6 lg:px-20 py-20 lg:py-40 text-center overflow-hidden min-h-[90vh] flex flex-col justify-center">
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full opacity-[0.03] pointer-events-none z-0">
          <Trophy className="w-[800px] h-[800px] absolute -top-20 -right-20 rotate-12" />
       </div>
@@ -38,7 +38,7 @@ export const Hero = () => {
         <motion.h1 
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-[clamp(64px,12vw,140px)] font-[950] tracking-tighter leading-[0.85] mb-8 bg-gradient-to-br from-zinc-900 via-primary-gold to-zinc-800 bg-[length:200%_auto] bg-clip-text text-transparent animate-[textShimmer_5s_linear_infinite,titleGlow_6s_ease-in-out_infinite]"
+          className="text-[clamp(48px,12vw,140px)] font-[950] tracking-tighter leading-[0.85] mb-8 bg-gradient-to-br from-zinc-900 via-primary-gold to-zinc-800 bg-[length:200%_auto] bg-clip-text text-transparent animate-[textShimmer_5s_linear_infinite,titleGlow_6s_ease-in-out_infinite]"
         >
           {t("hero", "title")}
         </motion.h1>

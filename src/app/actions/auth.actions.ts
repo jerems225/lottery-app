@@ -16,6 +16,19 @@ export async function registerUserAction(formData: FormData) {
 
     if (!email || !password) return { error: "Email and password are required" };
 
+    // Validate referredById exists in DB to avoid P2003 Foreign Key Violation
+    let validReferredById = null;
+    if (referredById && referredById.trim() !== "" && referredById !== "null" && referredById !== "undefined") {
+        try {
+            const referrer = await prisma.user.findUnique({ where: { id: referredById } });
+            if (referrer) {
+                validReferredById = referredById;
+            }
+        } catch (e) {
+            validReferredById = null;
+        }
+    }
+
     try {
         const hashedPassword = await bcrypt.hash(password, 12);
         const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
@@ -27,7 +40,7 @@ export async function registerUserAction(formData: FormData) {
                 password: hashedPassword,
                 role: "USER",
                 balance: 0,
-                referredById: referredById || null,
+                referredById: validReferredById,
                 verificationCode,
                 isVerified: false,
             }
@@ -39,7 +52,9 @@ export async function registerUserAction(formData: FormData) {
 
         return { success: true, email };
     } catch (error: any) {
+        console.error("REGISTRATION ERROR:", error);
         if (error.code === 'P2002') return { error: "Email already exists" };
+        if (error.code === 'P2003') return { error: "Referral ID is invalid or linked account does not exist." };
         return { error: "Internal server error" };
     }
 }
@@ -121,6 +136,23 @@ export async function forgotPasswordAction(email: string) {
         return { success: true };
     } catch (error) {
         return { error: "Failed to process request" };
+    }
+}
+
+/**
+ * Password Reset: Step 1.5 - Verify Code Only (UI convenience)
+ */
+export async function verifyResetCodeAction(email: string, code: string) {
+    if (!email || !code) return { error: "Email and code are required" };
+
+    try {
+        const user = await prisma.user.findUnique({ where: { email } });
+        // Use the same verificationCode field as in forgotPasswordAction
+        if (!user || user.verificationCode !== code) return { error: "Invalid reset code" };
+
+        return { success: true };
+    } catch (error) {
+        return { error: "Verification failed" };
     }
 }
 

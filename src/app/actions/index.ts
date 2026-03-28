@@ -9,8 +9,11 @@
  */
 
 // Auth
-export { registerUserAction, verifyCodeAction, resendVerificationCodeAction, forgotPasswordAction, resetPasswordAction, updatePasswordAction, updateUserAction, getLatestBalanceAction } from "./auth.actions";
+export { registerUserAction, verifyCodeAction, resendVerificationCodeAction, forgotPasswordAction, verifyResetCodeAction, resetPasswordAction, updatePasswordAction, updateUserAction, getLatestBalanceAction } from "./auth.actions";
 
+
+// Crypto
+export { initiateCryptoRechargeAction, verifyCryptoTransactionAction } from "./crypto.actions";
 
 // Lottery Rooms
 export { getActiveRoomsAction, createPrivateRoomAction, buyTicketsAction, updatePrivateRoomAction, deletePrivateRoomAction, searchUserRoomsAction } from "./lottery.actions";

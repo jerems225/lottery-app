@@ -45,22 +45,24 @@ export async function getActiveRoomsAction() {
         }
     });
 
-    // Attach winner name for completed rooms
-    const roomsWithWinner = await Promise.all(
-        rooms.map(async (room: any) => {
-            let winnerName: string | null = null;
-            if (room.winnerId) {
-                const winner = await prisma.user.findUnique({
-                    where: { id: room.winnerId },
-                    select: { name: true }
-                });
-                winnerName = winner?.name || "Anonymous";
-            }
-            return { ...room, winnerName };
-        })
-    );
+    // Attach winner names for completed rooms in bulk to avoid N+1 queries
+    const winnerIds = Array.from(new Set(rooms.map(r => r.winnerId).filter(Boolean))) as string[];
+    const winners = winnerIds.length > 0 
+        ? await prisma.user.findMany({
+            where: { id: { in: winnerIds } },
+            select: { id: true, name: true }
+          })
+        : [];
+    
+    // Create a lookup map
+    const winnerMap = Object.fromEntries(winners.map(w => [w.id, w.name]));
 
-        return roomsWithWinner;
+    const roomsWithWinner = rooms.map(room => ({
+        ...room,
+        winnerName: room.winnerId ? (winnerMap[room.winnerId] || "Anonymous") : null
+    }));
+
+    return roomsWithWinner;
     } catch (error) {
         console.error("Room fetch error:", error);
         return [];

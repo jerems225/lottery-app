@@ -4,6 +4,7 @@ import { X, DollarSign, Smartphone, Landmark, Check } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { requestDepositAction, requestWithdrawalAction } from "@/app/actions/finance.actions";
 import { toast } from "react-hot-toast";
+import { CryptoDeposit } from "./CryptoDeposit";
 
 interface WalletModalProps {
   isOpen: boolean;
@@ -98,75 +99,81 @@ export const WalletModal = ({ isOpen, onClose, initialTab = "deposit", onSuccess
             </button>
           </div>
 
-          <form onSubmit={handleSubmit} className="p-6 flex flex-col gap-6">
-            <div className="flex flex-col gap-2">
-               <label className="text-[10px] font-black text-text-muted uppercase tracking-widest ml-1">Method</label>
-               <div className="grid grid-cols-2 gap-3">
-                 {PAYMENT_METHODS.map(m => {
-                   const Icon = m.icon;
-                   const isSelected = method === m.id;
-                   return (
-                     <div 
-                       key={m.id}
-                       onClick={() => setMethod(m.id)}
-                       className={`p-3 rounded-2xl flex items-center justify-center gap-2 cursor-pointer border-2 transition-all ${isSelected ? "border-primary-gold bg-primary-gold/5" : "border-black/5 hover:border-black/10"}`}
-                     >
-                        <Icon className={`w-4 h-4 ${isSelected ? "text-primary-gold" : "text-text-muted"}`} />
-                        <span className={`text-[10px] font-black uppercase tracking-widest ${isSelected ? "text-primary-gold" : "text-text-muted"}`}>{m.label}</span>
-                     </div>
-                   );
-                 })}
-               </div>
+          {tab === "deposit" && method === "CRYPTO" ? (
+            <div className="p-4 sm:p-6 bg-zinc-50/50">
+               <CryptoDeposit />
             </div>
-
-            <div className="flex flex-col gap-2">
-              <label className="text-[10px] font-black text-text-muted uppercase tracking-widest ml-1">Amount (USD)</label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
-                  <span className="text-lg font-black text-zinc-400">$</span>
-                </div>
-                <input
-                  type="number"
-                  min="5"
-                  step="1"
-                  value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
-                  placeholder="0.00"
-                  className="w-full pl-10 pr-6 py-4 bg-zinc-50 border border-black/5 rounded-2xl font-black text-lg outline-none focus:border-primary-gold focus:bg-white transition-all text-text-main"
-                  required
-                />
+          ) : (
+            <form onSubmit={handleSubmit} className="p-6 flex flex-col gap-6">
+              <div className="flex flex-col gap-2">
+                 <label className="text-[10px] font-black text-text-muted uppercase tracking-widest ml-1">Method</label>
+                 <div className="grid grid-cols-2 gap-3">
+                   {PAYMENT_METHODS.map(m => {
+                     const Icon = m.icon;
+                     const isSelected = method === m.id;
+                     return (
+                       <div 
+                         key={m.id}
+                         onClick={() => setMethod(m.id)}
+                         className={`p-3 rounded-2xl flex items-center justify-center gap-2 cursor-pointer border-2 transition-all ${isSelected ? "border-primary-gold bg-primary-gold/5" : "border-black/5 hover:border-black/10"}`}
+                       >
+                          <Icon className={`w-4 h-4 ${isSelected ? "text-primary-gold" : "text-text-muted"}`} />
+                          <span className={`text-[10px] font-black uppercase tracking-widest ${isSelected ? "text-primary-gold" : "text-text-muted"}`}>{m.label}</span>
+                       </div>
+                     );
+                   })}
+                 </div>
               </div>
-            </div>
 
-            <div className="flex flex-col gap-2">
-               <label className="text-[10px] font-black text-text-muted uppercase tracking-widest ml-1">
-                 {method === "CRYPTO" ? "Wallet Address" : method === "BANK_TRANSFER" ? "IBAN / Account Number" : "Phone Number"}
-               </label>
-               <input
-                  type="text"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  placeholder={method === "CRYPTO" ? "0x..." : "+225 ..."}
-                  className="w-full px-6 py-4 bg-zinc-50 border border-black/5 rounded-2xl font-bold text-sm outline-none focus:border-primary-gold focus:bg-white transition-all text-text-main"
-                  required
-                />
-            </div>
-            
-            <div className="mt-4">
-               <button 
-                  type="submit" 
-                  disabled={loading}
-                  className="w-full py-4 bg-zinc-900 text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl hover:bg-primary-gold hover:-translate-y-1 transition-all disabled:opacity-50 disabled:hover:translate-y-0 disabled:hover:bg-zinc-900"
-               >
-                 {loading ? "Processing..." : tab === "deposit" ? "Request Deposit" : "Request Withdrawal"}
-               </button>
-               {tab === "deposit" && (
-                 <p className="text-[9px] font-bold text-text-muted text-center mt-3 mx-4 leading-relaxed">
-                   By requesting a deposit, you agree to send the Exact amount via the selected method. An agent will verify and credit your account shortly.
-                 </p>
-               )}
-            </div>
-          </form>
+              <div className="flex flex-col gap-2">
+                <label className="text-[10px] font-black text-text-muted uppercase tracking-widest ml-1">Amount (USD)</label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
+                    <span className="text-lg font-black text-zinc-400">$</span>
+                  </div>
+                  <input
+                    type="number"
+                    min="5"
+                    step="1"
+                    value={amount}
+                    onChange={(e) => setAmount(e.target.value)}
+                    placeholder="0.00"
+                    className="w-full pl-10 pr-6 py-4 bg-zinc-50 border border-black/5 rounded-2xl font-black text-lg outline-none focus:border-primary-gold focus:bg-white transition-all text-text-main"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-2">
+                 <label className="text-[10px] font-black text-text-muted uppercase tracking-widest ml-1">
+                   {method === "CRYPTO" ? "Wallet Address" : method === "BANK_TRANSFER" ? "IBAN / Account Number" : "Phone Number"}
+                 </label>
+                 <input
+                    type="text"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    placeholder={method === "CRYPTO" ? "0x..." : "+225 ..."}
+                    className="w-full px-6 py-4 bg-zinc-50 border border-black/5 rounded-2xl font-bold text-sm outline-none focus:border-primary-gold focus:bg-white transition-all text-text-main"
+                    required
+                  />
+              </div>
+              
+              <div className="mt-4">
+                 <button 
+                    type="submit" 
+                    disabled={loading}
+                    className="w-full py-4 bg-zinc-900 text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl hover:bg-primary-gold hover:-translate-y-1 transition-all disabled:opacity-50 disabled:hover:translate-y-0 disabled:hover:bg-zinc-900"
+                 >
+                   {loading ? "Processing..." : tab === "deposit" ? "Request Deposit" : "Request Withdrawal"}
+                 </button>
+                 {tab === "deposit" && (
+                   <p className="text-[9px] font-bold text-text-muted text-center mt-3 mx-4 leading-relaxed">
+                     By requesting a deposit, you agree to send the Exact amount via the selected method. An agent will verify and credit your account shortly.
+                   </p>
+                 )}
+              </div>
+            </form>
+          )}
         </motion.div>
       </div>
       )}

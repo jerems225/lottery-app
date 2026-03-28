@@ -10,7 +10,7 @@ export const Footer = () => {
   return (
     <footer className="w-full bg-white mt-auto">
       <Newsletter />
-      <div className="max-w-7xl mx-auto px-6 lg:px-10 border-t border-black/5 pt-20 pb-10">
+      <div className="max-w-[1440px] mx-auto px-6 lg:px-20 border-t border-black/5 pt-20 pb-10">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 lg:gap-16 mb-20">
           <div className="flex flex-col gap-6">
             <Link href="/" className="flex flex-col">

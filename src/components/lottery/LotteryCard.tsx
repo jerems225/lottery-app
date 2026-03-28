@@ -69,7 +69,8 @@ export const LotteryCard = ({ room }: { room: LotteryDisplay }) => {
   const handleBuy = async () => {
     if (!session) {
       toast.error("Please connect your account first.");
-      router.push("/login");
+      const currentPath = typeof window !== 'undefined' ? window.location.pathname : "/rooms";
+      router.push(`/login?callbackUrl=${currentPath}`);
       return;
     }
 
@@ -111,7 +112,7 @@ export const LotteryCard = ({ room }: { room: LotteryDisplay }) => {
   return (
     <motion.div 
       whileHover={{ y: isClosed ? 0 : -8, scale: isClosed ? 1 : 1.01 }}
-      className={`flex flex-col bg-white rounded-[32px] overflow-hidden shadow-lg border border-black/5 transition-all w-[360px] shrink-0 relative ${!isClosed && "group hover:shadow-premium"}`}
+      className={`flex flex-col bg-white rounded-[32px] overflow-hidden shadow-lg border border-black/5 transition-all w-full max-w-[360px] shrink-0 relative ${!isClosed && "group hover:shadow-premium"}`}
     >
       {!isClosed && (
         <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-all duration-700 pointer-events-none z-10 skew-x-[-25deg] bg-gradient-to-r from-transparent via-white/40 to-transparent" />

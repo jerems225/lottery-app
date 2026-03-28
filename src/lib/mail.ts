@@ -19,7 +19,7 @@ const transporter = nodemailer.createTransport({
  * Uses Nodemailer via SMTP.
  */
 export async function sendVerificationEmail(email: string, code: string) {
-  const from = process.env.SMTP_FROM || '"BitLOT" <reservations@centreoptiquelorial.net>';
+  const from = process.env.SMTP_FROM || 'BitLOT <reservations@centreoptiquelorial.net>';
 
   try {
     const info = await transporter.sendMail({
@@ -67,7 +67,7 @@ export async function sendVerificationEmail(email: string, code: string) {
  * Sends a password reset code to the user.
  */
 export async function sendPasswordResetEmail(email: string, code: string) {
-  const from = process.env.SMTP_FROM || '"BitLOT" <reservations@centreoptiquelorial.net>';
+  const from = process.env.SMTP_FROM || 'BitLOT <reservations@centreoptiquelorial.net>';
 
   try {
     const info = await transporter.sendMail({
@@ -115,7 +115,7 @@ export async function sendPasswordResetEmail(email: string, code: string) {
  * Sends a notification email to a blocked or suspended user.
  */
 export async function sendBlockNotificationEmail(email: string, reason: string, blockedUntil: Date | null, isTotalBlock: boolean = false) {
-  const from = process.env.SMTP_FROM || '"BitLOT Security" <reservations@centreoptiquelorial.net>';
+  const from = process.env.SMTP_FROM || 'BitLOT Security <reservations@centreoptiquelorial.net>';
   const dateStr = blockedUntil ? blockedUntil.toLocaleDateString() : "Indefinite";
   const typeLabel = isTotalBlock ? "Access Blocked" : "Account Suspended";
   const typeColor = isTotalBlock ? "#ff4d4d" : "#f6851b";
@@ -175,7 +175,7 @@ export async function sendRoomClosedEmail(
   userRole: string = "USER",
   isManual: boolean = false
 ) {
-  const from = process.env.SMTP_FROM || '"BitLOT Notifications" <reservations@centreoptiquelorial.net>';
+  const from = process.env.SMTP_FROM || 'BitLOT Notifications <reservations@centreoptiquelorial.net>';
   const subject = userRole === "ADMIN" || userRole === "SUPERADMIN" || userRole === "MANAGER"
     ? `Action Required: Room ${roomTitle} Closed - BitLOT`
     : `Room ${roomTitle} has Closed! - BitLOT`;
@@ -228,3 +228,51 @@ export async function sendRoomClosedEmail(
     return { error: "Failed to send room closure email" };
   }
 }
+
+/**
+ * Sends a generic newsletter/bulk email to a subscriber.
+ */
+export async function sendNewsletterEmail(email: string, subject: string, content: string) {
+  const from = process.env.SMTP_FROM || 'BitLOT Announcements <reservations@centreoptiquelorial.net>';
+
+  try {
+    const info = await transporter.sendMail({
+      from: from,
+      to: email,
+      subject: subject,
+      html: `
+        <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; max-width: 600px; margin: auto; background-color: #ffffff; border-radius: 40px; border: 1px solid #f0f0f0; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.05);">
+          <div style="background-color: #000000; padding: 40px 20px; text-align: center;">
+            <h1 style="color: #F6851B; margin: 0; text-transform: uppercase; letter-spacing: 5px; font-weight: 900; font-size: 28px;">BitLOT</h1>
+            <p style="color: #ffffff; opacity: 0.6; margin-top: 5px; font-size: 10px; font-weight: bold; letter-spacing: 2px; text-transform: uppercase;">Official Update</p>
+          </div>
+          
+          <div style="padding: 50px 40px;">
+            <div style="color: #111111; font-size: 16px; line-height: 1.8;">
+              ${content}
+            </div>
+            
+            <div style="margin-top: 40px; padding-top: 30px; border-top: 1px solid #f0f0f0; text-align: center;">
+              <a href="${process.env.NEXTAUTH_URL}" style="background-color: #000000; color: #ffffff; padding: 18px 30px; border-radius: 18px; text-decoration: none; font-weight: 900; text-transform: uppercase; font-size: 11px; letter-spacing: 2px;">Visit Platform</a>
+            </div>
+
+            <p style="color: #999999; font-size: 11px; text-align: center; margin-top: 40px; line-height: 1.5;">
+              You received this email because you're subscribed to BitLOT updates. <br/>
+              <a href="#" style="color: #F6851B; text-decoration: none;">Unsubscribe instantly</a> if you no longer wish to receive these.
+            </p>
+          </div>
+          
+          <div style="background-color: #fafafa; padding: 30px; text-align: center; border-top: 1px solid #f0f0f0;">
+             <p style="margin: 0; color: #bbbbbb; font-size: 9px; text-transform: uppercase; letter-spacing: 1px; font-weight: bold;">&copy; 2026 BitLOT &bull; Advanced Lottery Tech</p>
+          </div>
+        </div>
+      `,
+    });
+
+    return { success: true };
+  } catch (err: any) {
+    console.error("Bulk Mail Error:", err);
+    return { error: "Failed to send newsletter email" };
+  }
+}
+

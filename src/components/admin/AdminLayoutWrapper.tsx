@@ -36,7 +36,7 @@ export function AdminLayoutWrapper({
 
     useEffect(() => {
         fetchAdminData();
-        const interval = setInterval(fetchAdminData, 30000); // Poll every 30s
+        const interval = setInterval(fetchAdminData, 60000); // Reduced frequency (60s)
         return () => clearInterval(interval);
     }, []);
 
