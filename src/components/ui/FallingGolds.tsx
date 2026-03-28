@@ -6,6 +6,9 @@ export const FallingGolds = () => {
   const [particles, setParticles] = useState<any[]>([]);
 
   useEffect(() => {
+    // Save memory by not generating particles on mobile and tablet
+    if (window.innerWidth < 1024) return;
+
     const count = 75; // More particles
     const newParticles = Array.from({ length: count }).map((_, i) => ({
       id: i,
@@ -20,7 +23,7 @@ export const FallingGolds = () => {
   }, []);
 
   return (
-    <div className="fixed inset-0 pointer-events-none z-[-2] overflow-hidden">
+    <div className="hidden lg:block fixed inset-0 pointer-events-none z-[-2] overflow-hidden">
       {particles.map((p) => (
         <motion.div
           key={p.id}
