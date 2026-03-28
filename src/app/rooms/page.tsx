@@ -63,7 +63,7 @@ export default function RoomsPage() {
     fetchRoomData();
     const interval = setInterval(() => {
         fetchRoomData(true);
-    }, 3000); // 3-second realtime poll
+    }, 15000); // 15-second poll (was 3s — too aggressive)
     
     return () => clearInterval(interval);
   }, [fetchRoomData]);
