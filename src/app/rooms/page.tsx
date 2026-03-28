@@ -61,11 +61,7 @@ export default function RoomsPage() {
 
   useEffect(() => {
     fetchRoomData();
-    const interval = setInterval(() => {
-        fetchRoomData(true);
-    }, 30000); // 30-second poll (reduced frequency)
-    
-    return () => clearInterval(interval);
+    // Realtime polling removed locally as per request. Updates occur on navigation or manual refresh.
   }, [fetchRoomData]);
 
   function handleOpenModal() {
@@ -111,7 +107,7 @@ export default function RoomsPage() {
       <Navbar />
 
       <main className="flex-1 py-20 px-6 lg:px-10 max-w-7xl mx-auto w-full relative overflow-hidden">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full opacity-[0.03] pointer-events-none z-0">
+        <div className="hidden md:block absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full opacity-[0.03] pointer-events-none z-0">
            <Users className="w-[800px] h-[800px] absolute -top-20 -right-20 rotate-12" />
         </div>
         

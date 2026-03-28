@@ -131,17 +131,15 @@ export const LotteryCard = ({ room }: { room: LotteryDisplay }) => {
              {room.title}
            </h3>
 
-           <motion.div 
-             animate={{ scale: [1, 1.05, 1] }}
-             transition={{ duration: 2, repeat: Infinity }}
-             className="bg-gradient-to-br from-emerald-400 to-emerald-600 text-white px-6 py-4 rounded-[28px] border border-white/20 shadow-2xl relative group overflow-hidden"
+           <div 
+             className="bg-gradient-to-br from-emerald-400 to-emerald-600 text-white px-6 py-4 rounded-[28px] border border-white/20 shadow-2xl relative group/win overflow-hidden hover:scale-105 transition-transform duration-300 cursor-default"
            >
-              <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 skew-x-[-20deg]" />
+              <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover/win:translate-x-[100%] transition-transform duration-1000 skew-x-[-20deg]" />
               <span className="text-[10px] font-black uppercase tracking-[0.2em] block leading-none mb-2 opacity-90">Potential Max Win</span>
               <span className="text-3xl font-[1000] tracking-tighter leading-none block">
                 {formatCurrency(room.maxTickets * room.price * 0.75)}
               </span>
-           </motion.div>
+           </div>
 
            <div className="mt-4 text-[10px] font-black text-primary-gold uppercase tracking-[0.1em] bg-black/40 px-3 py-1 rounded-full backdrop-blur-sm">
              Current Pot: {formatCurrency(room.jackpot)}

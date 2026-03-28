@@ -45,12 +45,15 @@ export const NotificationBell = () => {
         setLoading(false);
     };
 
+    const fetchNotificationsRef = useRef(fetchNotifications);
     useEffect(() => {
-        fetchNotifications();
-        // Poll every 60 seconds (reduced from 30s)
-        const interval = setInterval(fetchNotifications, 60000);
-        return () => clearInterval(interval);
-    }, [unreadCount, notifications.length]);
+        fetchNotificationsRef.current = fetchNotifications;
+    });
+
+    useEffect(() => {
+        fetchNotificationsRef.current();
+        // Polling removed: real-time updates restricted to dashboard only
+    }, []);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {

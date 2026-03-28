@@ -47,20 +47,21 @@ export function GlobalWinCelebrator() {
         }
     }, [update]);
     
+    const checkDataRef = useRef(checkData);
     useEffect(() => {
-        if (!session?.user?.id) return;
+        checkDataRef.current = checkData;
+    });
+
+    useEffect(() => {
+        if (!userIdRef.current) return;
         
         // Initialize balance ref
-        lastBalanceRef.current = session.user.balance;
+        lastBalanceRef.current = session?.user?.balance; // Fixed initialization safely
         
-        // Initial check
-        checkData();
+        // Initial check only (no real-time polling)
+        checkDataRef.current();
         
-        // Reduced polling: 30s instead of 5s
-        const interval = setInterval(checkData, SYNC_INTERVAL);
-        return () => clearInterval(interval);
-        // Only re-run if user logs in/out, NOT on balance changes
-    }, [session?.user?.id, checkData]);
+    }, [userIdRef.current]);
     
     const dismissFirst = () => {
         setWins(prev => prev.slice(1));

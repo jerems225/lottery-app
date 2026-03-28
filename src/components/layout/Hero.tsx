@@ -11,26 +11,29 @@ export const Hero = () => {
 
   return (
     <section className="relative w-full max-w-[1440px] mx-auto px-6 lg:px-20 py-20 lg:py-40 text-center overflow-hidden min-h-[90vh] flex flex-col justify-center">
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full opacity-[0.03] pointer-events-none z-0">
+      <div className="hidden md:block absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full opacity-[0.03] pointer-events-none z-0">
          <Trophy className="w-[800px] h-[800px] absolute -top-20 -right-20 rotate-12" />
       </div>
 
       {/* Dynamic Animated Flowing Background (Mesh Gradient Feel) */}
-      <div className="absolute inset-0 pointer-events-none z-0">
+      <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
+        {/* Mobile Static Fallback for Performance */}
+        <div className="md:hidden absolute top-[10%] left-[10%] w-[300px] h-[300px] rounded-full bg-primary-gold opacity-[0.05] blur-[80px]" />
+        
         <motion.div 
           animate={{ x: [0, 50, -50, 0], y: [0, 100, -100, 0], scale: [1, 1.2, 0.8, 1] }}
           transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
-          className="absolute top-[10%] left-[20%] w-[500px] h-[500px] rounded-full bg-primary-gold opacity-[0.07] blur-[120px]" 
+          className="hidden md:block absolute top-[10%] left-[20%] w-[500px] h-[500px] rounded-full bg-primary-gold opacity-[0.07] blur-[120px]" 
         />
         <motion.div 
           animate={{ x: [0, -100, 100, 0], y: [0, -50, 50, 0], scale: [1, 1.3, 0.9, 1] }}
           transition={{ duration: 20, repeat: Infinity, ease: "linear", delay: 2 }}
-          className="absolute bottom-[20%] right-[15%] w-[600px] h-[600px] rounded-full bg-dark-gold opacity-[0.05] blur-[130px]" 
+          className="hidden md:block absolute bottom-[20%] right-[15%] w-[600px] h-[600px] rounded-full bg-dark-gold opacity-[0.05] blur-[130px]" 
         />
         <motion.div 
           animate={{ x: [0, 80, -80, 0], y: [0, 80, -80, 0], scale: [1, 1.1, 1.2, 1] }}
           transition={{ duration: 30, repeat: Infinity, ease: "linear", delay: 5 }}
-          className="absolute top-[40%] left-[40%] w-[450px] h-[450px] rounded-full bg-accent-gold opacity-[0.04] blur-[110px]" 
+          className="hidden md:block absolute top-[40%] left-[40%] w-[450px] h-[450px] rounded-full bg-accent-gold opacity-[0.04] blur-[110px]" 
         />
       </div>
 
@@ -100,7 +103,7 @@ export const Hero = () => {
           <motion.div 
             animate={{ y: [0, -10, 0] }}
             transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute bottom-10 right-10 glass-panel p-6 rounded-3xl flex items-center gap-4 bg-white/70 backdrop-blur-2xl shadow-2xl border border-white/40"
+            className="hidden md:flex absolute bottom-10 right-10 glass-panel p-6 rounded-3xl flex items-center gap-4 bg-white/70 backdrop-blur-2xl shadow-2xl border border-white/40"
           >
             <div className="bg-primary-gold p-3 rounded-xl">
               <Trophy className="w-6 h-6 text-white" />

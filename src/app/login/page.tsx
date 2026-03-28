@@ -127,7 +127,7 @@ export default function LoginPage() {
 
       <main className="flex-1 flex items-center justify-center p-6 lg:p-10 relative overflow-hidden py-24">
          {/* Decorative backgrounds like FAQ */}
-         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full opacity-[0.03] pointer-events-none z-0">
+         <div className="hidden md:block absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full opacity-[0.03] pointer-events-none z-0">
            <User className="w-[800px] h-[800px] absolute -top-20 -left-20 rotate-12" />
          </div>
 
