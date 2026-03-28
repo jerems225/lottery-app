@@ -50,7 +50,7 @@ export const Footer = () => {
               {["Home", "Rooms", "Affiliation"].map((item) => (
                 <Link
                   key={item}
-                  href={`/${item.toLowerCase()}`}
+                  href={item === "Home" ? "/" : `/${item.toLowerCase()}`}
                   className="text-text-muted hover:text-primary-gold hover:translate-x-1 transition-all"
                 >
                   {t("nav", item)}
@@ -67,7 +67,7 @@ export const Footer = () => {
               {["FAQ", "Contact Us", "Help Center", "Bug Bounty"].map((item) => (
                 <Link
                   key={item}
-                  href={`/${item.toLowerCase()}`}
+                  href={item === "FAQ" ? "/faq" : "#"}
                   className="text-text-muted hover:text-primary-gold hover:translate-x-1 transition-all"
                 >
                   {t("nav", item)}

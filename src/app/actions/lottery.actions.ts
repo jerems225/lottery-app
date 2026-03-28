@@ -30,9 +30,14 @@ async function checkUserRestriction(userId: string) {
  * Includes the winner's name for completed rooms.
  */
 export async function getActiveRoomsAction() {
-    await resolveExpiredLotteries();
+    try {
+        await resolveExpiredLotteries();
+    } catch (err) {
+        console.error("Delayed draw resolution error (non-fatal):", err);
+    }
 
-    const rooms = await prisma.lottery.findMany({
+    try {
+        const rooms = await prisma.lottery.findMany({
         orderBy: { endsAt: "asc" },
         include: {
             _count: { select: { bets: true } },
@@ -55,7 +60,11 @@ export async function getActiveRoomsAction() {
         })
     );
 
-    return roomsWithWinner;
+        return roomsWithWinner;
+    } catch (error) {
+        console.error("Room fetch error:", error);
+        return [];
+    }
 }
 
 // Minimum wallet balance required to create a private room (in USD)
