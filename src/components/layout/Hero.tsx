@@ -16,25 +16,26 @@ const FloatingParticles = () => {
 
   return (
     <div className="absolute inset-0 pointer-events-none overflow-hidden">
-      {[...Array(20)].map((_, i) => (
+      {[...Array(12)].map((_, i) => (
         <motion.div
           key={i}
           initial={{ 
-            opacity: Math.random() * 0.4 + 0.1, 
+            opacity: Math.random() * 0.3 + 0.1, 
             x: Math.random() * 100 + "%", 
             y: Math.random() * 100 + "%",
-            scale: Math.random() * 0.5 + 0.5
+            scale: Math.random() * 0.4 + 0.4
           }}
           animate={{ 
-            y: [null, "-20%", "20%"],
-            opacity: [null, 0.8, 0.2]
+            y: [null, "-15%", "15%"],
+            opacity: [null, 0.6, 0.1]
           }}
           transition={{ 
-            duration: Math.random() * 10 + 10, 
+            duration: Math.random() * 15 + 15, 
             repeat: Infinity, 
             ease: "linear" 
           }}
-          className="absolute w-1 h-1 bg-primary-gold rounded-full blur-[1px]"
+          style={{ willChange: "transform, opacity" }}
+          className="absolute w-1 h-1 bg-primary-gold rounded-full blur-[0.5px]"
         />
       ))}
     </div>
@@ -43,34 +44,30 @@ const FloatingParticles = () => {
 
 const FloatingIcons = () => {
   return (
-    <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-5">
+    <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-[0.03]">
       <motion.div
-        animate={{ y: [0, -20, 0], rotate: [0, 5, 0] }}
-        transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute top-[10%] left-[15%]"
-      >
-        <Trophy size={120} />
-      </motion.div>
-      <motion.div
-        animate={{ y: [0, 20, 0], rotate: [0, -10, 0] }}
-        transition={{ duration: 12, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-        className="absolute top-[20%] right-[10%]"
-      >
-        <Trophy size={80} />
-      </motion.div>
-      <motion.div
-        animate={{ y: [0, -15, 0], rotate: [0, 15, 0] }}
-        transition={{ duration: 8, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-        className="absolute bottom-[30%] left-[5%]"
-      >
-        <Trophy size={60} />
-      </motion.div>
-      <motion.div
-        animate={{ y: [0, 15, 0], rotate: [0, -5, 0] }}
-        transition={{ duration: 15, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
-        className="absolute bottom-[20%] right-[20%]"
+        animate={{ y: [0, -15, 0], rotate: [0, 3, 0] }}
+        transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
+        style={{ willChange: "transform" }}
+        className="absolute top-[12%] left-[18%]"
       >
         <Trophy size={100} />
+      </motion.div>
+      <motion.div
+        animate={{ y: [0, 15, 0], rotate: [0, -6, 0] }}
+        transition={{ duration: 18, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+        style={{ willChange: "transform" }}
+        className="absolute top-[25%] right-[12%]"
+      >
+        <Trophy size={70} />
+      </motion.div>
+      <motion.div
+        animate={{ y: [0, -12, 0], rotate: [0, 8, 0] }}
+        transition={{ duration: 13, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+        style={{ willChange: "transform" }}
+        className="absolute bottom-[35%] left-[8%]"
+      >
+        <Trophy size={50} />
       </motion.div>
     </div>
   );
@@ -155,17 +152,18 @@ export const Hero = () => {
       <FloatingParticles />
       
       {/* Mesh Glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary-gold/10 blur-[150px] rounded-full pointer-events-none" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-primary-gold/5 blur-[100px] rounded-full pointer-events-none transform-gpu" style={{ willChange: "filter" }} />
 
       <motion.div 
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className="relative z-10 max-w-4xl mx-auto flex flex-col items-center"
+        className="relative z-10 max-w-4xl mx-auto flex flex-col items-center transform-gpu"
       >
         {/* Prize Badge with Automatic Slider */}
         <motion.div 
           variants={slideUp}
+          style={{ willChange: "transform, opacity" }}
           className="flex items-center gap-4 bg-slate-900/60 backdrop-blur-md border border-white/5 rounded-full px-2 py-2 pr-6 mb-12 shadow-2xl h-16 min-w-[300px]"
         >
           <div className="bg-slate-800 p-2.5 rounded-full shadow-inner flex-shrink-0">
@@ -184,6 +182,7 @@ export const Hero = () => {
                       animate={{ y: 0, opacity: 1 }}
                       exit={{ y: -20, opacity: 0 }}
                       transition={{ duration: 0.8, ease: "circOut" }}
+                      style={{ willChange: "transform, opacity" }}
                       className="absolute inset-0 text-sm font-black text-white uppercase tracking-tight whitespace-nowrap"
                     >
                       {prizes[prizeIndex].name}
@@ -202,6 +201,7 @@ export const Hero = () => {
                     animate={{ x: 0, opacity: 1 }}
                     exit={{ x: -20, opacity: 0 }}
                     transition={{ duration: 0.8, ease: "circOut" }}
+                    style={{ willChange: "transform, opacity" }}
                     className="absolute inset-0 text-[#f59e0b] font-black text-lg"
                   >
                     {prizes[prizeIndex].value}
@@ -214,7 +214,8 @@ export const Hero = () => {
         {/* Hero Title with Dynamic Headlines */}
         <motion.h1 
           variants={slideLeft}
-          className="text-5xl md:text-8xl font-[900] tracking-tighter leading-[1.1] text-white mb-8 max-w-4xl min-h-[2.2em] md:min-h-[1.1em]"
+          style={{ willChange: "transform, opacity" }}
+          className="text-5xl md:text-8xl font-[900] tracking-tighter leading-[1.1] text-white mb-8 max-w-4xl min-h-[2.2em] md:min-h-[1.1em] transform-gpu"
         >
           {headlines[headlineIndex].part1} <br className="md:hidden" />
           <span className="relative inline-block mx-2 text-[#f59e0b] overflow-hidden align-middle">
@@ -225,6 +226,7 @@ export const Hero = () => {
                 animate={{ y: 0, opacity: 1 }}
                 exit={{ y: "-100%", opacity: 0 }}
                 transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+                style={{ willChange: "transform, opacity" }}
                 className="inline-block"
               >
                 {headlines[headlineIndex].highlight}
