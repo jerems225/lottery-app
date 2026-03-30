@@ -19,8 +19,15 @@ const dictionaries = {
       "Login / Register": "Login / Register",
     },
     hero: {
-      title: "Bitcoin Lottery",
-      subtitle: "The world's most transparent and secure Bitcoin lottery platform. Provably fair, community-driven, and built on blockchain technology.",
+      badgeTitle: "Today's Prize",
+      badgePrize: "MacBook Air M3",
+      badgeValue: "$2,500",
+      titlePart1: "Win",
+      titleHighlight: "Amazing Prizes",
+      titlePart2: "Every Day",
+      subtitle: "Join our raffles, pick your lucky tickets, and watch the live draws. Fair, transparent, and exciting.",
+      createRaffle: "Create Private Room",
+      findDraw: "Find a Draw",
       playNow: "Play Now",
       viewRooms: "View Rooms",
     },
@@ -28,10 +35,13 @@ const dictionaries = {
       activeLotteries: "Active Lotteries",
       activeLotteriesDesc: "Choose your entry point and join the next draw. Provably fair results guaranteed by blockchain.",
       features: [
-        { title: "Escrow Logic", desc: "All bets are locked in secure smart-escrows until draw is finalized.", icon: "fa-shield-halved" },
-        { title: "Fair Draw", desc: "Verifiable random number generation ensures complete transparency.", icon: "fa-dice" },
-        { title: "Instant Pay", desc: "Winnings are credited to your wallet milleseconds after the result.", icon: "fa-bolt-lightning" }
+        { title: "Escrow Logic", desc: "All bets are locked in secure smart-escrows until draw is finalized.", icon: "ShieldCheck" },
+        { title: "Fair Draw", desc: "Verifiable random number generation ensures complete transparency.", icon: "Dices" },
+        { title: "Instant Pay", desc: "Winnings are credited to your wallet milleseconds after the result.", icon: "Zap" }
       ],
+      statsLabelActive: "Active Raffles",
+      statsLabelValue: "Total Prize Value",
+      statsLabelWinners: "Winners Picked",
       stats: {
         activePlayers: "Active Players",
         payouts: "Total Payouts",
@@ -62,8 +72,15 @@ const dictionaries = {
       "Login / Register": "Connexion / Inscription",
     },
     hero: {
-      title: "Loterie Bitcoin",
-      subtitle: "La plateforme de loterie Bitcoin la plus transparente et sécurisée au monde. Équitable, axée sur la communauté et construite sur la technologie blockchain.",
+      badgeTitle: "Prix du Jour",
+      badgePrize: "MacBook Air M3",
+      badgeValue: "2 500 $",
+      titlePart1: "Gagnez des",
+      titleHighlight: "Prix Incroyables",
+      titlePart2: "Chaque Jour",
+      subtitle: "Rejoignez nos tirages, choisissez vos tickets et regardez les tirages en direct. Équitable, transparent et passionnant.",
+      createRaffle: "Créer un Salon Privé",
+      findDraw: "Trouver un Tirage",
       playNow: "Jouer Maintenant",
       viewRooms: "Voir les Salles",
     },
@@ -71,10 +88,13 @@ const dictionaries = {
       activeLotteries: "Loteries Actives",
       activeLotteriesDesc: "Choisissez votre porte d'entrée et rejoignez le prochain tirage. Résultats équitables garantis par la blockchain.",
       features: [
-        { title: "Logique Séquestre", desc: "Tous les paris sont bloqués dans des escrows intelligents jusqu'à la fin du tirage.", icon: "fa-shield-halved" },
-        { title: "Tirage Équitable", desc: "Génération de nombres aléatoires vérifiable assurant une transparence totale.", icon: "fa-dice" },
-        { title: "Paiement Instantané", desc: "Gains crédités sur votre portefeuille en quelques millisecondes.", icon: "fa-bolt-lightning" }
+        { title: "Logique Séquestre", desc: "Tous les paris sont bloqués dans des escrows intelligents jusqu'à la fin du tirage.", icon: "ShieldCheck" },
+        { title: "Tirage Équitable", desc: "Génération de nombres aléatoires vérifiable assurant une transparence totale.", icon: "Dices" },
+        { title: "Paiement Instantané", desc: "Gains crédités sur votre portefeuille en quelques millisecondes.", icon: "Zap" }
       ],
+      statsLabelActive: "Tirages Actifs",
+      statsLabelValue: "Valeur Totale des Prix",
+      statsLabelWinners: "Gagnants Sélectionnés",
       stats: {
         activePlayers: "Joueurs Actifs",
         payouts: "Gains Totaux",
@@ -129,18 +149,13 @@ export const LanguageProvider = ({ children }: { children: React.ReactNode }) =>
     }
   };
 
-  // Prevent hydration flash
-  if (!mounted) {
-    return (
-      <LanguageContext.Provider value={{ locale: "en", setLocale, t }}>
-        <div style={{ visibility: "hidden" }}>{children}</div>
-      </LanguageContext.Provider>
-    );
-  }
-
   return (
     <LanguageContext.Provider value={{ locale, setLocale, t }}>
-      {children}
+      {!mounted ? (
+        <div style={{ visibility: "hidden" }}>{children}</div>
+      ) : (
+        children
+      )}
     </LanguageContext.Provider>
   );
 };

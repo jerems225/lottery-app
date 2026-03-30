@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Outfit } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers/Providers";
-import { FallingGolds } from "@/components/ui/FallingGolds";
 import { GlobalWinCelebrator } from "@/components/layout/GlobalWinCelebrator";
 
 const outfit = Outfit({
@@ -29,7 +28,6 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${outfit.variable} font-outfit antialiased bg-bg-light text-text-main relative min-h-screen overflow-x-hidden`}>
         <Providers>
-          <FallingGolds />
           <div className="relative z-10 w-full flex flex-col min-h-screen">
              <GlobalWinCelebrator />
              {children}

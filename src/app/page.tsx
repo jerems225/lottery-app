@@ -4,9 +4,15 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Hero } from "@/components/layout/Hero";
 import { Footer } from "@/components/layout/Footer";
 import { LotteryCard } from "@/components/lottery/LotteryCard";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, ShieldCheck, Dices, Zap } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
 import { getActiveRoomsAction } from "@/app/actions";
+
+const ICON_MAP: Record<string, any> = {
+  ShieldCheck,
+  Dices,
+  Zap
+};
 
 export default function Home() {
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -123,17 +129,20 @@ export default function Home() {
           <div className="absolute top-0 right-0 w-1/3 h-full bg-primary-gold/5 blur-[120px] rounded-full pointer-events-none" />
           <div className="max-w-7xl mx-auto px-6 lg:px-10 relative z-10">
              <div className="grid grid-cols-1 md:grid-cols-3 gap-16">
-                {((t("home", "features") || []) as { title: string, desc: string, icon: string }[]).map((f, i) => (
-                  <div key={i} className="flex flex-col items-start gap-6">
-                    <div className="w-16 h-16 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center text-primary-gold text-2xl">
-                      <i className={`fas ${f.icon}`} />
+                {((t("home", "features") || []) as { title: string, desc: string, icon: string }[]).map((f, i) => {
+                  const IconComp = ICON_MAP[f.icon] || ShieldCheck;
+                  return (
+                    <div key={i} className="flex flex-col items-start gap-6">
+                      <div className="w-16 h-16 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center text-primary-gold">
+                        <IconComp size={32} strokeWidth={2.5} />
+                      </div>
+                      <div className="flex flex-col gap-3">
+                        <h3 className="text-xl font-black text-white uppercase tracking-tight">{f.title}</h3>
+                        <p className="text-zinc-400 font-bold leading-relaxed">{f.desc}</p>
+                      </div>
                     </div>
-                    <div className="flex flex-col gap-3">
-                      <h3 className="text-xl font-black text-white uppercase tracking-tight">{f.title}</h3>
-                      <p className="text-zinc-400 font-bold leading-relaxed">{f.desc}</p>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
              </div>
           </div>
         </section>
