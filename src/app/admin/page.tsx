@@ -39,7 +39,7 @@ export default function AdminDashboard() {
     fetchData();
     const interval = setInterval(() => {
       fetchData(true);
-    }, 3000);
+    }, 15000);
     return () => clearInterval(interval);
   }, [fetchData]);
 

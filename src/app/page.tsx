@@ -42,7 +42,7 @@ export default function Home() {
 
         {/* Live Activity & Trust Badges */}
         <section className="bg-bg-white border-y border-black/5 py-12 relative overflow-hidden">
-          <div className="max-w-7xl mx-auto px-6 lg:px-10 flex flex-col md:flex-row items-center justify-between gap-12 relative z-10">
+          <div className="max-w-[1440px] mx-auto px-6 lg:px-20 flex flex-col md:flex-row items-center justify-between gap-12 relative z-10">
             <div className="flex items-center gap-12">
                <div className="flex flex-col">
                   <span className="text-2xl font-black text-text-main line-height-none tracking-tight">14.2K</span>
@@ -78,18 +78,18 @@ export default function Home() {
         </section>
 
         {/* Active Lotteries Section */}
-        <section id="lotteries" className="pt-32 pb-24 max-w-7xl mx-auto px-6 lg:px-10 overflow-hidden">
-          <div className="flex flex-col md:flex-row items-end justify-between mb-16 gap-8">
-            <div className="flex flex-col text-left">
-              <h2 className="text-4xl md:text-6xl font-black text-text-main tracking-tight mb-4 uppercase">
+        <section id="lotteries" className="pt-32 pb-24 max-w-[1440px] mx-auto px-6 lg:px-20 overflow-hidden">
+          <div className="flex flex-col md:flex-row items-end justify-between mb-16 gap-8 text-center md:text-left">
+            <div className="flex flex-col">
+              <h2 className="text-4xl md:text-6xl lg:text-7xl font-black text-text-main tracking-tight mb-4 uppercase leading-none">
                 {t("home", "activeLotteries")}
               </h2>
-              <p className="text-lg font-bold text-text-muted max-w-xl">
+              <p className="text-lg md:text-xl font-bold text-text-muted max-w-xl mx-auto md:mx-0">
                 {t("home", "activeLotteriesDesc")}
               </p>
             </div>
             
-            <div className="flex items-center gap-3">
+            <div className="flex items-center justify-center gap-3">
               <button 
                 onClick={() => scroll("left")}
                 className="w-14 h-14 flex items-center justify-center rounded-2xl bg-white border border-black/5 text-zinc-600 shadow-md hover:bg-zinc-900 hover:text-white transition-all group"
@@ -116,7 +116,7 @@ export default function Home() {
               </div>
             ) : (
               rooms.map((room) => (
-                <div key={room.id} className="snap-center">
+                <div key={room.id} className="snap-center shrink-0">
                   <LotteryCard room={room} />
                 </div>
               ))
@@ -127,18 +127,18 @@ export default function Home() {
         {/* Brand Features */}
         <section className="py-32 bg-zinc-900 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-1/3 h-full bg-primary-gold/5 blur-[120px] rounded-full pointer-events-none" />
-          <div className="max-w-7xl mx-auto px-6 lg:px-10 relative z-10">
-             <div className="grid grid-cols-1 md:grid-cols-3 gap-16">
+          <div className="max-w-[1440px] mx-auto px-6 lg:px-20 relative z-10">
+             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-16 lg:gap-24">
                 {((t("home", "features") || []) as { title: string, desc: string, icon: string }[]).map((f, i) => {
                   const IconComp = ICON_MAP[f.icon] || ShieldCheck;
                   return (
-                    <div key={i} className="flex flex-col items-start gap-6">
-                      <div className="w-16 h-16 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center text-primary-gold">
+                    <div key={i} className="flex flex-col items-center md:items-start text-center md:text-left gap-6 group">
+                      <div className="w-20 h-20 bg-white/5 border border-white/10 rounded-[32px] flex items-center justify-center text-primary-gold group-hover:bg-primary-gold group-hover:text-white transition-all duration-500 shadow-2xl">
                         <IconComp size={32} strokeWidth={2.5} />
                       </div>
                       <div className="flex flex-col gap-3">
-                        <h3 className="text-xl font-black text-white uppercase tracking-tight">{f.title}</h3>
-                        <p className="text-zinc-400 font-bold leading-relaxed">{f.desc}</p>
+                        <h3 className="text-2xl font-black text-white uppercase tracking-tight">{f.title}</h3>
+                        <p className="text-zinc-400 font-bold leading-relaxed text-lg">{f.desc}</p>
                       </div>
                     </div>
                   );

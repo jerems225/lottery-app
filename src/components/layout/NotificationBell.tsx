@@ -18,8 +18,11 @@ export const NotificationBell = () => {
     const fetchNotifications = async () => {
         const res = await getNotificationsAction();
         if (res.success && res.notifications) {
-            setNotifications(res.notifications);
-            setUnreadCount(res.unreadCount || 0);
+            // Only update if unread count changed to prevent unnecessary re-renders
+            if (res.unreadCount !== unreadCount || notifications.length !== res.notifications.length) {
+                setNotifications(res.notifications);
+                setUnreadCount(res.unreadCount || 0);
+            }
 
             // Handle Toast for new notifications if the dropdown was closed
             if (!isOpen && res.unreadCount > unreadCount) {
@@ -42,11 +45,14 @@ export const NotificationBell = () => {
         setLoading(false);
     };
 
+    const fetchNotificationsRef = useRef(fetchNotifications);
     useEffect(() => {
-        fetchNotifications();
-        // Poll every 30 seconds
-        const interval = setInterval(fetchNotifications, 30000);
-        return () => clearInterval(interval);
+        fetchNotificationsRef.current = fetchNotifications;
+    });
+
+    useEffect(() => {
+        fetchNotificationsRef.current();
+        // Polling removed: real-time updates restricted to dashboard only
     }, []);
 
     useEffect(() => {

@@ -3,7 +3,27 @@ import React from "react";
 import { Send, Bell } from "lucide-react";
 import { motion } from "framer-motion";
 
+import { subscribeToNewsletterAction } from "@/app/actions/newsletter.actions";
+import { toast } from "react-hot-toast";
+
 export const Newsletter = () => {
+  const [loading, setLoading] = React.useState(false);
+
+  async function handleSubscribe(e: React.FormEvent<HTMLFormElement>) {
+      e.preventDefault();
+      setLoading(true);
+      const formData = new FormData(e.currentTarget);
+      const res = await subscribeToNewsletterAction(formData);
+      setLoading(false);
+
+      if (res.error) {
+          toast.error(res.error);
+      } else {
+          toast.success(res.message || "Success!");
+          (e.target as HTMLFormElement).reset();
+      }
+  }
+
   return (
     <section className="relative py-24 px-6 lg:px-10 overflow-hidden">
       <div className="max-w-7xl mx-auto">
@@ -30,17 +50,21 @@ export const Newsletter = () => {
             </div>
 
             <div className="lg:col-span-2">
-              <form className="flex flex-col gap-4">
+              <form onSubmit={handleSubscribe} className="flex flex-col gap-4">
                 <div className="relative group">
                   <input 
+                    name="email"
                     type="email" 
                     placeholder="your@email.com" 
+                    required
                     className="w-full bg-white/5 border border-white/10 rounded-[28px] py-6 px-8 text-white font-bold text-lg outline-none focus:border-primary-gold focus:ring-4 focus:ring-primary-gold/10 transition-all placeholder:text-zinc-600 shadow-inner"
                   />
                 </div>
-                <button className="relative overflow-hidden group/btn bg-primary-gold text-white w-full py-6 rounded-[28px] font-black text-lg uppercase tracking-widest shadow-xl shadow-primary-gold/20 hover:-translate-y-1 active:scale-95 transition-all">
+                <button 
+                disabled={loading}
+                className="relative overflow-hidden group/btn bg-primary-gold text-white w-full py-6 rounded-[28px] font-black text-lg uppercase tracking-widest shadow-xl shadow-primary-gold/20 hover:-translate-y-1 active:scale-95 transition-all disabled:opacity-50">
                   <span className="relative z-10 flex items-center justify-center gap-3 text-zinc-900">
-                    Subscribe Now
+                    {loading ? "Subscribing..." : "Subscribe Now"}
                     <Send className="w-5 h-5" />
                   </span>
                   <div className="absolute inset-0 -translate-x-full group-hover/btn:translate-x-full transition-all duration-1000 pointer-events-none z-0 skew-x-[-25deg] bg-gradient-to-r from-transparent via-white/40 to-transparent" />

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { 
   Users, Crown, History, BarChart3, Settings, 
-  Home, LogOut, ShieldCheck, DollarSign, Wallet, HelpCircle, User
+  Home, LogOut, ShieldCheck, DollarSign, Wallet, HelpCircle, User, Mail
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { signOut } from "next-auth/react";
@@ -18,6 +18,7 @@ const MENU_ITEMS = [
   { id: "finance", label: "Recharges & Agents", icon: DollarSign, href: "/admin/finance" },
   { id: "transactions", label: "Transactions", icon: History, href: "/admin/transactions" },
   { id: "wallets", label: "Vault & Liquidity", icon: Wallet, href: "/admin/wallets" },
+  { id: "newsletter", label: "Newsletter & Comms", icon: Mail, href: "/admin/newsletter" },
   { id: "faqs", label: "Manage FAQs", icon: HelpCircle, href: "/admin/faqs" },
   { id: "settings", label: "Global Settings", icon: Settings, href: "/admin/settings" },
   { id: "profile", label: "My Profile", icon: User, href: "/profile" },
@@ -98,7 +99,7 @@ export function AdminSidebar({ isOpen, onClose, role }: AdminSidebarProps) {
             Back to site
           </Link>
           <button 
-            onClick={() => signOut()}
+            onClick={() => signOut({ callbackUrl: "/login" })}
             className="flex items-center gap-3 px-5 py-4 rounded-2xl font-black text-xs uppercase tracking-widest text-red-400 hover:bg-red-500/10 transition-all border border-red-500/20"
           >
             <LogOut className="w-5 h-5" />

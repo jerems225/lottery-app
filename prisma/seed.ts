@@ -24,7 +24,7 @@ async function main() {
             password: hashedPassword,
             role: "SUPERADMIN",
             isVerified: true,
-            balance: 1000,
+            balance: 0,
         },
     });
 

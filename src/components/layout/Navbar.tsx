@@ -18,7 +18,7 @@ export const Navbar = () => {
 
   return (
     <header className="sticky top-0 z-50 w-full bg-white/90 backdrop-blur-lg border-b border-black/5 animate-fadeInUp">
-      <div className="max-w-7xl mx-auto px-6 lg:px-20 h-20 flex items-center justify-between">
+      <div className="max-w-[1440px] mx-auto px-6 lg:px-20 h-20 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-3 no-underline group">
           <div className="flex flex-col">
             <span className="text-2xl font-black gold-text-gradient tracking-tighter uppercase leading-none">
@@ -91,7 +91,7 @@ export const Navbar = () => {
               </Link>
 
               <button 
-              onClick={() => signOut()}
+              onClick={() => signOut({ callbackUrl: "/login" })}
               className="w-10 h-10 flex items-center justify-center rounded-2xl bg-zinc-100 text-text-muted hover:text-red-500 hover:bg-red-50 transition-all"
               title={t("nav", "Sign Out")}
             >
@@ -99,7 +99,7 @@ export const Navbar = () => {
             </button>
           </>
         ) : (
-          <Link href="/login" className="wallet-btn flex items-center gap-2 bg-zinc-900 text-white px-6 py-3.5 rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-black/10 hover:bg-primary-gold hover:-translate-y-0.5 active:scale-95 transition-all">
+          <Link href="/login?callbackUrl=/rooms" className="wallet-btn flex items-center gap-2 bg-zinc-900 text-white px-6 py-3.5 rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-black/10 hover:bg-primary-gold hover:-translate-y-0.5 active:scale-95 transition-all">
             <Wallet className="w-4 h-4" />
             <span>{t("nav", "Connect")}</span>
           </Link>
@@ -148,7 +148,7 @@ export const Navbar = () => {
           </div>
         )}
 
-          <Link href={session ? "/profile" : "/login"} className="w-10 h-10 rounded-full bg-zinc-100 border border-zinc-200 flex items-center justify-center text-zinc-600 hover:text-primary-gold transition-all active:scale-90 overflow-hidden relative">
+          <Link href={session ? "/profile" : "/login?callbackUrl=/rooms"} className="w-10 h-10 rounded-full bg-zinc-100 border border-zinc-200 flex items-center justify-center text-zinc-600 hover:text-primary-gold transition-all active:scale-90 overflow-hidden relative">
              {session?.user?.image ? (
                 <img src={session.user.image} alt="Avatar" className="w-full h-full object-cover" />
              ) : (
@@ -232,14 +232,14 @@ export const Navbar = () => {
             <div className="mt-auto pb-10 flex flex-col gap-4">
               {session ? (
                 <button 
-                  onClick={() => signOut()}
+                  onClick={() => signOut({ callbackUrl: "/login" })}
                   className="bg-zinc-900 text-white w-full py-5 rounded-[24px] font-black uppercase tracking-widest text-sm shadow-xl"
                 >
                    {t("nav", "Sign Out")}
                 </button>
               ) : (
                 <Link 
-                  href="/login"
+                  href="/login?callbackUrl=/rooms"
                   onClick={() => setIsOpen(false)}
                   className="bg-primary-gold text-white text-center w-full py-5 rounded-[24px] font-black uppercase tracking-widest text-sm shadow-xl"
                 >

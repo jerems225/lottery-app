@@ -26,7 +26,7 @@ export default function AgentDashboard() {
              if (res.success && res.balance !== undefined) setBalance(res.balance);
         };
         fetchBal();
-        const interval = setInterval(fetchBal, 10000);
+        const interval = setInterval(fetchBal, 30000);
         return () => clearInterval(interval);
     }, [session]);
 

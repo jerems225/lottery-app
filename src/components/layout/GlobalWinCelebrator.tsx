@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import { getAndClearWinNotificationsAction } from "@/app/actions/lottery.actions";
 import { getLatestBalanceAction } from "@/app/actions";
@@ -7,44 +7,61 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Trophy, X } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 
+// Polling interval: 60 seconds (synced with notifications to balance load)
+const SYNC_INTERVAL = 60000;
+
 export function GlobalWinCelebrator() {
     const { data: session, update } = useSession();
     const [wins, setWins] = useState<any[]>([]);
-    
+    const isFetchingRef = useRef(false);
+    const lastBalanceRef = useRef<number | undefined>(undefined);
+
+    // Store the session user id in a ref to avoid re-creating the effect 
+    const userIdRef = useRef(session?.user?.id);
     useEffect(() => {
-        if (!session?.user?.id) return;
-        
-        let isFetching = false;
-        const checkData = async () => {
-            if (isFetching) return;
-            isFetching = true;
+        userIdRef.current = session?.user?.id;
+    }, [session?.user?.id]);
 
-            try {
-                const [winsRes, balanceRes] = await Promise.all([
-                    getAndClearWinNotificationsAction(),
-                    getLatestBalanceAction()
-                ]);
+    const checkData = useCallback(async () => {
+        if (isFetchingRef.current || !userIdRef.current) return;
+        isFetchingRef.current = true;
 
-                if (winsRes.success && winsRes.wins && winsRes.wins.length > 0) {
-                    setWins(winsRes.wins);
-                }
+        try {
+            const [winsRes, balanceRes] = await Promise.all([
+                getAndClearWinNotificationsAction(),
+                getLatestBalanceAction()
+            ]);
 
-                if (balanceRes.success && balanceRes.balance !== undefined && balanceRes.balance !== session.user.balance) {
-                    await update({ balance: balanceRes.balance });
-                }
-            } catch (err) {
-                console.error("Sync error", err);
-            } finally {
-                isFetching = false;
+            if (winsRes.success && winsRes.wins && winsRes.wins.length > 0) {
+                setWins(winsRes.wins);
             }
-        };
+
+            if (balanceRes.success && balanceRes.balance !== undefined && balanceRes.balance !== lastBalanceRef.current) {
+                lastBalanceRef.current = balanceRes.balance;
+                await update({ balance: balanceRes.balance });
+            }
+        } catch (err) {
+            console.error("Sync error", err);
+        } finally {
+            isFetchingRef.current = false;
+        }
+    }, [update]);
+    
+    const checkDataRef = useRef(checkData);
+    useEffect(() => {
+        checkDataRef.current = checkData;
+    });
+
+    useEffect(() => {
+        if (!userIdRef.current) return;
         
-        checkData();
+        // Initialize balance ref
+        lastBalanceRef.current = session?.user?.balance; // Fixed initialization safely
         
-        // Fast polling (e.g. 5 seconds) for real-time deposit/win hydration throughout the site
-        const interval = setInterval(checkData, 5000);
-        return () => clearInterval(interval);
-    }, [session?.user?.id, session?.user?.balance, update]);
+        // Initial check only (no real-time polling)
+        checkDataRef.current();
+        
+    }, [userIdRef.current]);
     
     const dismissFirst = () => {
         setWins(prev => prev.slice(1));

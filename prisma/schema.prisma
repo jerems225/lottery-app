@@ -1,7 +1,6 @@
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-  engineType = "dataproxy"
 }
 
 generator client {
@@ -232,13 +231,18 @@ model PaymentRequest {
   id              String   @id @default(cuid())
   userId          String
   user            User     @relation("UserPaymentRequests", fields: [userId], references: [id])
-  type            String   // DEPOSIT, WITHDRAWAL, AGENT_RECHARGE
+  type            String   // DEPOSIT, WITHDRAWAL, AGENT_RECHARGE, CRYPTO_DEPOSIT
   amount          Float
-  status          String   @default("PENDING") // PENDING, APPROVED, REJECTED
+  status          String   @default("PENDING") // PENDING, APPROVED, REJECTED, CANCELLED
   
   proofUrl        String?
   paymentMethod   String?
   phoneNumber     String?
+
+  // Crypto specific fields
+  txHash          String?  @unique
+  blockchain      String?  // Ethereum, BSC, Polygon
+  currency        String?  // ETH, BNB, USDT
   
   handledById     String?
   handledBy       User?    @relation("HandledPaymentRequests", fields: [handledById], references: [id])
@@ -250,5 +254,13 @@ model PaymentRequest {
 model GlobalSetting {
   key       String   @id
   value     String
+  updatedAt DateTime @updatedAt
+}
+
+model Newsletter {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

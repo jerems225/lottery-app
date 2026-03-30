@@ -7,6 +7,7 @@ import { authConfig } from "./auth.config";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
     ...authConfig,
+    secret: process.env.AUTH_SECRET,
     adapter: PrismaAdapter(prisma) as any,
     providers: [
         Credentials({
@@ -33,7 +34,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
                 // Check for Total Block
                 if (user.isTotalBlock && user.blockedUntil && new Date(user.blockedUntil) > new Date()) {
-                    throw new Error("Your account has been restricted. Access denied.");
+                    return null; // Don't throw to avoid terminal stack traces
                 }
 
                 return {
