@@ -1,21 +1,27 @@
-{% block stylesheets %}
-    <!DOCTYPE html>
-    <html lang="fr">
+<!DOCTYPE html>
+<html lang="fr">
 
-    <head>
-        <meta charset="utf-8">
-        <title>{% block title %}{% endblock title %} Bitcoin Lottery - Tentez votre chance dans une salle de tirages</title>
-        <meta content="width=device-width, initial-scale=1.0" name="viewport">
-        <meta content="" name="keywords">
-        <meta content="" name="description">
+	<head>
+		<meta charset="utf-8">
+		<title>
+			{% block title %}{% endblock title %}
+			BitLOT - Bitcoin Lottery Platform</title>
+		<meta content="width=device-width, initial-scale=1.0" name="viewport">
+		<meta content="Bitcoin lottery, crypto lottery, provably fair, blockchain" name="keywords">
+		<meta content="The next generation of provably fair Bitcoin lotteries. Secure, transparent, and community-driven." name="description">
 
-        {% include "./_partials/stylesheets/styles.html.twig" %}
-    </head>
+		{% include "./_partials/stylesheets/styles.html.twig" %}
+		{% block stylesheets %}{% endblock %}
+	</head>
 
-{% endblock stylesheets %}
+	<body>
+		{% include "./_partials/header.html.twig" %}
 
-{% include "./_partials/header.html.twig" %}
+		{% block body %}{% endblock body %}
 
-{% block body %}{% endblock body %}
+		{% include "./_partials/footer.html.twig" %}
+		{% include "./_partials/stylesheets/scripts.html.twig" %}
+		{% block javascripts %}{% endblock %}
+	</body>
 
-{% include "./_partials/footer.html.twig" %}
+</html>

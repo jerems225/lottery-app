@@ -1,62 +1,61 @@
 <!-- Winner Start -->
-<div class="container-xxl py-5">
-    <div class="container">
-        {% if winner %}
-            <div class="row g-12 d-flex justify-content-center">
-                <div class="col-lg-5 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
-                    <div class="team-item position-relative rounded overflow-hidden">
-                        <div class="overflow-hidden">
-                            <img class="img-fluid" src="{{asset('assets/img/win.jpg')}}" alt="">
-                        </div>
-                        <div class="team-text bg-light text-center p-4">
-                            <h5><strong class="text-primary">GAGNANT</strong> <i class="fa fa-arrow-right"></i> {{winner.numTicket}}</h5>
-                            {% if winner.user %}
-                                <p><strong class="text-primary">{{winner.user.pseudo|upper}} GAGNE</strong> <strong class="text-dark"><i class="fa fa-arrow-right"></i> {{betroom.awards|number_format(0, '', '.')}}$</strong></p>
-                            {% else %}
-                                <p><strong class="text-danger text-lowercase">Ce ticket n'a pas été sélectionner par un participant !</strong></p>
-                            {% endif %}
-        
-                            <div class="team-social text-center">
-                                <p href="#"><strong>{{(betroom.updatedAt|format_datetime('full', 'none', locale='fr'))|upper}}</strong></p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        {% endif %}
-        
-        {% if betroom.status == "sold out" %}
-        <div class="row g-12 d-flex justify-content-center">
-            <div class="col-lg-5 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
-                <div class="team-item position-relative rounded overflow-hidden">
-                    <div class="team-text bg-light text-center p-4">
-                        <h5><strong class="text-primary"><strong class="text-">LA LIMITE D'ACHAT DE TICKETS EST ATTEINTE</strong> ET LE RESULTAT SERA DISPONIBLE A PARTIR DE 18H, MERCI DE PATIENTER !!</strong></h5>
-                    </div>
-                </div>
-            </div>
-        </div>
-        {% elseif not winner and betroom.status == "closed" and betroom.buyTicket != 0 %}
-        <div class="row g-12 d-flex justify-content-center">
-            <div class="col-lg-5 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
-                <div class="team-item position-relative rounded overflow-hidden">
-                    <div class="team-text bg-light text-center p-4">
-                        <h5><strong class="text-primary">LE RESULTAT SERA DISPONIBLE A PARTIR DE 18H, MERCI DE PATIENTER !!</strong></h5>
-                    </div>
-                </div>
-            </div>
-        </div>
-        {% elseif winner and betroom.status == "closed" and betroom.buyTicket == 0 %}
-        <div class="row g-12 d-flex justify-content-center">
-            <div class="col-lg-5 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
-                <div class="team-item position-relative rounded overflow-hidden">
-                    <div class="team-text bg-light text-center p-4">
-                        <h5><strong class="text-primary">AUCUN PARTICIPANT DANS CETTE SALLE DE TIRAGES, AUCUN GAGNANT !!</strong></h5>
-                    </div>
-                </div>
-            </div>
-        </div>
-        {% endif %}
+<div class="container py-5" style="margin-top: -60px;">
+	<div class="container">
+		{% if winner %}
+			<div style="max-width: 600px; margin: 0 auto;">
+				<div class="glass-card" style="background: white; border-radius: 32px; box-shadow: var(--shadow-xl); padding: 48px; border: 1px solid rgba(0,0,0,0.03); text-align: center;">
+					<div style="margin-bottom: 30px;">
+						<img src="{{asset('assets/img/win.jpg')}}" alt="Winner" style="width: 100%; border-radius: 20px; box-shadow: var(--shadow-md);">
+					</div>
+					<div>
+						<h5 style="font-weight: 800; font-size: 24px; margin-bottom: 16px;">
+							<span style="color: var(--primary-gold);">WINNER</span>
+							<i class="fa fa-arrow-right" style="font-size: 16px; opacity: 0.5;"></i>
+							{{winner.numTicket}}
+						</h5>
+						{% if winner.user %}
+							<p style="font-size: 18px; color: var(--text-main); margin-bottom: 24px;">
+								<strong style="color: var(--primary-gold); font-weight: 800;">{{winner.user.pseudo|upper}}</strong>
+								HAS WON
+								<strong style="color: var(--dark-gold); font-weight: 800;">{{betroom.awards|number_format(0, '', '.')}}$</strong>
+							</p>
+						{% else %}
+							<p style="color: #ef4444; font-weight: 600; font-size: 16px; margin-bottom: 24px;">This ticket was not purchased by any participant.</p>
+						{% endif %}
 
-    </div>
+						<div style="background: #F8FAFC; padding: 16px; border-radius: 16px; color: #64748B; font-weight: 700; font-size: 14px;">
+							{{(betroom.updatedAt|format_datetime('full', 'none', locale='fr'))|upper}}
+						</div>
+					</div>
+				</div>
+			</div>
+		{% endif %}
+
+		{% if betroom.status == "sold out" %}
+			<div style="max-width: 600px; margin: 20px auto;">
+				<div class="glass-card" style="background: white; border-radius: 24px; padding: 32px; text-align: center; border: 1px solid var(--primary-gold);">
+					<h5 style="color: var(--primary-gold); font-weight: 800; line-height: 1.4;">
+						TICKET PURCHASE LIMIT REACHED.<br>RESULTS WILL BE AVAILABLE AFTER 6:00 PM. THANK YOU FOR YOUR PATIENCE!
+					</h5>
+				</div>
+			</div>
+		{% elseif not winner and betroom.status == "closed" and betroom.buyTicket != 0 %}
+			<div style="max-width: 600px; margin: 20px auto;">
+				<div class="glass-card" style="background: white; border-radius: 24px; padding: 32px; text-align: center; border: 1px solid var(--primary-gold);">
+					<h5 style="color: var(--primary-gold); font-weight: 800;">
+						RESULTS WILL BE AVAILABLE AFTER 6:00 PM. THANK YOU FOR YOUR PATIENCE!
+					</h5>
+				</div>
+			</div>
+		{% elseif winner and betroom.status == "closed" and betroom.buyTicket == 0 %}
+			<div style="max-width: 600px; margin: 20px auto;">
+				<div class="glass-card" style="background: white; border-radius: 24px; padding: 32px; text-align: center; border: 1px solid #ef4444;">
+					<h5 style="color: #ef4444; font-weight: 800;">
+						NO PARTICIPANTS IN THIS ROOM. NO WINNER!
+					</h5>
+				</div>
+			</div>
+		{% endif %}
+	</div>
 </div>
 <!-- Winner End -->

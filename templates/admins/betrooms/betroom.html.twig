@@ -1,173 +1,224 @@
 {% extends './admins/adminbase.html.twig' %}
-{% block title %} Gestion des salles de tirage{% endblock %}
-{% block body %}
-  <!-- Content -->
-  <div class="container-xxl flex-grow-1 container-p-y">
-
-    <!-- Vertically Centered Modal -->
-    <div class="col-lg-4 col-md-6">
-      <div class="mt-3">
-        <!-- Modal -->
-        <div class="modal fade" id="modalCenter" tabindex="-1" aria-hidden="true">
-          <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title" id="modalCenterTitle">ENREGISTRER UNE NOUVELLE SALLE</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-              </div>
-              <div class="modal-body">
-                {{form_start(form)}}
-                  <div class="row">
-                    <div class="col mb-3">
-                      <label for="nameWithTitle" class="form-label">NOM DE LA SALLE</label>
-                      {{form_widget(form.num_betroom,{'attr':{'class':'form-control', 'placeholder':'le nom de la salle de tirage ...'}})}}
-                    </div>
-                  </div>
-                  <div class="row">
-                    <div class="col mb-3">
-                      <label for="nameWithTitle" class="form-label">GAIN</label>
-                      {{form_widget(form.awards,{'attr':{'class':'form-control', 'placeholder':'le gain de cette salle...'}})}}
-                      <small>
-                        {% if not form.vars.valid %}
-                          {# Loop through every form item #}
-                          {% for child in form.children %}
-                            {# Display the errors of the form item #}
-                            {% if child.vars.name =="awards" %}
-                              {%for error in child.vars.errors%}
-                              <p style="color:red;">{{error.message}}</p>
-                              {%endfor%}
-                            {% endif %}
-                          {% endfor %}
-                        {% endif %}
-                      </small>
-                    </div>
-                  </div>
-                  <div class="row">
-                    <div class="col mb-3">
-                      <label for="nameWithTitle" class="form-label">PRIX DU TICKET</label>
-                      {{form_widget(form.ticket_price,{'attr':{'class':'form-control', 'placeholder':'le prix unitaire du ticket ...'}})}}
-                      <small>
-                        {% if not form.vars.valid %}
-                          {# Loop through every form item #}
-                          {% for child in form.children %}
-                            {# Display the errors of the form item #}
-                            {% if child.vars.name =="ticket_price" %}
-                              {%for error in child.vars.errors%}
-                              <p style="color:red;">{{error.message}}</p>
-                              {%endfor%}
-                            {% endif %}
-                          {% endfor %}
-                        {% endif %}
-                      </small>
-                    </div>
-                  </div>
-                  <div class="row">
-                    <div class="col mb-3">
-                      <label for="nameWithTitle" class="form-label">TICKET MAXIMUM</label>
-                      {{form_widget(form.max_ticket,{'attr':{'class':'form-control', 'placeholder':'le maximum de ticket possible ...'}})}}
-                    </div>
-                  </div>
-                  </div>
-                  <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
-                      Annuler
-                    </button>
-                    <button type="submit" class="btn btn-primary">Sauvegarder les changements</button>
-                  </div>
-                {{form_end(form)}}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <!-- Liste des piece -->
-    {% for message in app.flashes('admins.betrooms') %}
-      <div class="alert alert-success text-dark" align="center">
-        <b>{{message}}</b>
-      </div>
-    {% endfor %}
-
-    {% for message in app.flashes('remove.tickets.error') %}
-    <div class="alert alert-danger text-dark" align="center">
-      <b>{{message}}</b>
-    </div>
-  {% endfor %}
-    <div class="card">
-      <h5 class="card-header text-uppercase">Liste des salles de tirage</h5>
-      <div class="table-responsive text-nowrap">
-        <table class="table">
-          <thead>
-            <tr>
-              <th colspan="3">
-                <a href="#" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modalCenter">Enregistrer une nouvelle salle
-                  <i class="bx bx-plus-circle"></i>
-                </a>
-              </th>
-            </tr>
-            <tr class="bg-dark">
-              <th class="text-white">DATE</th>
-              <th class="text-white">REFERENCE</th>
-              <th class="text-white">SALLE</th>
-              <th class="text-white">PRIX TICKET</th>
-              <th class="text-white">TICKET MAXIMUM</th>
-              <th class="text-white">GAIN</th>
-              <th class="text-white">ACHAT TICKET</th>
-              <th class="text-white">STATUS</th>
-              <th colspan="2" class="text-white">ACTIONS</th>
-            </tr>
-          </thead>
-          <tbody class="table-border-bottom-0">
-            {% for b in betrooms|reverse %}
-              <tr class="table-white">
-                <td>
-                  <strong>{{b.createdAt|format_datetime('medium', 'none', locale='fr')}}</strong>
-                </td>
-                <td>
-                  <strong>{{b.reference}}</strong>
-                </td>
-                <td>
-                  <strong>{{b.numBetroom}}</strong>
-                </td>
-                <td>
-                  <span class="badge bg-label-primary text-dark me-1">{{b.TicketPrice|number_format('2','.',',')}} $USD</span>
-                </td>
-                <td>
-                  <strong><span class="badge bg-label-warning text-dark me-1">{{b.maxTicket|number_format('0',',','.')}} Tickets Max</span></strong>
-                </td>
-                <td>
-                  <span class="badge bg-label-primary text-dark me-1">{{b.awards|number_format('2','.',',')}} $USD</span>
-                </td>
-                <td>
-                  <span class="badge bg-label-primary text-dark me-1">{{b.buyTicket|number_format('0',',','.')}}/{{b.maxTicket}}</span>
-                </td>
-                <td>
-                  {% if roomSettings.status == "closed" %}
-                    <span class="badge bg-label-danger text-dark me-1">Fermee</span>
-                  {% elseif roomSettings.status == "open" %}
-                    <span class="badge bg-label-success text-dark me-1">Ouverte</span>
-                  {% elseif b.buyTicket == b.maxTicket %}
-                    <span class="badge bg-label-warning text-dark me-1">Pleine</span>
-                  {% endif %}
-                </td>
-                <td>
-                  <a href="{{path('admins.betrooms.edit',{reference: b.reference})}}" class="btn btn-sm btn-dark text-uppercase">Modifier</a>
-                  <a href="{{path('admins.betrooms.remove',{reference: b.reference})}}" class="btn btn-sm btn-danger text-uppercase">Supprimer</a>
-                </td>
-              </tr>
-            {% endfor %}
-            {% if betrooms | length == 0 %}
-              <tr class="">
-                <td colspan="7">
-                  <p class="text-center text-muted">Aucune salle de tirages enregistrée</p>
-                </td>
-              </tr>
-            {% endif %}
-          </tbody>
-        </table>
-      </div>
-    </div>
-    <!--/ liste des gestionnaires -->
-
-  </div>
-  <!-- / Content -->
+{% block title %}
+	Gestion des salles de tirage
 {% endblock %}
+{% block body %}
+	<!-- Content -->
+	<div
+		class="container-xxl flex-grow-1 container-p-y">
+
+		<!-- Vertically Centered Modal -->
+		<div class="col-lg-4 col-md-6">
+			<div
+				class="mt-3">
+				<!-- Modal -->
+				<div class="modal fade" id="modalCenter" tabindex="-1" aria-hidden="true">
+					<div class="modal-dialog modal-dialog-centered" role="document">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5 class="modal-title" id="modalCenterTitle">ENREGISTRER UNE NOUVELLE SALLE</h5>
+								<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+							</div>
+							<div class="modal-body">
+								{{form_start(form, {'attr': {'enctype': 'multipart/form-data'}})}}
+								<div class="row">
+									<div class="col mb-3">
+										<label for="nameWithTitle" class="form-label">NOM DE LA SALLE</label>
+										{{form_widget(form.num_betroom,{'attr':{'class':'form-control', 'placeholder':'le nom de la salle de tirage ...'}})}}
+									</div>
+								</div>
+								<div class="row">
+									<div class="col mb-3">
+										<label for="nameWithTitle" class="form-label">IMAGE DE LA SALLE</label>
+										{{form_widget(form.image,{'attr':{'class':'form-control'}})}}
+									</div>
+								</div>
+								<div class="row">
+									<div class="col mb-3">
+										<label for="nameWithTitle" class="form-label">TEMPS DE FERMETURE (Optionnel)</label>
+										{{form_widget(form.closingAt,{'attr':{'class':'form-control'}})}}
+									</div>
+								</div>
+								<div class="row">
+									<div class="col mb-3">
+										<label for="nameWithTitle" class="form-label">GAIN</label>
+										{{form_widget(form.awards,{'attr':{'class':'form-control', 'placeholder':'le gain de cette salle...'}})}}
+										<small>
+											{% if not form.vars.valid %}
+												{# Loop through every form item #}
+												{% for child in form.children %}
+													{# Display the errors of the form item #}
+													{% if child.vars.name =="awards" %}
+														{%for error in child.vars.errors%}
+															<p style="color:red;">{{error.message}}</p>
+															{%endfor%}
+														{% endif %}
+													{% endfor %}
+												{% endif %}
+											</small>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col mb-3">
+											<label for="nameWithTitle" class="form-label">PRIX DU TICKET</label>
+											{{form_widget(form.ticket_price,{'attr':{'class':'form-control', 'placeholder':'le prix unitaire du ticket ...'}})}}
+											<small>
+												{% if not form.vars.valid %}
+													{# Loop through every form item #}
+													{% for child in form.children %}
+														{# Display the errors of the form item #}
+														{% if child.vars.name =="ticket_price" %}
+															{%for error in child.vars.errors%}
+																<p style="color:red;">{{error.message}}</p>
+																{%endfor%}
+															{% endif %}
+														{% endfor %}
+													{% endif %}
+												</small>
+											</div>
+										</div>
+										<div class="row">
+											<div class="col mb-3">
+												<label for="nameWithTitle" class="form-label">TICKET MAXIMUM</label>
+												{{form_widget(form.max_ticket,{'attr':{'class':'form-control', 'placeholder':'le maximum de ticket possible ...'}})}}
+											</div>
+										</div>
+									</div>
+									<div class="modal-footer">
+										<button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+											Annuler
+										</button>
+										<button type="submit" class="btn btn-primary">Sauvegarder les changements</button>
+									</div>
+									{{form_end(form)}}
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- Liste des piece -->
+				{% for message in app.flashes('admins.betrooms') %}
+					<div class="alert alert-success text-dark" align="center">
+						<b>{{message}}</b>
+					</div>
+				{% endfor %}
+
+				{% for message in app.flashes('remove.tickets.error') %}
+					<div class="alert alert-danger text-dark" align="center">
+						<b>{{message}}</b>
+					</div>
+				{% endfor %}
+				<div class="card">
+					<div class="card-header border-bottom d-flex justify-content-between align-items-center">
+						<h5 class="m-0 text-uppercase fw-bold">Liste des salles de tirage</h5>
+						<a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalCenter">
+							<i class="bx bx-plus me-1"></i>
+							Créer une salle
+						</a>
+					</div>
+					<div class="table-responsive text-nowrap">
+						<table class="table table-hover">
+							<thead>
+								<tr>
+									<th>IMAGE</th>
+									<th>SALLE</th>
+									<th>REFERENCE</th>
+									<th>FERMETURE</th>
+									<th>PRIX TICKET</th>
+									<th>CAPACITÉ</th>
+									<th>GAIN</th>
+									<th>REMPLISSAGE</th>
+									<th>STATUT</th>
+									<th class="text-center">ACTIONS</th>
+								</tr>
+							</thead>
+							<tbody class="table-border-bottom-0">
+								{% for b in betrooms|reverse %}
+									<tr>
+										<td>
+											{% if b.image %}
+												<img src="{{ asset('uploads/betrooms/' ~ b.image) }}" width="40" height="40" class="rounded shadow-sm" style="object-fit: cover;">
+											{% else %}
+												<div class="bg-label-secondary rounded d-flex align-items-center justify-content-center shadow-sm" style="width: 40px; height: 40px;">
+													<i class="bx bx-image text-muted"></i>
+												</div>
+											{% endif %}
+										</td>
+										<td>
+											<span class="fw-bold">{{b.numBetroom}}</span>
+										</td>
+										<td>
+											<code class="text-primary small fw-bold">{{b.reference}}</code>
+										</td>
+										<td>
+											{% if b.closingAt %}
+												<span class="badge bg-label-warning text-dark small">
+													<i class="bx bx-time me-1"></i>
+													{{b.closingAt|format_datetime('medium', 'short', locale='fr')}}
+												</span>
+											{% else %}
+												<span class="text-muted small">Non défini</span>
+											{% endif %}
+										</td>
+										<td>
+											<span class="badge bg-label-info">{{b.TicketPrice|number_format('2','.',',')}}
+												$</span>
+										</td>
+										<td>
+											<span class="badge bg-label-secondary text-muted">{{b.maxTicket|number_format('0',',','.')}}
+												Max</span>
+										</td>
+										<td>
+											<span class="badge bg-label-success">{{b.awards|number_format('2','.',',')}}
+												$</span>
+										</td>
+										<td>
+											<div class="d-flex align-items-center">
+												<span class="me-2">{{b.buyTicket}}/{{b.maxTicket}}</span>
+												<div class="progress w-px-50" style="height: 6px;">
+													<div class="progress-bar bg-primary" role="progressbar" style="width: {{ (b.buyTicket / b.maxTicket * 100)|round }}%;"></div>
+												</div>
+											</div>
+										</td>
+										<td>
+											{% if roomSettings.status == "closed" %}
+												<span class="badge bg-label-danger">Fermée</span>
+											{% elseif roomSettings.status == "open" %}
+												<span class="badge bg-label-success">Active</span>
+											{% elseif b.buyTicket == b.maxTicket %}
+												<span class="badge bg-label-warning">Pleine</span>
+											{% endif %}
+										</td>
+										<td class="text-center">
+											<div class="dropdown">
+												<button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
+													<i class="bx bx-dots-vertical-rounded"></i>
+												</button>
+												<div class="dropdown-menu">
+													<a class="dropdown-item" href="{{path('admins.betrooms.edit',{reference: b.reference})}}">
+														<i class="bx bx-edit-alt me-1"></i>
+														Modifier</a>
+													<a class="dropdown-item text-danger" href="{{path('admins.betrooms.remove',{reference: b.reference})}}">
+														<i class="bx bx-trash me-1"></i>
+														Supprimer</a>
+												</div>
+											</div>
+										</td>
+									</tr>
+								{% endfor %}
+								{% if betrooms | length == 0 %}
+									<tr class="">
+										<td colspan="7">
+											<p class="text-center text-muted">Aucune salle de tirages enregistrée</p>
+										</td>
+									</tr>
+								{% endif %}
+							</tbody>
+						</table>
+					</div>
+				</div>
+				<!--/ liste des gestionnaires -->
+
+			</div>
+			<!-- / Content -->
+		{% endblock %}

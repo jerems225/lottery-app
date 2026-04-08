@@ -1,0 +1,181 @@
+{% extends 'base.html.twig' %}
+{% block title %}FAQ |
+{% endblock title %}
+
+{% block stylesheets %}
+	<style>
+		.faq-section {
+			padding: 80px 0;
+			max-width: 800px;
+			margin: 0 auto;
+		}
+
+		.faq-item {
+			background: white;
+			border-radius: 16px;
+			margin-bottom: 16px;
+			overflow: hidden;
+			box-shadow: var(--shadow-sm);
+			border: 1px solid rgba(0, 0, 0, 0.05);
+		}
+
+		.faq-question {
+			padding: 24px;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			cursor: pointer;
+			font-weight: 700;
+			transition: var(--transition);
+		}
+
+		.faq-question:hover {
+			background: #fafafa;
+			color: var(--primary-gold);
+		}
+
+		.faq-answer {
+			padding: 0 24px;
+			max-height: 0;
+			overflow: hidden;
+			transition: all 0.4s ease-out;
+			color: var(--text-muted);
+			font-size: 15px;
+		}
+
+		.faq-item.active .faq-answer {
+			padding: 0 24px 24px;
+			max-height: 500px;
+		}
+
+		.faq-item.active .faq-question {
+			color: var(--primary-gold);
+		}
+
+		.faq-question i {
+			transition: transform 0.3s;
+		}
+
+		.faq-item.active .faq-question i {
+			transform: rotate(180deg);
+		}
+
+		@media(max-width: 768px) {
+			.faq-section {
+				padding: 40px 0;
+			}
+
+			.faq-question {
+				padding: 16px 20px;
+				font-size: 15px;
+			}
+
+			.faq-answer {
+				padding: 0 20px;
+				font-size: 14px;
+			}
+
+			.faq-item.active .faq-answer {
+				padding: 0 20px 20px;
+			}
+		}
+	</style>
+{% endblock %}
+
+{% block body %}
+	<main class="container faq-section">
+		<div class="section-header" style="text-align: center; margin-bottom: 48px;">
+			<h2 style="font-size: 36px; font-weight: 800; margin-bottom: 12px;">Frequently Asked Questions</h2>
+			<p style="color: var(--text-muted); font-size: 16px;">Everything you need to know about BitLOT</p>
+		</div>
+
+		<div class="faq-list">
+			<div class="faq-item active">
+				<div class="faq-question">
+					<span>What is BitLOT?</span>
+					<i class="fas fa-chevron-down"></i>
+				</div>
+				<div class="faq-answer">
+					BitLOT is a provably fair Bitcoin lottery platform that allows users to participate in global
+					                lotteries or create their own private "Community Rooms" to play with friends and earn commissions.
+				</div>
+			</div>
+
+			<div class="faq-item">
+				<div class="faq-question">
+					<span>How do Community Rooms work?</span>
+					<i class="fas fa-chevron-down"></i>
+				</div>
+				<div class="faq-answer">
+					Any user with a balance of at least $10 can create a room. You set the bet amount and the minimum
+					                number of players. Once the room is full, a winner is picked automatically using a verifiable RNG.
+					                The winner gets 75%, you get 5% as the creator, and the platform takes 20%.
+				</div>
+			</div>
+
+			<div class="faq-item">
+				<div class="faq-question">
+					<span>Is the draw fair?</span>
+					<i class="fas fa-chevron-down"></i>
+				</div>
+				<div class="faq-answer">
+					Yes. We use a Random Number Generator (RNG) that is verifiable. Every ticket has an equal chance,
+					                and the outcome can be checked on-chain or via our internal transparency logs.
+				</div>
+			</div>
+
+			<div class="faq-item">
+				<div class="faq-question">
+					<span>How can I earn with affiliation?</span>
+					<i class="fas fa-chevron-down"></i>
+				</div>
+				<div class="faq-answer">
+					When you refer a friend, you earn 10% of the platform's fees from every bet they make. That's
+					                effectively 2% of their total bet amount, credited to your wallet in real-time.
+				</div>
+			</div>
+
+			<div class="faq-item">
+				<div class="faq-question">
+					<span>What are the withdrawal limits?</span>
+					<i class="fas fa-chevron-down"></i>
+				</div>
+				<div class="faq-answer">
+					You can withdraw your winnings and commissions at any time once you reach the minimum payout
+					                threshold of $20. Transfers are processed in BTC or BNB.
+				</div>
+			</div>
+
+			<div class="faq-item">
+				<div class="faq-question">
+					<span>How do I connect my wallet?</span>
+					<i class="fas fa-chevron-down"></i>
+				</div>
+				<div class="faq-answer">
+					Click the "Connect Wallet" button in the header. You can connect via Metamask or WalletConnect.
+					                Once connected, your balance will be visible and you can start playing immediately.
+				</div>
+			</div>
+
+			<div class="faq-item">
+				<div class="faq-question">
+					<span>What happens if the room doesn't fill up?</span>
+					<i class="fas fa-chevron-down"></i>
+				</div>
+				<div class="faq-answer">
+					If a room doesn't reach the minimum number of participants before the deadline, all funds are
+					                automatically returned to the participants' wallets. No fees are charged.
+				</div>
+			</div>
+		</div>
+	</main>
+
+	<script>
+		document.querySelectorAll('.faq-question').forEach(q => {
+q.addEventListener('click', () => {
+const item = q.parentElement;
+item.classList.toggle('active');
+});
+});
+	</script>
+{% endblock body %}

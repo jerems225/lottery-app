@@ -1,0 +1,141 @@
+{% extends 'base.html.twig' %}
+{% block title %}Affiliation |
+{% endblock title %}
+
+{% block body %}
+	<main class="container">
+		<section class="aff-top">
+			<div class="aff-hero glass-card" style="background: white; border-radius: 32px; box-shadow: var(--shadow-xl); padding: 48px; border: 1px solid rgba(0,0,0,0.03);">
+				<h1 style="font-weight: 800; font-size: 36px; letter-spacing: -0.025em; line-height: 1.1; margin-bottom: 16px;">
+					Invite Friends &
+					<span style="color:var(--primary-gold)">Earn BTC</span>
+				</h1>
+				<p style="color: var(--text-muted); font-size: 16px; margin-bottom: 32px;">Get lifetime rewards of 10%
+					                of our fees from every referral's activity.</p>
+
+				<div class="referral-box" style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 20px; padding: 24px;">
+					<label style="font-weight: 700; font-size: 12px; color: #94A3B8; text-transform: uppercase; margin-bottom: 12px; display: block;">Your Exclusive Link</label>
+					<div class="link-input">
+						<input type="text" id="ref-link" value="{% if app.user %}https://bitlot.com/ref/{{ app.user.pseudo }}{% else %}https://bitlot.com/ref/...{% endif %}" readonly style="border: 1px solid #CBD5E1; padding: 14px; border-radius: 12px; font-weight: 600;">
+						<button id="copy-ref" style="background: var(--primary-gold); font-weight: 700;">Copy Link</button>
+					</div>
+				</div>
+			</div>
+
+			<div class="stats-grid">
+				<div class="stat-card glass-card">
+					<div class="icon-box blue">
+						<i class="fas fa-users"></i>
+					</div>
+					<div class="stat-info">
+						<span class="val">
+							{% if app.user %}
+								{{ app.user.referrals|default(0)|length }}{% else %}0
+							{% endif %}
+						</span>
+						<span class="lbl">Total Affiliates</span>
+					</div>
+				</div>
+				<div class="stat-card glass-card">
+					<div class="icon-box gold">
+						<i class="fas fa-comment-dollar"></i>
+					</div>
+					<div class="stat-info">
+						<span class="val">0.00 $</span>
+						<span class="lbl">Total Earned</span>
+					</div>
+				</div>
+				<div class="stat-card glass-card">
+					<div class="icon-box green">
+						<i class="fas fa-wallet"></i>
+					</div>
+					<div class="stat-info">
+						<span class="val">0.00 $</span>
+						<span class="lbl">Available to Withdraw</span>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<section class="aff-details">
+			<div class="rules-panel glass-card">
+				<h2>How it works</h2>
+				<div class="steps-grid">
+					<div class="step">
+						<span class="step-num">01</span>
+						<h3>Share Link</h3>
+						<p>Share your link with your community or friends.</p>
+					</div>
+					<div class="step">
+						<span class="step-num">02</span>
+						<h3>They Play</h3>
+						<p>When they join a room or buy a ticket, we collect a fee.</p>
+					</div>
+					<div class="step">
+						<span class="step-num">03</span>
+						<h3>Get Paid</h3>
+						<p>You receive 2% of their total bet amount instantly.</p>
+					</div>
+				</div>
+
+				<div class="payout-example">
+					<div class="example-box">
+						<h4>Real Example</h4>
+						<ul>
+							<li>Affiliate Bet:
+								<strong>100 $</strong>
+							</li>
+							<li>Platform Fee (20%):
+								<strong>20 $</strong>
+							</li>
+							<li class="win">Your Commission (10% of Fee):
+								<strong>2 $</strong>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+
+			<div class="history-panel glass-card">
+				<h2>Earnings History</h2>
+				{% if app.user %}
+					<table class="aff-table">
+						<thead>
+							<tr>
+								<th>Date</th>
+								<th>Affiliate ID</th>
+								<th>Action</th>
+								<th>Commission</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td colspan="4" style="text-align: center; color: var(--text-muted); padding: 40px 0;">
+									No earnings yet. Start sharing your link!
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				{% else %}
+					<div style="text-align: center; padding: 40px 0; color: var(--text-muted);">
+						<i class="fas fa-lock" style="font-size: 36px; margin-bottom: 16px; display: block;"></i>
+						<p>Please
+							<a href="{{path('app_login')}}" style="color: var(--primary-gold); font-weight: 700;">login</a>
+							to view your earnings history.</p>
+					</div>
+				{% endif %}
+			</div>
+		</section>
+	</main>
+
+	<script>
+		document.getElementById('copy-ref').addEventListener('click', () => {
+const link = document.getElementById('ref-link');
+link.select();
+document.execCommand('copy');
+const btn = document.getElementById('copy-ref');
+btn.textContent = 'Copied!';
+setTimeout(() => btn.textContent = 'Copy Link', 2000);
+});
+	</script>
+{% endblock body %}

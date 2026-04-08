@@ -1,69 +1,77 @@
 {% extends './security/loginbase.html.twig' %}
-{% block title %}
-  Connexion
+{% block title %}Connexion
 {% endblock %}
 {% block body %}
-  <body>
+	<body>
+		<div class="auth-container">
+			<div class="auth-card">
+				<div class="auth-header">
+					<a href="{{path('index')}}">
+						<div class="logo-text" style="display:inline-block;">
+							<span class="brand-name" style="font-size:32px;">BitLOT</span>
+						</div>
+					</a>
+					<h2>Welcome back</h2>
+					<p>Login to your BitLOT account</p>
+				</div>
 
-    <div class="limiter">
-      <div class="container-login100" style="background-image: url('{{asset('assets/img/banner-3.jpg')}}'); background-size:cover;">
-        <div class="wrap-login100">
-          <form class="login100-form validate-form p-l-55 p-r-55 p-t-178" method="post">
-            <span class="login100-form-title">
-              CONNEXION - CRYPTOBET
-            </span>
+				{# Flash messages #}
+				{% for label, messages in app.flashes %}
+					{% for message in messages %}
+						<div class="auth-{{ label == 'success' ? 'success' : 'error' }}" style="{{ label == 'success' ? 'background:#E8F5E9; color:#2E7D32; border-color:#C8E6C9;' : '' }}">
+							<i class="fas fa-{{ label == 'success' ? 'check-circle' : 'exclamation-circle' }}"></i>
+							{{ message }}
+						</div>
+					{% endfor %}
+				{% endfor %}
 
-            <div class="wrap-input100 validate-input m-b-16" data-validate="example@mail.com">
-              <input class="input100" type="email" name="email" value="{{ last_username }}" required="required" autofocus="autofocus" placeholder="Email">
-              <span class="focus-input100"></span>
-            </div>
+				{% if error %}
+					<div class="auth-error">
+						<i class="fas fa-exclamation-circle" style="margin-right: 8px;"></i>
+						{{ error.messageKey|trans(error.messageData, 'security') }}
+					</div>
+				{% endif %}
 
-            <div class="wrap-input100 validate-input" data-validate="Mot de passe requis">
-              <input class="input100" type="password" name="password" autocomplete="current-password" required="required" placeholder="Mot de passe">
-              <span class="focus-input100"></span>
-            </div>
+				<form method="post">
+					<div class="auth-form-group">
+						<label>Email Address</label>
+						<input type="email" name="email" value="{{ last_username }}" required autofocus placeholder="name@example.com">
+					</div>
+					<div class="auth-form-group">
+						<label>Password</label>
+						<input type="password" name="password" autocomplete="current-password" required placeholder="••••••••">
+						<a href="{{path('forget.password')}}" class="forgot-link">Forgot password?</a>
+					</div>
 
-            <input class="input-checkbox100" id="ckb1" type="hidden" name="_remember_me" checked="checked">
+					<input type="hidden" name="_remember_me" value="1">
+					<input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
 
-            <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+					<button type="submit" class="auth-btn">Sign In</button>
+				</form>
 
-            <div class="text-right p-t-13 p-b-23">
-              <span class="txt1">
-                Vous avez oublié
-              </span>
+				<div class="social-auth">
+					<span style="font-size: 13px; color: var(--text-muted);">Or continue with</span>
+					<div class="social-btns">
+						<button class="social-btn">
+							<i class="fab fa-google"></i>
+						</button>
+						<button class="social-btn">
+							<i class="fab fa-apple"></i>
+						</button>
+					</div>
+				</div>
 
-              <a href="{{path('forget.password')}}" class="txt2">
-                votre mot de passe
-              </a>
-            </div>
+				<div class="footer-text">
+					Don't have an account?
+					<a href="{{path('app_register')}}">Create one</a>
+				</div>
 
-            <div class="container-login100-form-btn">
-              <button class="login100-form-btn">
-                Connexion
-              </button>
-            </div>
-
-            <div class="mt-4">
-              {% if error %}
-                <p class="text-center bg-danger text-white p-3">Votre Email ou mot de passe est incorrect!</p>
-                {%endif%}
-              </div>
-
-              <div class="flex-col-c p-t-170 p-b-40">
-                <span class="txt1 p-b-9">
-                  Vous n'avez pas de compte?
-                </span>
-
-                <a href="{{path('app_register')}}" class="txt3">
-                  Inscrivez vous maintenant
-                </a>
-
-                <span class="txt1 p-b-9">
-                  <a href="{{path('index')}}">Retour sur l'acceuil <i class="fa fa-home"></i></a>
-                </span>
-              </div>
-            </form>
-          </div>
-        </div>
-    </div>
+				<div class="footer-text" style="margin-top: 12px;">
+					<a href="{{path('index')}}" style="color: var(--text-muted);">
+						<i class="fas fa-arrow-left"></i>
+						Back to home</a>
+				</div>
+			</div>
+		</div>
+	</body>
 {% endblock %}

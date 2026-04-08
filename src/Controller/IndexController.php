@@ -17,62 +17,98 @@ use Twig\Environment;
 
 class IndexController extends AbstractController
 {
-    public function __construct(private Environment $twig,private  betroomService $betroomService,
-    private  sendemailService $sendemailService,private  TestimonyService $testimonyService, private ticketService $ticketService,
-     private RoomSettingsRepository $roomSettingsRepository, private UserService $userService)
-    {
+    public function __construct(
+        private Environment $twig,
+        private betroomService $betroomService,
+        private sendemailService $sendemailService,
+        private TestimonyService $testimonyService,
+        private ticketService $ticketService,
+        private RoomSettingsRepository $roomSettingsRepository,
+        private UserService $userService
+    ) {
     }
 
-    #[Route('/',name:'index')]
+    #[Route('/', name: 'index')]
     public function index(): Response
     {
-         
-        $roomSettings = $this->roomSettingsRepository->findAll()[0];
+        $settings = $this->roomSettingsRepository->findAll();
+        if (empty($settings)) {
+            return new Response("Database is empty. Please run migrations and seed room_settings table.");
+        }
+        $roomSettings = $settings[0];
         $roomStatus = $roomSettings->getStatus();
-        if($roomStatus  == "closed")
-        {
+        if ($roomStatus == "closed") {
             //get current winners by closed time
             $logger = $this->getUser();
-            if($logger)
-            {
+            if ($logger) {
                 $user = $this->userService->getUserByEmail($logger->getUserIdentifier())[0];
                 $current_winners = $this->betroomService->getCurrentWinners($roomSettings->getClosedAt(), $user);
-                if($current_winners)
-                {
+                if ($current_winners) {
                     $this->addFlash("winner", "💥🎉🎉💥💥💥Vous etes un heureux gagnant d'une ou plusieurs salle de tirages !!");
                 }
             }
         }
 
-        return new Response($this->twig->render('index.html.twig',[
+        return new Response($this->twig->render('index.html.twig', [
             'betrooms' => $this->betroomService->allBetRoom(),
             'testimonies' => $this->testimonyService->getTestimonyByStatus(true),
-            'closedAt' => date_format($roomSettings->getClosedAt(),"Y/m/d H:i:s"),
-            'openAt' => date_format($roomSettings->getOpenAt(),"Y/m/d H:i:s"),
+            'closedAt' => date_format($roomSettings->getClosedAt(), "Y/m/d H:i:s"),
+            'openAt' => date_format($roomSettings->getOpenAt(), "Y/m/d H:i:s"),
             'status' => $roomSettings->getStatus()
         ]));
     }
 
-    #[Route('/contactez-nous',name:'contact')]
-    public function contact(Request $request) : Response
+    #[Route('/contact-us', name: 'contact')]
+    public function contact(Request $request): Response
     {
         $form = $this->createForm(ContactType::class);
         $form->handleRequest($request);
-        if($form->isSubmitted() && $form->isValid())
-        {
+        if ($form->isSubmitted() && $form->isValid()) {
             $email = $form->get('email')->getData();
             $subject = $form->get('subject')->getData();
             $fullname = $form->get('fullname')->getData();
             $message = $form->get('message')->getData();
 
             //send
-            $this->sendemailService->sendContactMail($email,$subject,$fullname,$message);
-            $this->addFlash('contact','Votre message est bien parvenu à notre service client, Merci pour votre attention!!');
+            $this->sendemailService->sendContactMail($email, $subject, $fullname, $message);
+            $this->addFlash('contact', 'Votre message est bien parvenu à notre service client, Merci pour votre attention!!');
 
             return $this->redirectToRoute('contact');
         }
-        return new Response($this->twig->render('./contact/contact.html.twig',[
+        return new Response($this->twig->render('./contact/contact.html.twig', [
             'form' => $form->createView()
+        ]));
+    }
+
+    #[Route('/faq', name: 'faq_page')]
+    public function faq(): Response
+    {
+        return new Response($this->twig->render('faq/faq.html.twig'));
+    }
+
+    #[Route('/affiliation', name: 'affiliation_page')]
+    public function affiliation(): Response
+    {
+        return new Response($this->twig->render('affiliation/affiliation.html.twig'));
+    }
+
+    #[Route('/lottery/{reference}', name: 'lottery_page')]
+    public function lottery(string $reference = null): Response
+    {
+        $settings = $this->roomSettingsRepository->findAll()[0];
+        $betroom = null;
+
+        if ($reference) {
+            $betroom = $this->betroomService->getBetroomByReference($reference);
+        } else {
+            $betrooms = $this->betroomService->allBetRoom();
+            $betroom = !empty($betrooms) ? $betrooms[0] : null;
+        }
+
+        return new Response($this->twig->render('lottery/lottery.html.twig', [
+            'betroom' => $betroom,
+            'roomSettings' => $settings,
+            'closedAt' => date_format($settings->getClosedAt(), "Y/m/d H:i:s")
         ]));
     }
 }

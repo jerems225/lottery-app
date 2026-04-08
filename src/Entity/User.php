@@ -89,6 +89,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Testimony::class)]
     private Collection $testimonies;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $walletAddress = null;
+
     public function __construct()
     {
         $this->tickets = new ArrayCollection();
@@ -489,6 +492,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             }
         }
 
+        return $this;
+    }
+
+    public function getWalletAddress(): ?string
+    {
+        return $this->walletAddress;
+    }
+
+    public function setWalletAddress(?string $walletAddress): self
+    {
+        $this->walletAddress = $walletAddress;
         return $this;
     }
 }
