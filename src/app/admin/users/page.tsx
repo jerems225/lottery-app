@@ -16,7 +16,7 @@ import {
     toggleUserBlockAction 
 } from "@/app/actions";
 import { toast } from "react-hot-toast";
-import { cn } from "@/lib/utils";
+import { cn, formatNumber } from "@/lib/utils";
 import { useSession } from "next-auth/react";
 
 const ROLE_CONFIG: Record<string, { color: string, icon: any, label: string, bg: string, border: string }> = {
@@ -274,7 +274,7 @@ function UserRow({ user, currentAdminRole, onUpdateRole, onEdit, onDelete, onBlo
             <div className="w-6 h-6 rounded-lg bg-emerald-500/10 flex items-center justify-center">
                 <Zap className="w-3.5 h-3.5 text-emerald-600" />
             </div>
-            <span className="font-black text-sm text-emerald-600 tracking-tight">${user.balance.toFixed(2)}</span>
+            <span className="font-black text-sm text-emerald-600 tracking-tight">${formatNumber(user.balance || 0)}</span>
         </div>
       </td>
       <td className="px-10 py-6 whitespace-nowrap text-xs">

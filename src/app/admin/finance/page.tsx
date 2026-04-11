@@ -13,6 +13,7 @@ import {
 } from "@/app/actions/finance.actions";
 import { useSession } from "next-auth/react";
 import { toast } from "react-hot-toast";
+import { formatNumber } from "@/lib/utils";
 
 export default function FinanceAdminDashboard() {
     const { data: session } = useSession();
@@ -208,7 +209,7 @@ export default function FinanceAdminDashboard() {
                                     <span className="font-black text-lg text-text-main">{selectedAgent.name}</span>
                                     <span className="text-xs font-bold text-text-muted">{selectedAgent.email}</span>
                                     <span className="text-[10px] font-black text-emerald-600 uppercase tracking-widest mt-1 px-2 py-0.5 bg-emerald-50 w-fit rounded-md border border-emerald-100">
-                                        Balance: ${selectedAgent.balance}
+                                    Balance: ${formatNumber(selectedAgent.balance)}
                                     </span>
                                 </div>
                                 <form 
@@ -281,14 +282,14 @@ export default function FinanceAdminDashboard() {
                                         <div className="flex flex-col">
                                             <div className="flex items-center gap-3">
                                                 <span className="font-black text-base uppercase">{req.type}</span>
-                                                <span className={`font-black text-lg ${req.type === 'WITHDRAWAL' ? 'text-zinc-900' : 'text-emerald-600'}`}>${req.amount}</span>
+                                                <span className={`font-black text-lg ${req.type === 'WITHDRAWAL' ? 'text-zinc-900' : 'text-emerald-600'}`}>${formatNumber(req.amount)}</span>
                                             </div>
                                             <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mt-1">
                                                 <span className="text-xs font-black text-text-muted uppercase tracking-widest">
                                                     User: <span className="text-zinc-700">{req.user?.name || req.user?.email}</span>
                                                 </span>
                                                 <span className="text-xs font-black text-emerald-600 uppercase tracking-widest border border-emerald-200 bg-emerald-50 px-2 py-0.5 rounded-md">
-                                                    Bal: ${req.user?.balance ?? 0}
+                                                    Bal: ${formatNumber(req.user?.balance ?? 0)}
                                                 </span>
                                                 {req.paymentMethod && (
                                                     <span className="text-xs font-black text-text-muted uppercase tracking-widest flex items-center gap-1">

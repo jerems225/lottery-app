@@ -81,7 +81,7 @@ export function AdminLayoutWrapper({
                         {/* Live Balance */}
                         <div className="hidden sm:flex items-center gap-2 px-4 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl">
                             <Zap className="w-4 h-4 text-emerald-600" />
-                            <span className="font-black text-sm text-emerald-600 tracking-tight">{formatCurrency(balance)}</span>
+                            <span className="font-black text-sm text-emerald-600 tracking-tight">{formatCurrency(balance, "en")}</span>
                         </div>
 
                         {/* Notifications */}

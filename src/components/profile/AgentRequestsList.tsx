@@ -4,11 +4,13 @@ import { motion, AnimatePresence } from "framer-motion";
 import { DollarSign, Clock, CheckCircle2, XCircle, User as UserIcon, Loader2, RefreshCw } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { getAllUserRequestsAction, processUserRequestAction } from "@/app/actions/finance.actions";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, formatNumber } from "@/lib/utils";
+import { useLanguage } from "@/lib/i18n/LanguageContext";
 import { toast } from "react-hot-toast";
 
 export function AgentRequestsList({ onSuccess }: { onSuccess?: () => void }) {
     const { data: session, update } = useSession();
+    const { locale } = useLanguage();
     const [requests, setRequests] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [processingId, setProcessingId] = useState<string | null>(null);
@@ -88,7 +90,7 @@ export function AgentRequestsList({ onSuccess }: { onSuccess?: () => void }) {
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-6 justify-between sm:justify-end border-t sm:border-none border-black/5 pt-4 sm:pt-0">
-                                    <span className="font-[950] text-2xl tracking-tighter mx-4">{formatCurrency(req.amount)}</span>
+                                    <span className="font-[950] text-2xl tracking-tighter mx-4">{formatCurrency(req.amount, locale === "fr" ? "fr" : "en")}</span>
                                     <div className="flex items-center gap-2">
                                         <button 
                                             onClick={() => handleProcess(req.id, "REJECTED")}
@@ -131,7 +133,7 @@ export function AgentRequestsList({ onSuccess }: { onSuccess?: () => void }) {
                                     </div>
                                 </div>
                                 <div className="flex flex-col items-end">
-                                    <span className="font-black text-sm">{formatCurrency(req.amount)}</span>
+                                    <span className="font-black text-sm">{formatCurrency(req.amount, locale === "fr" ? "fr" : "en")}</span>
                                     <span className="text-[9px] font-bold text-zinc-400">{new Date(req.createdAt).toLocaleDateString()}</span>
                                 </div>
                             </div>

@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
 import { getUserDashboardDataAction, verifyCodeAction, resendVerificationCodeAction, updateUserAction } from "@/app/actions";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, formatNumber } from "@/lib/utils";
 import { toast } from "react-hot-toast";
 import Link from "next/link";
 import { ManageRoomModal } from "@/components/lottery/ManageRoomModal";
@@ -248,7 +248,7 @@ export default function ProfilePage() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="p-6 bg-zinc-50 border border-black/5 rounded-[24px]">
                       <span className="text-[10px] font-black uppercase tracking-widest text-text-muted">Total Balance</span>
-                      <div className="text-3xl font-[950] mt-1 text-emerald-600">${dashboardData.user?.balance?.toLocaleString() || "0.00"}</div>
+                      <div className="text-3xl font-[950] mt-1 text-emerald-600">${formatNumber(dashboardData.user?.balance || 0, locale)}</div>
                       <div className="flex gap-3 mt-6">
                         <button 
                           onClick={() => { setWalletTab("deposit"); setIsWalletModalOpen(true); }}

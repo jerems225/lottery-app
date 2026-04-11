@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { Wallet, Menu, X, ChevronDown, User, LogOut, ShieldCheck } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { cn } from "@/lib/utils";
+import { cn, formatNumber } from "@/lib/utils";
 import { useSession, signOut } from "next-auth/react";
 import { useLanguage } from "@/lib/i18n/LanguageContext";
 import { NotificationBell } from "./NotificationBell";
@@ -68,7 +68,7 @@ export const Navbar = () => {
                 <div className="flex flex-col">
                   <span className="text-[10px] font-black text-text-muted uppercase tracking-widest leading-none mb-1">{t("nav", "Balance")}</span>
                   <span className="text-sm font-black text-text-main leading-none">
-                    {session.user.balance?.toLocaleString() || "0.00"}
+                    {formatNumber(session.user.balance || 0, locale)}
                   </span>
                 </div>
               </div>
@@ -143,7 +143,11 @@ export const Navbar = () => {
                 <span className="text-white font-[950] text-[9px]">$</span>
              </div>
              <span className="text-[11px] font-[900] text-text-main tracking-tight uppercase">
-               {session.user.balance > 1000 ? `${Math.floor(session.user.balance/1000)}K` : session.user.balance || "0"}
+               {session.user.balance > 1000000 
+                 ? `${(session.user.balance / 1000000).toFixed(1)}M` 
+                 : session.user.balance > 1000 
+                   ? `${Math.floor(session.user.balance / 1000)}K` 
+                   : formatNumber(session.user.balance || 0, locale)}
              </span>
           </div>
         )}
